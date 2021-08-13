@@ -1,0 +1,411 @@
+---
+title: "Clase 11. Introducción a Redes Neuronales ^[Estas notas estan basadas en https://tensorflow.rstudio.com/keras/#tutorials]"
+output: 
+  html_notebook: 
+    toc: yes
+    toc_float: yes
+author: "Juan Manuel Barriola y Sofia Perini"
+date: "28 de Noviembre de 2020"
+---
+
+```{r package_options, include=FALSE}
+knitr::opts_knit$set(progress = FALSE, verbose = TRUE)
+```
+
+
+# Fully connected Neural Network
+
+Las redes neuronales densas (**Fully Connected Neural Networks**) son un tipo de red neuronal artificial donde todas las neuronas de una capa (**layer**) se encuentran conectadas con todas las neuronas de la capa siguiente.
+
+Este tipo de redes neuronales se caracterizan por ser "agnósticas de la estructura o del input" (**structure agnostic**) ya que no es necesario realizar supuestos o tratamientos especiales a los datos de input de la red.
+
+Veamos la arquitectura de una red densa:
+
+![red densa](img/nn.png)
+
+Cuenta con:
+
+ * **Input Layer**: capa de entrada de los datos, cada neurona/nodo es una variable o feature de nuestros datos
+ * **Hidden Layer I** y **Hidden Layer II**: capas ocultas con neuronas con funciones de activación
+ * **Output Layer**: capa de salida, respuesta de la red neuronal
+
+## Keras
+
+Vamos a utilizar la librería [__KERAS__](https://keras.rstudio.com/)
+
+### Instalación
+
+Keras utiliza como backend __TensorFlow__. Para poner todo en funcionamiento necesitamos instalar ambas cosas. Para eso usamos la función `install_keras()` que realiza una instalación por default de basada en el CPU.
+
+Si tienen una GPU (procesador gráfico), las redes funcionan mucho más rápido, porque la GPU permite optimizar las operaciones matriciales. Pero necesitan instalar keras para que corra en el lenguaje de la GPU ( _CUDA_ )
+
+```{r, message=FALSE}
+#devtools::install_github("rstudio/keras")
+
+library(keras)
+#install_keras()
+library(tidyverse)
+library(knitr)
+```
+
+
+
+## Mnist
+
+Este es un problema clásico, de juguete, que sirve desde hace muchos años como benchmark para clasificación de imágenes. 
+Tiene 60.000 imágenes, de 28x28 pixeles, de números escritos a mano.
+
+```{r}
+mnist <- dataset_mnist()
+x_train <- mnist$train$x
+y_train <- mnist$train$y
+x_test <- mnist$test$x
+y_test <- mnist$test$y
+```
+
+Observemos los **datos de entrada** del modelo:
+
+```{r}
+matrix.rotate <- function(img) { 
+    t(apply(img, 2, rev))
+}
+
+# Observamos 9 registros
+par(mfrow=c(3, 3))
+for (idx in 1:9) {
+    label <- y_train[idx]
+    image(matrix.rotate(x_train[idx,,]), col = grey(level = seq(1, 0, by=-1/255)), axes=F, main=label)
+  
+}
+```
+
+Cada registro es una imagen de 28x28 pixeles. Veamos la primera observación en su forma matricial:
+
+```{r}
+kable(data.frame(x_train[1,,]))
+```
+
+
+Cada celda es un pixel, y su valor es su representación en la escala de grises (de 0 a 255). Es decir, cuando mayor es el valor es un pixel más oscuro. 
+
+El dato se encuentra en un array de 3 dimensiones (imagen,ancho,largo). Como tenemos 60K imagenes, esto tiene la forma de :
+```{r}
+dim(x_train)
+```
+
+Es decir, nuestros datos ahora conforman un **Tensor**:
+
+![Tensor^[https://hackernoon.com/learning-ai-if-you-suck-at-math-p4-tensors-illustrated-with-cats-27f0002c9b32]](img/Tensor.jpeg)
+
+Las dimensiones son:
+
+  * **Cantidad de registros**: 60.000 imágenes
+  * **Ancho de la imagen**: 28 pixeles
+  * **Alto de la imagen**: 28 pixeles
+  
+### Preparación de los datos
+
+Para utilizar las Redes Densas o Fully Connected con imagenes como inputs es necesario **aplanarlas** para que la red pueda interpretarla. Esto implica que cada celda o pixel es un variables, es decir, tenemos 28x28 = 784 features o variables.
+
+Para **aplanar** cada imágen debemos realizar un _reshape_ de los datos:
+
+- Pasar de estos arrays de 3 dimensiones a 2 dimensiones (como estamos acostumbrados, un vector por observación)
+- Además, necesitamos convertir la escala de los datos de íntegers entre 0 y 255 a numeros floating point entre 0 y 1
+
+```{r}
+# reshape
+x_train <- array_reshape(x_train, c(nrow(x_train), 28*28)) #la primera dimensión es tan larga como la cantidad de observaciones, la segunda dimensión es la matriz aplanada (28*28)
+x_test <- array_reshape(x_test, c(nrow(x_test), 28*28))
+# rescale
+x_train <- x_train / 255
+x_test <- x_test / 255
+```
+
+Ahora tenemos 60.000 registros de 784 elementos:
+
+```{r}
+dim(x_train)
+```
+
+Veamos como luce el primer elemento luego de la transformación:
+
+```{r}
+x_train[1,]
+```
+
+**Datos de salida**
+
+```{r}
+y_train %>% head(.)
+```
+
+Es un vector de integers entre 0-9. 
+
+Dada la implementación de las redes, necesitamos pasarlo a __one-hot encoding__ esto se hace con la función `to_categorical()` de Keras
+
+```{r}
+y_train <- to_categorical(y_train, 10)
+y_test <- to_categorical(y_test, 10)
+```
+
+¿Cómo lucen los datos de salida?
+
+```{r}
+y_train %>% head(.)
+```
+
+## Definición del modelo
+
+Para armar el modelo primero definimos el tipo de modelo. Para eso usamos `keras_model_sequential()` que nos permite simplemente apilar capas de la red. 
+
+- En la primera capa tenemos que aclarar el input_shape. En este caso es **unidimensional** (lo aplanamos previamente), pero podría ser un tensor de cualquier dimensión (!!)
+
+- Las capas se agregan con pipes `%>%`
+
+- La última capa tiene la misma cantidad de unidades que categorías nuestro output. La salida del modelo es un vector que asigna una probabilidad a cada una da las categorías
+
+- En cada capa tenemos que definir una función de activación
+- Además agregamos una regularización `layer_droput(x)` que lo que hace es, en cada iteración del ajuste, ignorar el x% de las conexiones. Esto evita el sobreajuste del modelo
+
+¿Cuál va a ser el tamaño de nuestra **input layer**? ¿Y de la **output layer**?
+
+Vamos a creer un modelo sencillo: con sus capas de input y output y dos **hidden layers**
+
+```{r}
+# Definimos el tipo de modelo
+model <- keras_model_sequential() 
+
+model %>% 
+  # Hidden layer I
+  layer_dense(units = 256, activation = 'relu', input_shape = c(784)) %>% 
+  layer_dropout(rate = 0.4) %>% 
+  # Hidden layer II
+  layer_dense(units = 128, activation = 'relu') %>%
+  layer_dropout(rate = 0.3) %>%
+  # Output layer
+  layer_dense(units = 10, activation = 'softmax')
+```
+
+### Funciones de activación
+
+Para este modelo utilizamos dos funciones de activación: 
+
+- Rectified Linear Unit: $$f(x)=max(0,x)$$
+- Softmax : $$ f(x)=\frac{e^{x_i}}{\sum_{j=1}^n e^{x_j}}$$
+
+Definidas en código y gráficamente:
+
+
+```{r}
+
+relu <- function(x) ifelse(x >= 0, x, 0)
+softmax <- function(x) exp(x) / sum(exp(x))
+
+relu_df = data.frame(x= seq(from=-2, to=2, by=0.25)) %>% 
+  mutate(relu = relu(x)) 
+
+softmax_df = data.frame(x= runif(min = -2, max=2, n=10)) %>% 
+  mutate(softmax = softmax(x))
+
+relu_plot = ggplot(relu_df, aes(x=x, y=relu))+
+  geom_line(size=1,  colour='steelblue') +
+  ggtitle("ReLU")+
+  theme_bw()
+
+softmax_plot = ggplot(softmax_df, aes(x=x, y=softmax, colour='firebrick'))+
+  geom_line(size=1) +
+  ggtitle("Softmax")+
+  theme_bw()
+
+cowplot::plot_grid(relu_plot, softmax_plot)
+```
+
+
+__ReLu__ es la función de activación que más se utiliza en la actualidad en las hidden layers. 
+
+### Estructura del modelo
+
+Si queremos ver un resumen del modelo:
+
+```{r echo=T, results='hide',eval=F}
+summary(model)
+```
+
+![](img/fc_model_summary.png)
+
+
+El modelo tiene 235,146 parámetros para optimizar:
+
+En la **primera capa oculta** tenemos 256 nodos que se conectan con cada nodo de la capa de entrada (784), además de un bias para cada nodo:
+```{r}
+784*256+256
+```
+
+La capa de **dropout** es una regularización que elimina algunas conexiones entre neuronas aleatoriamente y no ajusta ningún parámetro
+
+La **segunda capa oculta** se conecta con los 256 nodos de la primera capa y tiene 32,286 parámetros:
+
+```{r}
+128*256+128
+```
+
+La tercera capa, la **capa de salida** tiene 1290 parámetros:
+
+```{r}
+128*10+10
+```
+
+-----------
+
+Luego necesitamos __compilar el modelo__ indicando la función de _loss_, qué tipo de optimizador utilizar, y qué métricas nos importan
+
+```{r}
+model %>% compile(
+  loss = 'categorical_crossentropy',
+  optimizer = optimizer_rmsprop(),
+  metrics = c('accuracy')
+)
+```
+
+
+## Entrenamiento
+
+Para ajustar el modelo usamos la función `fit()`, acá necesitamos pasar los siguientes parámetros:
+
+- El array con los datos de entrenamiento
+- El array con los outputs
+- `epochs`: Cuantas veces va a recorrer el dataset de entrenamiento
+- `batch_size`: de a cuantas imagenes va a mirar en cada iteración del backpropagation
+- `validation_split`: Hacemos un split en train y validation para evaluar las métricas.
+
+```{r echo=T, results='hide',eval=F}
+fit_history <- model %>% fit(
+  x_train, y_train, 
+  epochs = 30, batch_size = 128, 
+  validation_split = 0.2
+)
+```
+
+![](img/fc_training.png)
+
+
+
+```{r include=FALSE, eval=F}
+#guardo la historia. No lo muestro, ni lo corro por default
+saveRDS(fit_history,"../Resultados/fc_hist.RDS")
+```
+
+```{r include=FALSE, eval=T}
+#levanto la historia. No lo muestro, pero lo corro por default
+fit_history <- read_rds("../Resultados/fc_hist.RDS")
+```
+
+
+
+Mientras entrenamos el modelo, podemos ver la evolución en el gráfico interactivo que se genera en el viewer de Rstudio.
+
+`fit()` nos devuelve un objeto que incluye las métricas de loss y accuracy
+
+```{r}
+fit_history
+```
+
+Este objeto lo podemos graficar con `plot()` y nos devuelve un objeto de _ggplot_, sobre el que podemos seguir trabajando
+
+```{r}
+plot(fit_history)+
+  theme_minimal()+
+  labs(title= "Evolución de Loss y Accuracy en train y validation")
+```
+
+
+
+> Noten que el modelo entrenado, con el que podemos predecir, sigue siendo `model`.
+
+__es importante guardar el modelo luego de entrenar, para poder reutilizarlo__
+
+
+```{r eval=FALSE, echo=T}
+model %>% save_model_hdf5("../Resultados/fc_model.h5")
+```
+
+Para cargarlo:
+
+```{r}
+modelo_preentrenado <- load_model_hdf5("../Resultados/fc_model.h5")
+```
+
+Observamos nuevamente un resumen de su estructura:
+
+```{r}
+modelo_preentrenado
+```
+
+## Dataset de testing
+
+Si queremos evaluar el modelo sobre el conjunto de test (distinto del de validación) podemos usar la función `evaluate()`
+
+```{r}
+modelo_preentrenado %>% evaluate(x_test, y_test)
+```
+
+Para obtener las predicciones sobre un nuevo conjunto de datos utilizamos `predict_classes()`
+
+```{r}
+clases_predichas = modelo_preentrenado %>% predict_classes(x_test)
+```
+
+Observemos las primeras 9 predicciones:
+
+```{r}
+clases_predichas %>% head(9)
+```
+
+Observemos las imagenes de estos nueve registros y su etiqueta real:
+
+```{r}
+par(mfrow=c(3, 3))
+for (idx in 1:9) {
+    label <- mnist$test$y[idx]
+    image(matrix.rotate(mnist$test$x[idx,,]), col = grey(level = seq(1, 0, by=-1/255)), axes=F, main=label)
+  
+}
+```
+
+### Errores de clasificacion
+
+Observemos algunos errores de clasificación
+
+```{r}
+errores = which(mnist$test$y != clases_predichas)
+```
+
+Las clases predichas son:
+
+```{r}
+clases_predichas[errores[1:9]] 
+```
+
+Las imagenes y clases reales son:
+
+```{r}
+par(mfrow=c(3, 3))
+for (idx in errores[1:9]) {
+    label <- mnist$test$y[idx]
+    image(matrix.rotate(mnist$test$x[idx,,]), col = grey(level = seq(1, 0, by=-1/255)), axes=F, main=label)
+  
+}
+```
+
+
+## Otros recursos interesantes
+
+[Visualización de una Red Fully conected para clasificación de dígitos](http://scs.ryerson.ca/~aharley/vis/fc/)
+
+
+[Tensor Flow Playground](http://playground.tensorflow.org/#activation=tanh&batchSize=10&dataset=circle&regDataset=reg-plane&learningRate=0.03&regularizationRate=0&noise=0&networkShape=4,2&seed=0.59794&showTestData=false&discretize=false&percTrainData=50&x=true&y=true&xTimesY=false&xSquared=false&ySquared=false&cosX=false&sinX=false&cosY=false&sinY=false&collectStats=false&problem=classification&initZero=false&hideText=false
+)
+
+[Diagramas de redes](http://alexlenail.me/NN-SVG/index.html)
+
+

@@ -1,0 +1,415 @@
+---
+title: "Regresión Lineal Múltiple II"
+author: "Juan Barriola y Sofía Perini"
+date: "17 de Octubre de 2020"
+output:
+  html_notebook:
+    theme: spacelab
+    toc: yes
+    toc_float: yes
+    df_print: paged
+---
+
+<style type="text/css">
+div.main-container {
+  max-width: 1600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+## Diagnóstico y Evaluación de Modelos de Regresión Lineal Múltiple
+
+### Dataset 
+
+Vamos a trabajar con el subconjunto de datos que surgió del trabajo de limpieza que se hizo en la clase de regresión lineal simple, correspondiente al grupo de salarios de los data scientists/analyst, de la encuesta de sueldos en el sector de tecnología en Argenina realizada por SysArmy. El informe, realizado por OpenQube lo pueden ver [acá](https://sueldos.openqube.io/encuesta-sueldos-2020.01/).
+
+Nuestro objetivo es evaluar modelos de regresión lineal múltiple que buscan explicar el sueldo neto de Data Analysts, Data Scientists y Data Engineers en Argentina.
+
+Es decir, evaluamos los siguientes modelos para el salario neto:
+
+$salarioNeto = \beta_0 +\beta_1X_1+\beta_2X_2+...+\epsilon$
+
+```{r, warning=F, message=F}
+library(tidyverse)
+library(tidymodels)
+library(gridExtra)
+```
+
+#### Levantamos Dataset y seleccionamos variables de interés
+
+La limpieza consistió en: eliminar los outliers de acuerdo a los criterios de la clase 3, descartar los sueldos dolarizados, eliminar los registros inconsistentes con la edad laboral, aquellas inconsistencias en las variables sueldo bruto y neto, como también aquellos errores de carga en los años de experiencia y las inconsistencias en relación con los años en la empresa actual, quedando como resultado un dataset de 159 observaciones, con el que trabajaremos a continuación (98 DA y 61 DS).
+
+Seleccionamos variables de interés y armamos nuevas variables. 
+
+```{r, warning=F, message=F}
+encuesta <- read_csv("../Fuentes/encuesta_RLM_limpia.csv")
+df <- encuesta %>%
+  select(me_identifico, edad, donde_estas_trabajando, anos_de_experiencia, anos_en_la_empresa_actual, anos_en_el_puesto_actual, gente_a_cargo, trabajo_de, nivel_de_estudios_alcanzado, estado, salario_bruto, salario_neto) %>%
+  # creamos la variable perfil
+  mutate(perfil = factor(case_when(trabajo_de == "BI Analyst / Data Analyst" ~ "DA", trabajo_de == "Data Scientist / Data Engineer" ~ "DS")), 
+  # y la variable nivel educativo alcanzado (agrupa nivel de estudios y estado)
+         nivel_educativo = case_when(nivel_de_estudios_alcanzado %in% c("Posgrado", "Posdoctorado", "Doctorado") ~ "Posgrado", 
+                                     TRUE ~ nivel_de_estudios_alcanzado), nivel_edu_alcanzado = paste(nivel_educativo, sep = " ", estado))
+df
+```
+### Partición del dataset en train y test
+
+En este caso para evaluar los modelos vamos a realizar una partición entre dataset de entrenamiento (70%) y testeo (30%) usando la función `initial_split` del paquete [rsample](https://rsample.tidymodels.org/) de tidymodels.
+
+```{r}
+# fijamos semilla
+set.seed(44)
+# Partición Train y Test, indicando proporción
+df_split <- initial_split(df, prop = 0.7)
+class(df_split)
+View(df_split)
+# armamos dataframe de testeo y entrenamiento
+df_train <- training(df_split)
+df_test <- testing(df_split)
+# vemos el contenido
+df_train %>%
+  dim_desc() # 112 filas
+df_test %>%
+  dim_desc() # 47 filas
+```
+
+#### Ajuste
+
+Habíamos realizado tres modelos distintos para tratar de explicar el salario neto: 
+
+* Modelo **Años de experiencia y Gente a cargo**
+
+* Modelo **Años de experiencia y Género**
+
+* Modelo **Años de experiencia y Nivel Educativo Alcanzado**
+
+Agregamos uno adicional: 
+
+* **Modelo Varias**: Años de Experiencia, Género y Gente a cargo
+
+Volvemos a realizar estos modelos utilizando el dataset de entrenamiento:
+
+```{r}
+# Modelo Experiencia y Gente a cargo
+modelo_exp_gc <- lm(salario_neto ~ anos_de_experiencia + gente_a_cargo, data = df_train)
+# Modelo Experiencia y Género
+modelo_exp_sex <- lm(salario_neto ~ anos_de_experiencia + me_identifico, data = df_train)
+# Modelo Experiencia y Nivel Educativo
+modelo_exp_edu <- lm(salario_neto ~ anos_de_experiencia + nivel_edu_alcanzado, data = df_train)
+# Modelo Experiencia, Género y Gente a cargo
+modelo_varias <- lm(salario_neto ~ anos_de_experiencia + gente_a_cargo + me_identifico, data = df_train)
+```
+
+En el notebook previo sólo habíamos interpretado el valor de los parámetros estimados y su nivel de significación. Ahora buscaremos responder preguntas tales como:
+
+¿Qué proporción de la variabilidad logra explicar el modelo? ¿Cómo decidir que modelo explica mejor el fenómeno?
+
+¿El modelo cumple con los supuestos del modelo lineal?
+
+## Evaluación del Modelo 
+
+Utilizando el paquete broom, vamos a analizar las medidas de resumen del modelo y graficamos coeficientes estimados. 
+
+**Modelo Años de experiencia y Gente a cargo**
+
+```{r}
+# medidas de resumen tidy (incluido el intervalo de confianza)
+tidy_meg <- tidy(modelo_exp_gc, conf.int = TRUE)
+tidy_meg
+# Plot de los Coeficientes
+ggplot(tidy_meg, aes(estimate, term, xmin = conf.low, xmax = conf.high, height = 0)) +
+  geom_point(color = "forestgreen", size=2) +
+  geom_vline(xintercept = 0, lty = 4, color = "black") +
+  geom_errorbarh(color = "forestgreen", size=1) +
+  theme_bw() +
+  labs(y = "Coeficientes β", x = "Estimación")
+```
+
+En este gráfico podemos observar los coeficientes estimados para este modelo con sus respectivos intervalos de confianza. Tanto el gráfico como la salida del modelo tidy se puede apreciar que el intervalo de confianza (IC) del 95% de la variable años de experiencia no contiene al 0, mientras el IC de la variable gente_a_cargo sí. Es decir, que la experiencia resulta significativa y la gente a cargo no para explicar el salario neto. 
+
+**Modelo Años de experiencia y Género**
+
+```{r}
+# medidas de resumen tidy (incluido el intervalo de confianza)
+tidy_mes <- tidy(modelo_exp_sex, conf.int = TRUE) %>% arrange(p.value)
+tidy_mes
+# Plot de los Coeficientes
+ggplot(tidy_mes, aes(estimate, term, xmin = conf.low, xmax = conf.high, height = 0)) +
+  geom_point(color = "forestgreen",size=2) +
+  geom_vline(xintercept = 0, lty = 4, color = "black") +
+  geom_errorbarh(color = "forestgreen", size=1) +
+  theme_bw() +
+  labs(y = "Coeficientes β", x = "Estimación")
+```
+
+En este caso se observa que la variable años de experiencia resulta estadísticamente significativa para explicar al sueldo neto mientras que la categoría Mujer de la variable me_identifico no. Esto se ve reflejado en que el intervalo de confianza del 95% para la primera variable no contiene el cero, pero el de la segunda sí.
+
+**Modelo Años de experiencia y Nivel Educativo Alcanzado**
+
+```{r}
+# medidas de resumen tidy (incluido el intervalo de confianza)
+tidy_meed <- tidy(modelo_exp_edu, conf.int = TRUE) %>% arrange(p.value)
+tidy_meed
+# Plot de los Coeficientes
+ggplot(tidy_meed, aes(estimate, term, xmin = conf.low, xmax = conf.high, height = 0)) +
+  geom_point(color = "forestgreen") +
+  geom_vline(xintercept = 0, lty = 4, color = "black") +
+  geom_errorbarh(color = "forestgreen") +
+  theme_bw() +
+  labs(y = "Coeficientes β", x = "Estimación")
+```
+
+A diferencia de lo observado en la clase 6, vemos que todos los IC de los niveles educativos contienen al 0. Es decir, que todos los niveles de la variable nivel educativo alcanzado no resultan estadísticamente significativos.  
+
+**Modelo Varias**
+
+```{r}
+# medidas de resumen tidy (incluido el intervalo de confianza)
+tidy_varias <- tidy(modelo_varias, conf.int = TRUE) %>% arrange(p.value)
+tidy_varias
+# Plot de los Coeficientes
+ggplot(tidy_varias, aes(estimate, term, xmin = conf.low, xmax = conf.high, height = 0)) +
+  geom_point(color = "forestgreen") +
+  geom_vline(xintercept = 0, lty = 4, color = "black") +
+  geom_errorbarh(color = "forestgreen") +
+  theme_bw() +
+  labs(y = "Coeficientes β", x = "Estimación")
+```
+
+Podemos calcular las variables resumen para todos los modelos juntos, usando la función map_df de la librería purrr para poder mostrar las salidas todas en un mismo dataframe. 
+
+```{r}
+# armamos lista con todos los modelos
+models <- list(modelo_exp_gc = modelo_exp_gc, modelo_exp_sex = modelo_exp_sex, modelo_exp_edu = modelo_exp_edu, modelo_varias = modelo_varias)
+# calculamos las variables resumen
+purrr::map_df(models, broom::tidy, .id = "model")
+```
+
+### Coeficientes de determinación $R^2$ y $R^2$ ajustado
+
+$$ R^2 = 1 − \frac{SSRes}{SSTot} = \frac{SSReg}{SSTot} $$
+
+El $R^2$ permite medir el porcentaje de variabilidad del fenómeno que el modelo logra explicar. 
+
+Sin importar la relevancia de la/s variables regresoras, el $R^2$ aumenta al agregar una variable adicional al modelo, aunque no se incremente la capacidad explicativa. Es decir, que podríamos utilizarlo para comparar modelos con igual número de variables, pero en casos de modelos con distinto número no serían comparables. En estos casos conviene comparar modelos por medio del $R^2$ ajustado que incluyen justamente el número de variables en el modelo. 
+
+$$ R^2_{a,p} = 1 − \frac{(\frac{SSRes_p}{n − p})}{(\frac{SSTot}{n − 1})} = 1 - (\frac{n-1}{n-p})(\frac{SSRes_p}{SSTot}) $$
+Como $SSTot/(n−1)$ está fijo en un conjunto de datos dado (sólo depende de las Y observadas), el $R_a^2$ aumenta si y sólo si la $SSRes_p/(n-p)$ disminuye.
+
+Veamos qué pasa con los ajustes que hicimos. 
+
+```{r}
+# calculamos las métricas para todos los modelos
+df_evaluacion_train = map_df(models, broom::glance, .id = "model") %>%
+  # ordenamos por R2 ajustado
+  arrange(desc(adj.r.squared))
+
+df_evaluacion_train
+```
+
+### Selección del mejor modelo en training
+
+¿Cuál es el modelo que mejor explica la variabildad del conjunto?
+
+Como no todos los modelos tienen igual número de variables, debemos compararlos a través del $R_a^2$, ya que sino podemos incurrir en un error. Por ejemplo, en el caso de modelo_exp_edu el $R^2$ es el mayor de todos pero cuando analizamos el $R_a^2$ es el menor. Esto significa que el $R^2$  de ese modelo solo se incrementó por la cantidad de variables dummies del modelo, no por ser un mejor modelo.
+
+En este caso el **mejor modelo** resulta ser modelo_exp_sex: que explica el salario neto en función de los años de experiencia y el género. 
+
+## Diagnóstico de Modelos
+
+El diagnóstico del modelo consiste en utilizar técnicas para validar el cumplimiento (o no) de los supuestos del modelo lineal. Recordemos que estos supuestos se puede resumir en:
+
+$ε_i ∼ N(0,σ^2)$ independientes entre sí.
+
+Los errores tienen distribución normal con media cero y varianza constante y son independientes entre sí. Los errores son inobservables, por lo tanto, tendremos que trabajar con su correlato empírico: los residuos en las técnicas de diagnóstico.
+
+Vamos a efectuar el diagnóstico de los mejores dos modelos según el R-cuadrado ajustado. 
+
+**Diagnóstico para el Modelo Años de experiencia y Género**
+
+```{r}
+plot(modelo_exp_sex)
+```
+
+* *Residuos vs valores predichos*: Parece existir cierta estructura en los datos: la varianza parece incrementarse con los valores predichos (depende de la variable) y luego se reduce por lo que no se satisface el supuesto de homocedasticidad.
+
+* *Normal QQ plot*: El extremo superior derecho no se ajusta a la distribución teórica.
+
+* *Residual vs leverage*: Existen dos puntos con un leverage bastante alto.
+
+* *Diagnóstico del modelo*: El modelo creado no cumple con los supuestos del modelo lineal. Parecen existir problemas de heterocedasticidad (varianza no constante), falta de normalidad y presencia de observaciones de alto leverage.
+
+Veamos la versión tidy de estos gráficos. Para ello creamos un dataframe con la información de los distintos modelos creados. 
+
+```{r}
+# calculamos valores predichos para todos los modelos
+au_modelos = purrr::map_df(models, broom::augment, .id = "model")
+# observamos lo que ocurre con las variables que no se incluyen en el modelo
+au_modelos %>%
+  head(5)
+au_modelos %>%
+  tail(5)
+```
+
+Al contar con esta información como dataframe, podemos realizar los gráficos de diagnóstico con ggplot. Vamos a ver dos ejemplos con los mejores modelos, pero se podría hacer para todos el mismo ejercicio. 
+
+```{r}
+# Modelo experiencia y género
+g1 = ggplot(au_modelos %>% filter(model == "modelo_exp_sex"), 
+       aes(.fitted, .resid)) +
+  geom_point() +
+  geom_hline(yintercept = 0) +
+  geom_smooth(se = FALSE) +
+  labs(title = "Residuos vs valores predichos") + 
+  theme_bw()
+g2 = ggplot(au_modelos %>% filter(model == "modelo_exp_sex"), 
+       aes(sample = .std.resid)) +
+  stat_qq() +
+  geom_abline() +
+  labs(title = "Normal QQ plot") + 
+  theme_bw()
+g3 = ggplot(au_modelos %>% filter(model == "modelo_exp_sex"), 
+       aes(.fitted, sqrt(abs(.std.resid)))) +
+  geom_point() +
+  geom_smooth(se = FALSE) + 
+  theme_bw() +
+  labs(title = "Scale-location plot")
+g4 = ggplot(au_modelos %>% filter(model == "modelo_exp_sex"), 
+       aes(.hat, .std.resid)) +
+  geom_vline(size = 2, colour = "white", xintercept = 0) +
+  geom_hline(size = 2, colour = "white", yintercept = 0) +
+  geom_point() + 
+  geom_smooth(se = FALSE) + 
+  theme_bw() +
+  labs(title = "Residual vs leverage")
+# grafico todos juntos
+grid.arrange(g1, g2, g3, g4, nrow = 2)
+```
+
+También podemos identificar cuál es el dato con alto leverage.
+
+```{r}
+au_modelos %>% filter(model == "modelo_exp_sex") %>%
+  filter(.hat>0.075)
+```
+
+**Diagnóstico para el Modelo Varias: experiencia, género y gente a cargo**
+
+```{r}
+plot(modelo_varias)
+```
+Calculamos los mismos gráficos con ggplot. 
+
+```{r}
+# Modelo varias
+g1 = ggplot(au_modelos %>% filter(model ==  "modelo_varias"), 
+       aes(.fitted, .resid)) +
+  geom_point() +
+  geom_hline(yintercept = 0) +
+  geom_smooth(se = FALSE) +
+  labs(title = "Residuos vs valores predichos") + 
+  theme_bw()
+g2 = ggplot(au_modelos %>% filter(model == "modelo_varias"), 
+       aes(sample = .std.resid)) +
+  stat_qq() +
+  geom_abline() +
+  labs(title = "Normal QQ plot") + 
+  theme_bw()
+g3 = ggplot(au_modelos %>% filter(model == "modelo_varias"), 
+       aes(.fitted, sqrt(abs(.std.resid)))) +
+  geom_point() +
+  geom_smooth(se = FALSE) + 
+  theme_bw() +
+  labs(title = "Scale-location plot")
+g4 = ggplot(au_modelos %>% filter(model == "modelo_varias"), 
+       aes(.hat, .std.resid)) +
+  geom_vline(size = 2, colour = "white", xintercept = 0) +
+  geom_hline(size = 2, colour = "white", yintercept = 0) +
+  geom_point() + 
+  geom_smooth(se = FALSE) + 
+  theme_bw() +
+  labs(title = "Residual vs leverage")
+# grafico todos juntos
+grid.arrange(g1, g2, g3, g4, nrow = 2)
+```
+
+* *Residuos vs valores predichos*: Parece existir cierta estructura en los datos: la varianza parece incrementarse con los valores predichos y luego se reduce (depende de la variable), por lo que no se satisface el supuesto de homocedasticidad.
+
+* *Normal QQ plot*: El extremo superior derecho no se ajusta a la distribución teórica, por lo que no parecen seguir una distribución normal.
+
+* *Residual vs leverage*: Existen un punto con un leverage bastante alto.
+
+Veamos cuál es ese punto. 
+
+```{r}
+au_modelos %>% filter(model == "modelo_varias") %>%
+  filter(.hat == max(.hat))
+```
+
+* *Diagnóstico del modelo*: El modelo creado no cumple con los supuestos del modelo lineal, dado que se detecta existencia de heterocedasticidad (varianza no constante), falta de normalidad y presencia de una observación de alto leverage.
+
+## Evaluación en el dataset de testing
+
+### Predicción y métrica de error
+
+Si vamos a utilizar un modelo para predecir nuevos datos nos interesa observar el error del modelo en el dataset de **training** y en el dataset de **testing** 
+
+En los problemas de regresión, se suele emplear el RMSE (root mean square error) como medida del error de predicción. Una de sus ventajas es que es una métrica que está en las mismas unidades que los datos originales.
+
+$RMSE = \sqrt{\frac{\sum(\hat{y_i}-y_i)^2}{n}}$
+
+Primero vamos a emplear la función `augment` para predecir el sueldo neto sobre el dataset de testeo. Cuando se proporciona newdata, solo devuelve las columnas .fitted y .resid. 
+
+Observemos el resultado para el modelo **Años de experiencia y Género**
+
+```{r}
+# Agregamos la predicciones al dataset de testeo
+pred_exp_sex = augment(modelo_exp_sex, newdata=df_test) 
+pred_exp_sex %>% select(me_identifico, edad, salario_neto, .fitted, .resid)
+```
+
+Para calcular el RMSE, vamos a utilizar la función `rmse` de la librería [**yardstick**](https://yardstick.tidymodels.org/) de **tidymodels**. Los parámetros de la función son:
+
+  * data: dataframe con las columnas truth y estimate
+  * truth: nombre de la columna con el valor de verdad
+  * estimate: nombre de la columna del valor predicho
+
+```{r}
+rmse(data = pred_exp_sex, truth = salario_neto, estimate = .fitted)
+```
+
+### Comparación entre training y testing
+
+Podemos obtener los valores del RMSE en el dataset de **training** para los cuatro modelos evaluados usando `map`
+
+```{r}
+# Aplicamos la función augment a los 4 modelos
+lista_predicciones_training = map(.x = models, .f = augment) 
+```
+
+Creamos una lista de 4 dataframes con los valores predichos. Luego podemos aplicar la función para calcular el RMSE de los cuatro modelos en el set de **training**
+
+```{r}
+# Obtenemos el RMSE para los 4 modelos
+map_dfr(.x = lista_predicciones_training, .f = rmse, truth = salario_neto, estimate = .fitted, .id="modelo") %>% arrange(.estimate)
+```
+
+El modelo que obtiene el menor RMSE es el modelo **Años de experiencia y Nivel Educativo**. 
+
+¿Qué resultado obtuvimos al observar el R-cuadrado ajustado?
+
+```{r}
+df_evaluacion_train
+```
+
+Veamos que sucede cuando obtenemos el RMSE de los modelos en el set de **testing** 
+
+```{r}
+# Aplicamos la función augment a los 4 modelos con el set de testing
+lista_predicciones_testing = map(.x = models, .f = augment, newdata = df_test) 
+# Obtenemos el RMSE para los 4 modelos
+map_dfr(.x = lista_predicciones_testing, .f = rmse, truth = salario_neto, estimate = .fitted, .id="modelo") %>% arrange(.estimate)
+```
+
+Ahora, el modelo que tiene el menor RMSE es el modelo **Años de experiencia y Género**. ¿Cuál modelo elegirían para predecir nuevas observaciones?

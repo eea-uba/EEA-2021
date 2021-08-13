@@ -1,0 +1,66 @@
+---
+title: "Limpieza datos NBA"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+nba_total_stats = read_csv("nba_players_total_stats_2018-2019.csv") %>% 
+  map(~.x) %>%
+  discard(~all(is.na(.x))) %>%
+  map_df(~.x)
+
+nba_advanced_stats = read_csv("nba_players_advanced_stats_2018-2019.csv") %>% 
+  map(~.x) %>%
+  discard(~all(is.na(.x))) %>%
+  map_df(~.x)
+```
+
+```{r}
+nba_stats = nba_total_stats %>% inner_join(nba_advanced_stats)
+```
+
+```{r}
+traded_players = nba_stats %>% group_by(Player) %>% count() %>% filter(n>1) %>% select(Player) %>% distinct()
+
+```
+
+```{r}
+nba_stats_clean = nba_stats %>% 
+  filter((Player %in% traded_players$Player & Tm == "TOT")|!(Player %in% traded_players$Player))
+  
+```
+
+```{r}
+nba_salaries = read_csv("nba_players_salaries_2019-2020.csv")
+nba_salaries %>% glimpse()
+```
+
+```{r}
+nba_salaries = nba_salaries %>% 
+  mutate(salary = as.numeric(str_remove(string = `2019-20`, pattern = "\\$"))) 
+
+nba_salaries = nba_salaries %>% group_by(Player) %>% 
+  summarise(mean_salary_2019_2020= mean(salary)) 
+```
+
+
+```{r}
+nba_stats_salaries = nba_stats_clean %>% inner_join(nba_salaries, by="Player") %>% 
+  mutate(Player=str_remove(Player, "\\\\.*")) %>% 
+  select(-Rk)
+```
+
+
+```{r}
+write_csv(nba_stats_salaries, " nba_player_stats_salary_2019_2020.csv")
+```
+
+

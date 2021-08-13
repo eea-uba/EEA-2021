@@ -1,0 +1,169 @@
+---
+title: 'Ejercicio 2: Strings'
+author: "Juan Barriola y Sofía Perini"
+date: "12 de Septiembre de 2020"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_float: yes
+---
+
+<style type="text/css">
+div.main-container {
+  max-width: 1600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+```{r, echo=FALSE}
+library(tidyverse)
+library(lubridate)
+```
+
+1.a Leer el dataset
+
+```{r}
+tiburones <- read_csv("~/EEA-2020/Fuentes/ataques_tiburones.csv")
+glimpse(tiburones)
+```
+
+```{r}
+tiburones = tiburones %>% select(`Case Number`, Date, Country)
+```
+
+## Limpieza de la variable país
+
+2. Obtener los valores únicos de la variable *Country* (país)
+
+```{r}
+# Creamos una lista con los valores de Country para ver si hay algunos problemas
+tiburones %>% 
+  select(Country) %>% # Seleccionamos la variable del pais
+  arrange(Country) %>% # La ordenamos
+  distinct() %>% # Nos quedamos con los valores unicos
+  as.list()
+```
+  
+Hay varios problemas, pero veamos dos:
+
+- Hay algunos nombres que no están en mayúscula
+- Hay algunos nombres que tienen espacios en blanco a izquierda y derecha
+
+3.a Llevar los nombres a mayúscula
+
+```{r}
+tiburones <- tiburones %>% 
+  mutate(pais = str_to_upper(Country))
+head(tiburones, 10)
+```
+
+3.b Quitar los espacios en blanco a izquierda y derecha
+
+```{r}
+tiburones <- tiburones %>% 
+  mutate(pais = str_trim(pais, side = "both"))
+```
+
+3.c Quitar el signo de pregunta que aparace al final de ciertos nombres.
+
+Como el "?" es un carácter especial en las expresiones regulares (REGEX), hay que utilizar "/?" para reemplazarlo. 
+
+```{r}
+tiburones = tiburones %>% 
+  mutate(pais = str_replace(pais, pattern = "/?", replacement = ""))
+```
+
+## Limpieza variable fecha
+
+4. Revisar la variable *Date* y evaluar qué problemas presenta esta variable para normalizarla 
+
+```{r}
+tiburones %>% select(Date) %>% distinct()
+```
+
+Vemos que la variable Date viene en muchos casos con la palabra "Reported" lo cual nos impide que podamos tratar esa expresión como fecha.
+
+5. Eliminar la palabra "Reported " (con su espacio en blanco) de la fecha
+
+```{r}
+# Hacemos la limpieza de la fecha como vimos más arriba
+tiburones <- tiburones %>% 
+  mutate(fecha = str_replace_all(string = Date, pattern =  "Reported ", replacement = ""))
+glimpse(tiburones)
+```
+
+6. Convertir la variable fecha de string a datetime. Crear las variables de año, mes y día 
+
+```{r}
+tiburones <- tiburones %>% mutate(fecha= dmy(fecha))
+```
+
+El mensaje indica que no pudo convertir a fecha 891 registros.
+
+
+```{r}
+# Extraemos variables de la fecha
+tiburones <- tiburones %>% 
+  mutate(año = year(fecha), # Obtener el año
+         mes = month(fecha,label = TRUE), # Obtener el nombre del mes
+         dia = day(fecha))# Obtener el día
+glimpse(tiburones)
+```
+
+## Gráficos
+
+7. Quedarse con los ataques desde el año 1800 en adelante
+
+```{r}
+tiburones_filtro <- tiburones %>% filter(año >=1800)
+```
+
+8. Crear un dataframe con la cantidad de ataques totales por región desde el 1800 en adelante
+
+```{r}
+ataques_por_region = tiburones_filtro %>% 
+                        group_by(Country) %>% 
+                        count() %>% 
+                        ungroup() # Evitar que mantenga el grupo para otras operaciones
+```
+
+9. Realizar un gráfico de barras para los 20 países con mayor cantidad de ataques
+
+```{r, message=FALSE}
+ataques_por_region %>%
+  top_n(20) %>% # la función top_n nos permite seleccionar los n registros con más ataques 
+  ggplot(., aes(x=reorder(Country, -n), y=n,fill=n)) + # la función reorder permite reordenar las regiones de mayor a menor por ataques
+  geom_bar(stat='identity') + 
+  theme_bw() +
+  theme(legend.position = 'none', axis.text.x = element_text(angle = 90)) +
+  labs(title='Total ataques por región', y='Ataques', x='')
+```
+
+10. Realizar un gráfico de la evolución de ataques por año desde 1800
+
+```{r}
+ggplot(tiburones_filtro, aes(año)) +
+  geom_line(stat = "count") +
+  geom_point(stat='count') +
+  theme_bw() +
+  labs(title='Evolucion ataques de tiburones', x='Año', y='Ataques')
+```
+
+11. Realizar un gráfico del total de ataques por mes para AUSTRALIA y USA (Estados Unidos) para construir el ciclo anual de ataques en estos países
+
+```{r}
+tiburones_aus_usa <- tiburones_filtro %>% filter(pais %in% c("AUSTRALIA","USA")) 
+```
+
+```{r}
+ggplot(tiburones_aus_usa, aes(mes,color=pais, group=pais)) +
+  geom_line(stat = "count") +
+  geom_point(stat='count') +
+  theme_bw() +
+  labs(title='Ciclo anual ataques de tiburones', x='Mes', y='Ataques')
+```
+
+
+

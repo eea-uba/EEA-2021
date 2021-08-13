@@ -1,0 +1,323 @@
+---
+title: "Regresión Lineal Simple: Evaluación y Diagnóstico"
+author: "Juan Barriola y Sofía Perini"
+date: "26 de Septiembre de 2020"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_float: yes
+---
+
+<style type="text/css">
+div.main-container {
+  max-width: 1600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+
+**Encuesta de Sueldos en el sector IT**
+
+## Planteo del problema
+
+Vamos a continuar trabajando con el dataset de la encuesta de sueldos en el sector de tecnología en Argenina realizada por SysArmy. El informe, realizado por OpenQube lo pueden ver [acá](https://sueldos.openqube.io/encuesta-sueldos-2020.01/).
+
+El objetivo es crear un modelo lineal simple para explicar el sueldo neto de los Data Analysts, Data Scientists y Data Engineers en Argentina.
+
+La idea subyacente de cómo se puede explicar el salario neto es:
+
+$salarioNeto = \beta_0 +\beta_1X+\epsilon$
+
+## Dataset y Modelos
+
+```{r, message=FALSE}
+# Carga de librerías
+library(tidyverse)
+library(tidymodels)
+```
+
+En el notebook previo realizamos un análisis extenso de nuestro dataset, limpieza de los datos y algunos modelos para explicar el salario.
+
+```{r}
+# Cargamos el dataset limpio
+encuesta_sueldos = read_csv("~/Fuentes/encuesta_sueldos_it_limpia.csv")
+```
+
+Habíamos realizado tres modelos distintos para tratar de explicar el salario neto
+
+  * **Modelo Edad**
+
+  * **Modelo Años de experiencia**
+
+  * **Modelo Años en la Empresa Actual**
+  
+Volvemos a realizar estos modelos:
+
+```{r}
+# Modelo Edad
+modelo_edad = lm(formula = salario_neto ~ edad, data = encuesta_sueldos)
+# Modelo experiencia
+modelo_experiencia = lm(formula = salario_neto ~ anos_de_experiencia, data = encuesta_sueldos)
+# Modelo empresa
+modelo_empresa = lm(formula = salario_neto ~ anos_en_la_empresa_actual, data = encuesta_sueldos)
+```
+
+En el notebook previo sólo habíamos interpretado el valor de los parámetros estimados. Ahora buscaremos responder preguntas tales como:
+
+  * ¿La relación entre la variable dependiente e independiente es estadísticamente significativa?
+  * ¿Qué proporción de la variabilidad logra explicar el modelo? ¿Cómo decidir que modelo explica mejor el fenómeno?
+  * ¿El modelo cumple con los supuestos del modelo lineal?
+
+## Tidymodels: Broom
+
+[Tidymodels](https://www.tidymodels.org/) es un meta-paquete (al igual que `tidyverse`) que contiene varios paquetes muy útiles para crear un framework para trabajar con modelos.
+
+El paquete [broom](https://broom.tidymodels.org/) permite acceder a información de modelos e interactuar con los mismos de una manera sencilla. Las tres funciones para interactuar con los modelos son:
+
+  * `tidy()`: resume información sobre los componentes del modelo
+  * `glance()`: reporta información sobre todo el modelo
+  * `augment()`: agrega información de las observaciones según el modelo al dataset
+  
+Veremos cómo utilizar estas funciones con un modelo lineal
+
+## Evaluación del modelo
+
+La función `summary()` nos permite obtener mucha información sobre el modelo lineal:
+
+```{r}
+resumen_modelo_edad = summary(modelo_edad)
+resumen_modelo_edad
+```
+
+Observamos que hay información sobre:
+
+  * Inferencia de $\beta_0$ y $\beta_1$
+  * Estimación de $\sigma^2$
+  * El coeficiente $R^2$
+  * Los residuos del modelo
+  
+En las secciones subsiguientes vamos a desarrollar cada uno de estos aspectos
+
+### Inferencia de $\beta_1$ (test de significatividad individual)
+
+En la salida de `summary()`, en la parte de **coefficients** observamos que están las columnas: estimate, std error, t value y Pr(>|t|).
+En las filas se encuentra el intercepto y la variable independiente: **edad**.
+
+En el notebook anterior trabajamos sobre la interpretación del coeficiente estimado (estimate). Ahora nos focalizaremos en la columnas t value y Pr(>|t|).
+
+En la inferencia de $\beta_1$ nos interesa responder si la relación entre la variable independiente y la variable a explicar es estadísticamente significativa. Nuestro test de hipótesis es:
+
+$H_0 : \beta_1 = 0$
+
+$H_1 : \beta_1 \neq 0$
+
+El valor de **t value** nos indica el valor del estadístico T para este test.
+
+El valor de **Pr(>|t|)** nos indica el p-valor para dicho test, acompañado de una ayuda visual sobre los niveles de significancia.
+
+Como el p-valor es extremadamente pequeño concluimos que se rechaza la hipótesis nula, es decir, $\beta_1$ (parámetro poblacional) es distinto de cero.
+
+Este test también se conoce como **test de significatividad individual** del parámetro. 
+
+#### Broom: tidy
+
+Con la función `tidy()` del paquete broom podemos obtener la información sobre los parámetros como un dataframe:
+
+```{r}
+tidy(modelo_edad)
+```
+
+Tiene dos parámetros muy útiles:
+
+  * `conf.int`: valor lógico para incluir los intervalos de confianza o no
+  * `conf.level`: nivel de confianza para calcular los intervalos. Este es valor es $1 - \alpha$ 
+  
+```{r}
+# Incluimos intervalos de confianza
+tidy(modelo_edad,conf.int = TRUE)
+```
+
+Al contar con los datos de los límites de los intervalos de confianza podemos chequear si los mismos contienen o no el cero
+
+```{r}
+# Aumentamos el nivel de confianza sobre los intervalos
+tidy(modelo_edad,conf.int = TRUE, conf.level = 0.99)
+```
+
+Al aumentar el nivel de confianza los intervalos se volvieron más anchos. De todas formas, siguen sin contener al cero.
+
+Veamos los resultados para los otros dos modelos
+
+**Modelo Años de experiencia**
+
+```{r}
+tidy(modelo_experiencia,conf.int = TRUE) 
+```
+
+Al igual que en el modelo anterior el p-valor es muy pequeño y el intervalo no contiene al cero
+
+**Modelo Años en la Empresa Actual**
+
+```{r}
+tidy(modelo_empresa,conf.int = TRUE)
+```
+
+En este modelo, el p-valor asociado al test sobre $\beta_1$ es igual a 0.067. Si nuestro nivel de significancia es 0.05 no rechazamos la hipótesis nula.
+
+Esto también se puede observar en el intervalo de confianza asociado ya que el mismo contiene el cero.
+
+### Test F (test de significatividad global)
+
+La información del Test F o de significatividad global se pueden encontrar en el `summary` del modelo en los siguientes campos:
+
+* F-statistic: estadístico del test F
+* p-value: es el p-valos de dicho test (se encuenta al lado del F-statistic)
+
+```{r}
+resumen_modelo_edad
+```
+
+En el caso de un modelo lineal simple, el test F es otro test para testear que las hipótesis $H_0 : \beta_1 = 0$ vs $H_1 : \beta_1 \neq 0$. Por lo tanto, no nos detendremos en su análisis.
+
+### Coeficiente de determinación $R^2$
+
+El $R^2$ permite medir el porcentaje de variabilidad del fenómeno que el modelo logra explicar.  Por este motivo es una métrica que nos permite evaluar la capacidad explicativa del modelo y poder comparar modelos entre sí bajo ciertas condiciones.
+
+Observemos nuevamente el resumen del **Modelo Edad**
+
+```{r}
+resumen_modelo_edad
+```
+
+Existen dos valores de $R^2$ en esta salida: el R-cuadrado multiple y el R-cuadrado ajustado. Podemos observar cualquiera de los dos valores ya que estamos trabajando con modelos con una sola variable independiente, el R-cuadrado ajustado tendrá mayor utilidad cuando trabajemos con regresiones múltiples. 
+
+El valor de $R^2$ es `r resumen_modelo_edad$r.squared` (el que corresponde al R-cuadrado multiple)
+
+#### Broom: glance
+
+Con la función `glance()` del paquete broom podemos obtener la información sobre la evaluación global del modelo como un dataframe: 
+
+```{r}
+glance(modelo_edad)
+```
+
+La salida de la función `glance()` devuelve mucha más información que la disponible en el resumen del modelo. 
+
+Veamos los resultados para los otros dos modelos
+
+**Modelo Años de experiencia**
+
+```{r}
+glance(modelo_experiencia)
+```
+
+**Modelo Años en la Empresa Actual**
+
+```{r}
+glance(modelo_empresa)
+```
+
+Observamos que el modelo que utiliza los años de experiencia como variable explicativa tiene el mayor R-cuadrado: $R^2=0.1698$ y por lo tanto es el mejor modelo entre los que probamos para **explicar** el salario neto del grupo de personas que estamos analizando.
+
+## Diagnóstico del modelo
+
+El diagnóstico del modelo consiste en utilizar técnicas para validar el cumplimiento o no de los supuestos del modelo lineal. Recordemos que estos supuestos se puede resumir en:
+
+$\varepsilon_i \sim N(0, \sigma^2)$ independientes entre sí.
+
+Los **errores** tienen distribución normal con media cero y varianza constante y son independientes entre sí. Los errores son inobservables, por lo tanto tendremos que trabajar con su correlato empírico: los **residuos** en las técnicas de diagnóstico.
+
+Con el comando `plot()` sobre un modelo lineal obtenemos 4 gráficos muy útiles para realizar el diagnóstico de nuestro modelo:
+
+1) **Residuos** vs **valores predichos**:  El objetivo es que no veamos una estructura clara. Si así la hubiera, esto implicaría que hay una parte __sistemática__ del fenómeno que se esta perdiendo. 
+
+2) **Normal QQ plot**: sirve para ver si los datos siguen una distribución teórica, en este caso, la $\sim N(0,1)$. Los residuos estandarizados, si el modelo esta bien definido, deberían seguir esta distribución
+
+3) **Scale-location plot**: Similar al primer gráfico, pero utilizando la raíz cuadrada de los residuos estandarizados. De la misma forma que el anterior, buscamos que no haya una estructura en los residuos.
+
+4) **Residual** vs **leverage**: El leverage mide cuan influyentes son los puntos en el modelo. Si en este gráfico algunas observaciones aparecen muy separadas, con mucho leverage y residuo, significa que cambian mucho al modelo.
+
+**Modelo de edad**
+
+Observemos estos gráficos para el modelo de edad
+
+```{r out.width = "50%", fig.asp = 1, fig.width = 5, fig.align='default'}
+plot(modelo_edad)
+```
+
+1) **Residuos** vs **valores predichos**:  Parece existir cierta estructura en los datos: una leve curvatura y varianza que depende de la covariable
+
+2) **Normal QQ plot**: los extremos no se ajustan a la distribución teórica
+
+4) **Residual** vs **leverage**: Existen dos puntos con un leverage bastante alto, el gráfico destaca la observación 82.
+
+```{r}
+encuesta_sueldos[82,]
+```
+
+**Diagnóstico**: el modelo no cumple con los supuestos del modelo lineal. Parecen existir dos problemas: la existencia de heterocedasticidad (varianza no constante) y la presencia de observaciones de alto leverage
+
+**Modelo de experiencia**
+
+Observemos estos gráficos para el modelo de experiencia
+
+```{r  out.width = "50%", fig.asp = 1, fig.width = 5, fig.align='default'}
+plot(modelo_experiencia)
+```
+
+¿Qué observamos en este caso? ¿Qué diagnóstico darían?
+
+### Broom: augment_columns
+
+Con la función `augment_columns()` del paquete broom podemos agregar información a nuestro dataset original o a datos nuevos. Toma como argumentos: `x`: el modelo y `data`: nuestro dataset. 
+
+```{r}
+# Agregamos las columnas
+encuesta_aumentada = augment_columns(x=modelo_edad, data=encuesta_sueldos)
+# Observamos los resultados
+glimpse(encuesta_aumentada)
+```
+
+La función agregó varias columnas al dataset:
+
+* .fitted: es el valor predicho
+
+* .resid: es el residuo
+
+* .std.resid: es el residuo estandarizado
+
+Al contar con esta información como dataframe podemos trabajarla de diversas maneras. Por ejemplo, podemos realizar los gráficos de diagnóstico con ggplot
+
+```{r  message= FALSE}
+
+ggplot(encuesta_aumentada, aes(.fitted, .resid)) +
+  geom_point()+
+  geom_hline(size = 1, colour = "grey", linetype="dashed", yintercept = 0) +
+  geom_smooth(se = FALSE) +
+  theme_bw() +
+  labs(title = "Residuos vs valores predichos")
+
+ggplot(encuesta_aumentada, aes(sample= .std.resid))+
+  stat_qq()+
+  geom_abline() +
+  theme_bw() +
+  labs(title = "Normal QQ plot")
+
+ggplot(encuesta_aumentada, aes(.fitted, sqrt(abs(.std.resid))))+
+  geom_point()+
+  geom_smooth(se = FALSE) +
+  theme_bw() +
+  labs(title = "Scale-location plot")
+
+ggplot(encuesta_aumentada, aes(.hat, .std.resid)) +
+  geom_vline(size = 2, colour = "white", xintercept = 0) +
+  geom_hline(size = 1, colour = "grey", linetype="dashed", yintercept = 0) +
+  geom_point() + geom_smooth(se = FALSE) +
+  theme_bw() +
+  labs(title = "Residual vs leverage")
+
+```
+
+

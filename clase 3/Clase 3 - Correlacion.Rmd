@@ -1,0 +1,249 @@
+---
+title: "Clase 3 - Correlación"
+author: "Juan Barriola y Sofía Perini"
+date: "19 de Septiembre de 2020"
+output:
+  html_notebook:
+    theme: spacelab
+    toc: yes
+    toc_float: yes
+    df_print: paged
+---
+
+<style type="text/css">
+div.main-container {
+  max-width: 1600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+```{r message=FALSE, warning=F}
+library(tidyverse)
+library(openintro)
+library(GGally)
+library(corrr)
+library(knitr)
+library(kableExtra)
+options(knitr.table.format = "html") 
+```
+
+## Covarianza vs. Correlación
+
+Tanto la covarianza como la correlación miden la asociación lineal y la dependencia entre dos variables. Mientras la **Covarianza** indica la dirección/sentido de esa asociación lineal, la **Correlación** mide tanto la fuerza como el sentido de dicha asociación lineal. 
+
+#### Covarianza poblacional:
+
+$$cov(x,y) = E[(x-\mu_x)(y-\mu_y)]$$
+
+El valor (magnitud) de la covarianza depende las unidades en que se miden las variables. Si las escalas de medida de las variables fueran muy diferentes, la variabilidad estaría dominada por las variables con mayores magnitudes. 
+
+La Correlación se define como la covarianza de los datos estandarizados, por lo que evita el problema de las diferencias en las escalas de medición. Se obtiene dividiendo la covarianza de dos variables por el producto de sus desvíos estándar. Recordemos que la desviación estándar esencialmente mide la variabilidad absoluta de la distribución de un conjunto de datos. 
+
+#### Coeficiente de Correlación poblacional: 
+
+$$\rho_{x,y}=\frac{cov(x,y)}{\sigma_x \sigma_y}$$
+
+Los valores del coeficiente de correlación van de -1 a 1. Cuanto más cerca esté de 1 (o -1), más estrechamente relacionadas estarán las dos variables. El signo positivo significa la dirección de la correlación, es decir, si una de las variables aumenta, se supone que la otra también aumentará.
+
+Para analizar la correlación, se utilizará el dataset ```mtcars``` que consiste en datos de pruebas en carretera de automóviles extraidos de la revista Motor Trend de EE.UU. de 1974 (*Motor Trend Car Road Tests*), incluidos el consumo de combustible y aspectos del diseño y rendimiento de 32 modelos distintos de autos (modelos 1973–74).
+
+Primero, veamos el contenido del dataset con la función `glimpse()`. 
+
+```{r}
+glimpse(mtcars)
+```
+
+Se trata de un dataframe de 32 observaciones (modelos de autos) y 11 variables numéricas que los caracterizan. 
+
+También se puede ver el contenido haciendo un `head()` de la tabla. Usando la librería `knitr`, la función `kable()` permite realizar mejores presentaciones de resultados de tablas en HTLM. Con `kable_styling()` se pueden modificar algunas de sus características.
+
+```{r}
+mtcars %>% 
+  head() %>% 
+  kable() %>% 
+  kable_styling(bootstrap_options = c("striped"))
+```
+
+## Correlación muestral
+
+¿Cómo estimar el coeficiente de correlación poblacional desconocido? Con un estimador muestral. 
+
+#### Coeficiente de Correlación de Pearson
+
+Recordemos que la fórmula para calcular ese estimador es:
+
+$$
+r = \frac{\sum_{i=1}^n(x_i-\bar{x})(y_i-\bar{y})}{\sqrt{\sum_{i=1}^n(x_i-\bar{x})^2} \sqrt{\sum_{i=1}^n(y_i-\bar{y})^2}}
+$$
+
+Analicemos la correlación entre las variables:
+
+- $mpg$: Miles/(US)gallon. Eficiencia de combustible (millas por galón)
+- $hp$: Gross horsepower. Potencia del motor
+
+Primero, efectuamos un scatterplot que permite observar la forma (lineal o no), el sentido (positiva o negativa) y la fuerza de la asociación (según la dispersión de los puntos alrededor de la recta que describiría la asociación). 
+```{r}
+ggplot(mtcars, aes(x = hp, y = mpg)) + 
+  geom_point()
+```
+
+Miramos el scatter plot y pareciera haber una asociación lineal negativa y fuerte entre ambas variables. 
+
+Inspeccionamos la distribución de las variables. 
+
+```{r}
+ggplot(mtcars, aes(x = mpg)) +
+  geom_histogram(bins = 10, aes(y = ..density..), position = "identity", alpha = 0.5, fill = "#1B9E77", color = "white")+
+  geom_density(alpha = 0.6)+
+  theme(legend.position="top") + 
+  theme_classic()
+ggplot(mtcars, aes(x = hp)) +
+  geom_histogram(bins = 10, aes(y = ..density..), position = "identity", alpha = 0.5, fill = "#1B9E77", color = "white")+
+  geom_density(alpha = 0.6)+
+  theme(legend.position="top") + 
+  theme_classic()
+```
+
+Se observan diferencias de escala de medición entre ambas variables. 
+
+Veamos qué ocurre cuando calculamos covarianza y correlación. 
+
+```{r}
+# calculamos covarianza 
+cov(mtcars$mpg, mtcars$hp)
+# calculamos correlación
+cor(mtcars$mpg, mtcars$hp) # pearson por default
+```
+
+La covarianza capta diferencias en las escalas de medición y no se puede determinar la fuerza de la asociación lineal, mientras que la correlación permite eludir las diferencias de escala y mostrar cómo es esa asociación.  
+
+### Inferencia de ρ
+
+¿Qué podemos decir de $\rho$ a partir de r?
+
+Queremos sacar conclusiones acerca del parámetro poblacional $\rho$ a partir de la muestra. Si quisieramos testear la significatividad de nuestro estimador $r$, se puede hacer un Test para ver si será que entre las dos variables consideradas no hay asociación lineal, y sólo por casualidad en la muestra obtenida vemos un valor de r que indique asociación. 
+
+Testeamos si existe asociación lineal en el parámetro poblacional:
+
+$H_0$ : ρ = 0        
+$H_1$ : ρ $\neq$ 0      
+
+* Supuestos del Test: las observaciones deben ser i.i.d. y la distribución conjunta debe ser normal bivariada. 
+
+```{r}
+# aplicamos test
+cor.test(mtcars$mpg, mtcars$hp, method = "pearson")
+```
+
+#### Coeficiente de Correlación de Spearman
+
+Medida más robusta que Pearson a outliers, no necesita el supuesto de normalidad para testearse. 
+
+```{r}
+cor.test(mtcars$mpg, mtcars$hp, method = "spearman")
+```
+
+Con los p-valor resultanes de ambos test, se rechazaría la $H_0$ (no existe asociación lineal entre las variables), es decir, existe evidencia estadísticamente significativa a favor de la asociación lineal entre las variables mpg y hp. 
+
+Testeando normalidad multivariada:
+
+```{r}
+mvnormtest::mshapiro.test(t(mtcars[,c("mpg", "hp")])) # chequeo normalidad bivariada
+```
+
+No se cumple normalidad bivariada. Entonces, el test para la correlación de pearson no sería válido ya que no se cumple el supuesto de normalidad multivariada. En cambio, el de spearman no requiere dicho supuesto y sus conclusiones sí serían válidas. Otra alternativa sería buscar normalizar el dataset.  
+
+## Graficando la Correlación
+
+### Librería GGally
+
+Como ya se vio, con `ggpairs()` podemos graficar todas las variables y buscar las correlaciones, agrupando por alguna variable de interés.  
+
+En este caso, vamos a agrupar (colorear) por:
+
+-$am$: Tipo de transmisión: automática (am = 0) o manual (am = 1)
+
+```{r message=FALSE, warning=FALSE, fig.width=10, fig.height=10}
+mtcars %>% 
+  select(-carb,-vs) %>% # desestimamos algunas variables
+  mutate(cyl = factor(cyl), 
+         am = factor(am)) %>% 
+  ggpairs(., 
+        title = "Matriz de correlaciones",
+        mapping = aes(colour = am))
+```
+
+### Librería [corrr](https://github.com/tidymodels/corrr) 
+
+Esta librería pertenece al entorno de _tidymodels_. Devuelve la matriz de correlacion en forma de dataframe (en lugar de matriz) y permite visualizar la información no repetida de la matriz, mostrando las correlaciones sólo debajo de la diagonal principal. 
+
+```{r}
+mtcars %>% 
+ correlate() %>% # convierte la matriz de corr en dataframe
+  shave() %>% # solo muestra información debajo de la diagonal principal
+  fashion() # acomoda los datos en forma tidy (por ej. redondeo de decimales)
+```
+
+También existen otras formas de visualización de los datos. Con la función `network_plot()` se genera un gráfico de red para los datos de la matriz de correlación en el que las variables que están más correlacionadas aparecen más cercanas y están unidas por caminos más fuertes. Los caminos también están coloreados por su signo (azul para asociación positiva y rojo para negativa).
+
+```{r}
+mtcars %>% 
+ correlate() %>% 
+  network_plot(min_cor = 0.7)
+```
+
+Con la función `rplot()` se puede visualizar la matriz de correlación como círculos de colores que representan la intensidad y sentido de la asociación lineal. 
+
+```{r}
+mtcars %>% 
+ correlate() %>% 
+  rplot()
+```
+
+La mitad superior de la matriz muestra la estimación puntual de la correlación, para todos los datos y considerando cada conjunto por separado. 
+
+#### ¿Y si queremos comparar la relación entre _drat_ y _gear_?
+
+- $drat$: la relación de engranaje del eje trasero. En los vehículos con tracción trasera, la relación de eje trasero es una parte importante de una ecuación de remolque exitosa. Se expresa como la relación entre las revoluciones por minuto del eje de transmisión y las revoluciones por minuto del eje trasero. Una relación "alta", con un número alto de rotaciones del eje de transmisión, es mejor para una aceleración rápida, los grados de ascenso, el transporte de cargas o el remolque. Sin embargo, ofrece menos ahorro de combustible y se produce más ruido cuando el vehículo circula a alta velocidad.
+- $gear$: Número de velocidades hacia adelante.
+
+```{r}
+ggplot(mtcars, aes(x = drat, y = gear)) + 
+  geom_point()
+```
+
+No parece haber una relación lineal. Pero la relación entre estas dos variables podría ser diferente entre los automáticos y con transmisión manual. Sabiendo esto, volvamos a calcular los estimadores puntuales de cada grupo. 
+
+```{r}
+mtcars %>% 
+  group_by(am) %>% 
+  summarise(cor = cor(drat, gear))
+```
+
+Los autos atomáticos parecen tener correlación positiva y alta, mientras los manuales negativa y baja. 
+
+Tomando el primer grupo, graficamos boxplot paralelos de la variable _gear_ para ver cómo se distribuye _drat_:
+
+```{r}
+mtcars2 <- mtcars %>% filter(am == 0)
+ggplot(mtcars2, aes(gear, drat, group = gear, fill = factor(gear)))+
+  geom_boxplot(alpha = 0.75)
+```
+
+No parece muy correcto hacer un test de correlación de pearson, es decir buscar una relación lineal, con una variable que sólo toma dos valores (3 y 4).
+
+Usemos el test de correlación de Spearman, que no necesita cumplir supuesto de normalidad para testearse. 
+
+```{r}
+cor.test(mtcars2$gear, mtcars2$drat, method = "pearson")
+cor.test(mtcars2$gear, mtcars2$drat, method = "spearman")
+```
+
+Se puede notar que el test de Spearman ya no da tan significativo como el de Pearson.
+
+* Testeando normalidad multivariada 
+
+```{r}
+mvnormtest::mshapiro.test(t(mtcars2[,c("gear", "drat")])) # chequeo normalidad bivariada
+```

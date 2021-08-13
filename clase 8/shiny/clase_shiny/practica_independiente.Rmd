@@ -1,0 +1,44 @@
+---
+title: Shiny apps
+output:
+  html_notebook:
+    toc: yes
+    toc_float: yes
+date: ""
+subtitle: Práctica independiente
+---
+
+
+Nuestro compañero de trabajo, _Estatikoz_,realizó el siguiente código para visualizar la información de `gapminder`. 
+
+- Si bien la idea del gráfico es interesante, el objetivo de _Estatikoz_ no era ver sólo la información del año 2000
+- Tampóco le interesa sólo la información de Europa
+- Por último, en gapminder también hay información sobre la esperanza de vida (`lifeExp`) que es relevante en el análisis. 
+
+
+```{r}
+library(tidyverse)
+library(treemapify)
+library(gapminder)
+library(viridis)
+
+gapminder <- gapminder_unfiltered
+
+gapminder %>% 
+  filter(year==2000, continent=='Europe') %>%
+  ggplot(., aes(area = pop, fill = gdpPercap, label = country)) +
+  geom_treemap() +
+  geom_treemap_text(fontface = "italic", colour = "white", place = "centre",
+                    grow = TRUE)+
+  scale_fill_viridis(option = 'C')+
+  labs(title = 'Treemap Europe', subtitle = 'Año 2000',caption = 'Tamaño según población.')
+
+```
+
+
+> __El objetivo es transformar este código en una visualización Shiny que incorpore todos los elementos que faltan.__
+
+- hint: A veces esta bueno pegar las cosas con $glue$
+- hint: Qué pasa con el ancho y largo del gráfico? lo podemos mejorar?
+- hint: Que tipo de _widget_ nos conviene usar para el input de años? podemos mirar las opciones acá: [inputs](https://shiny.rstudio.com/tutorial/written-tutorial/lesson3/)
+

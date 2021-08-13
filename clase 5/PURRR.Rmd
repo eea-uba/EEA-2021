@@ -1,0 +1,276 @@
+---
+title: "Tidyverse: PURRR"
+author: "Juan Barriola y Sofía Perini"
+date: "03 de Octubre de 2020"
+output:
+  html_notebook:
+    theme: spacelab
+    toc: yes
+    toc_float: yes
+    df_print: paged
+---
+
+<style type="text/css">
+div.main-container {
+  max-width: 1600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+Basado en los [tutoriales de PURRR](https://jennybc.github.io/purrr-tutorial/index.html) de Jenny Bryan y el capítulo [Iteration](https://r4ds.had.co.nz/iteration.html) del libro R for Data Science de Garrett Grolemund y Hadley Wickham
+
+# PURRR
+
+[PURRR](https://purrr.tidyverse.org/) es una librería en R que contiene funciones y métodos de programación funcional dentro del entorno de tidyverse.
+
+## MAP
+
+MAP es una **función** para aplicar una función a cada elemento de una estructura de datos como una lista o vector. El funcionamiento de map consiste en recorrer ("loopear") la estructura aplicando la función a cada elemento y guardando los resultados. De esta manera podemos reemplazar los loops por una forma más legible y clara de código.
+
+La función `map` toma como argumentos:
+ 
+ * .x: un vector o lista input
+ 
+ * .f: una función para aplicar
+ 
+map(VECTOR_O_LIST_INPUT, FUNCTION_A_APLICAR, OTROS_OPCIONALES)
+
+Veamos un ejemplo con un vector numérico
+
+```{r}
+# Aplicamos la función log10 sobre un vector
+map(.x = c(10,100,1000), .f=log10)
+```
+
+### Map: tipos específicos
+
+Veamos que el resultado de map es una lista. Si sabemos cuál es el tipo de dato de nuestros resultados podemos usar variaciones de map que explicitan el tipo de dato y devuelven los resultados en un vector. Algunas de ellas son:
+
+  * map_lgl() devuelve un vector de booleanos
+ 
+  * map_dbl() devuelve un vector numérico
+
+  * map_chr() devuelve un vector de strings 
+
+Volvamos a ver nuestro ejemplo usando `map_dbl`
+
+```{r}
+map_dbl(.x = c(10,100,1000), .f=log10)
+```
+
+### Map: funciones
+
+Se pueden aplicar funciones de R base o de las librerías como así también funciones definidas por el usuario. Muchas veces no es necesario definir una función de antemano, sino que podemos usar **funciones anónimas** o **funciones lambda**.
+
+#### Funciones anónimas
+
+La función se define en una única linea. 
+
+**Ejemplo numérico**
+
+Por ejemplo, calculamos una función cuadrática para un vector numérico que va del 1 al 10.
+
+```{r}
+# Calculamos una función cuadrática para el vector
+map_dbl(.x = c(1:10), .f = function(x) x^2+1)
+```
+
+**Ejemplo con strings**
+
+A partir de un vector de strings queremos contar la cantidad de letras "A" en cada elemento. Para eso combinamos las funciones `str_to_upper` y `str_count`.
+
+```{r}
+map_dbl(.x = c("papas FRITAS", "batatas HERVIDAS", "boniato AL HORNO"),
+        # conviertimos todas a mayúsculas y contamos la cantidad de "A"
+        .f = function(x) str_count(string = str_to_upper(x), pattern = "A"))
+```
+
+#### Funciones lambda
+
+Son una forma aún más concisa de declarar funciones, aunque pueden ser más limitadas. Las variables se declaran como .x
+
+```{r}
+# Calculamos otra función cuadrática para el vector
+map_dbl(.x = c(1:10), .f =  ~.x^2 - .x)
+```
+
+### Map: Múltiples argumentos
+ 
+Usamos `map2` cuando queremos aplicar una función sobre dos listas o vectores:
+
+- map2(.x, .y, .f, ...)
+- map2(INPUT_UNO, INPUT_DOS, FUNCTION_A_APLICAR, OTROS_OPCIONALES)
+
+**Ejemplo numérico**
+
+Veamos un ejemplo para generar observaciones de distribuciones normales a partir de los vectores de mu y sigma (este es el ejemplo del libro *R for Data Science*).
+
+La funcion `rnorm` sirve para generar muestras aleatorias de distribución normal con media igual a mu y desviación estándar igual a sigma, donde n indica la cantidad de observaciones a generar. 
+
+```{r}
+# Vector de mu = medias
+mu = c(0, 3, -5, 2.1)
+# Vector de sigma = desvíos estándar
+sigma = c(1, 0.5, 5, 0.01)
+# Generamos 10 observaciones a partir de nuestros vectores
+map2(.x = mu, .y = sigma, .f= rnorm, n = 10)
+```
+
+**Ejemplo con strings**
+
+Ahora veamos con un ejemplo para crear una lista de compras.
+
+```{r}
+# Vectores
+kilos = c(10, 1, 6, 8, 3)
+verduras =  c("papa", "batata", "zapallo", "boniato", "zanahoria")
+# concatenamos las palabras (con nombres en mayúscula) y valores
+map2_chr(.x = verduras, .y =kilos, .f = function(x,y) str_c(str_to_title(x),y, sep=": "))
+```
+  
+  
+Usamos `pmap` cuando queremos aplicar una función sobre una lista de argumentos:
+
+- pmap(.l, .f, ...)
+- pmap(VECTOR_O_LIST_DE_INPUTS, FUNCTION_A_APLICAR, OTROS_OPCIONALES)
+
+Volvamos al ejemplo para generar observaciones de distribuciones normales a partir de los vectores de mu y sigma, pero ahora incorporamos la cantidad de observaciones como un argumento adicional (este ejemplo también es del libro *R for Data Science*).
+
+```{r}
+# Vector de mu
+mu = c(0, 3, -5, 2.1)
+# Vector de sigma
+sigma = c(1, 0.5, 5, 0.01)
+# Vector de cantidad de observaciones 
+n = c(1:4)
+# Lista de argumentos
+argumentos <- list(n, mu, sigma)
+# Generamos las observaciones a partir de nuestra lista de parámetros
+pmap(.l = argumentos, .f = rnorm)
+```
+
+## PURRR: Dataframes y modelos
+
+### Dataframes
+
+Las funciones de PURRR se pueden utilizar para realizar operaciones sobre dataframes. La sintaxis que vamos a utilizar es:
+
+`map(dataframe, función)`
+
+De esta manera vamos a estar aplicando la función sobre todas las columnas del dataframe. Veamos un ejemplo usando nuestra encuesta de sueldos del sector IT limpia. 
+
+```{r}
+# cargamos el dataset
+encuesta_sueldos_limpia = read_csv("../Fuentes/encuesta_sueldos_it_limpia.csv")
+encuesta_sueldos_limpia <- encuesta_sueldos_limpia %>%
+  # creamos variable perfil BI/DA vs DS/DI
+  mutate(perfil = case_when(perfil == "BI Analyst / Data Analyst" ~ "BI/DA", TRUE ~ "DS/DE"))
+```
+
+Comencemos analizando la cantidad de valores distintos para cada columna. Para ello usamos la función `n_distinct`.
+
+```{r}
+map(encuesta_sueldos_limpia, n_distinct)
+```
+
+Usando la función `str()` se puede consultar de forma compacta la estructura interna de un objeto R. Es especialmente adecuado para mostrar de forma compacta el contenido (abreviado) de listas. 
+
+```{r}
+map(encuesta_sueldos_limpia, n_distinct) %>%
+  str() # Agregamos str para que la salida luzca mejor
+```
+
+Ahora calculamos el promedio sobre las columnas numéricas.
+
+```{r}
+encuesta_sueldos_limpia %>% 
+  select_if(is.numeric) %>% 
+  map(mean) %>% 
+  str()
+```
+
+Calculamos la mediana sobre las columnas numéricas. Sabiendo que el resultado de la función es un número podemos usar directamente la función `map_dbl`.
+
+```{r}
+# usando map_dbl 
+encuesta_sueldos_limpia %>% 
+  select_if(is.numeric) %>% 
+  map_dbl(median)
+```
+
+Recordemos que esta función devuelve un vector numérico no una lista como en el caso anterior, por eso no usamos la función `str()` para ver el resultado en forma compacta.
+
+### Modelos
+
+#### Creación de modelos
+
+Podemos usar la función map para calcular distintos modelos modelos. Por ejemplo, calculemos un modelo distinto según el perfil (DA y DS). En este caso pasamos como función un modelo lineal simple:
+
+```{r}
+modelos_por_perfil = encuesta_sueldos_limpia %>% 
+                        # separamos el dataset según perfil
+                        split(.$perfil) %>% 
+                        # creamos un modelo para cada perfil  
+                        map(~lm(salario_neto ~ edad, data = .))
+```
+
+El resultado de esto es una lista con los dos modelos:
+
+```{r}
+modelos_por_perfil
+```
+
+#### Acceso a la información
+
+Podemos trabajar sobre esta lista de modelos de distintas maneras. Por ejemplo, podemos acceder a la información de los coeficientes estimados de ambos modelos usando también la función `map`
+
+```{r}
+modelos_por_perfil %>% 
+  map("coefficients")
+```
+
+También podemos aplicar la función `summary` y acceder a la información de $R^2$ de ambos modelos para evaluar su capacidad explicativa (en este caso como son modelos simples podemos utilizar esta métrica).
+
+```{r}
+modelos_por_perfil %>% 
+  map(summary) %>%
+  map_dbl("r.squared")
+```
+
+Mientras el modelo de edad para los perfiles BI/DA logra explicar el 15.6% de la variabilidad del fenómeno, el modelo de edad para los DS/DE logra captar un porcentaje menor de la variabilidad (12,9%). 
+
+#### Acceso a la información: Broom
+
+Podemos aplicar las funciones de broom para poder obtener la información de los modelos en un dataframe. 
+
+Analicemos los elementos de cada uno utilizando la función `tidy()` de la librería broom. 
+
+```{r}
+modelos_por_perfil %>% 
+  map(broom::tidy)
+```
+
+Si bien la salida es bastante útil, la información sobre cuál modelo estamos observamos forma parte de la salida. Con la función `map_dfr` podemos concatenar los dataframes de salida y con el argumento **.id** crear una columna para indicar el modelo:
+
+```{r}
+modelos_por_perfil %>% 
+  map_dfr(broom::tidy, .id="modelo")
+```
+
+Realizamos lo mismo con la función `glance()`
+
+```{r}
+modelos_por_perfil %>% 
+  map_dfr(broom::glance, .id="modelo")
+```
+
+
+
+
+

@@ -1,0 +1,91 @@
+---
+title: "Clase 1 - Ejercicios para practicar"
+author: "Juan Barriola y Sofía Perini"
+date: "5 de Septiembre 2020"
+output:
+  html_notebook:
+    toc: yes
+    toc_float: yes
+---
+
+<style type="text/css">
+div.main-container {
+  max-width: 1600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+## Ejercicio 1
+ 
+#### 1) Dataset state.x77
+
+Crear un dataframe con el dataset de R: state.x77 y contestar las siguientes preguntas:
+
+a) ¿Cuál es la población total de Estados Unidos? 
+
+b) ¿Cuál es la media de la expectativa de vida?
+
+c) ¿Cual es la mediana del ingreso en pesos argentinos?
+
+#### 2) Nueva variable
+
+Crear un dataset **df_indice** solo con las columnas de porcentaje de analfabetismo sobre población  (*Illiteracy*) y tasa de homicidios por 100.000 habitantes (*Murder*). 
+
+a) Crear una nueva variable **ilit_murd** que contenga la suma de los valores de ambas variables del dataset. 
+
+b) Encontrar los valores máximos y mínimos de esta nueva variable.  
+
+#### 3) Objetos 
+
+a) Crear un VALOR llamado _OBJETO_ definido como el resultado de la suma: 5+6
+
+b) Crear un VECTOR _VEC0_ que contenga una muestra aleatoria de números del 1 al 10.
+
+c) Crear 3 vectores ( _VEC1_, _VEC2_, _VEC3_) que sean transformaciones del anterior consistentes en multiplicar por 2, elevar al cuadrado y restarle 2, respectivamente.
+
+d) Crear 3 vectores con la misma cantidad de elementos que VEC0, pero con variables string (texto) ( _VEC4_, _VEC5_, _VEC6_). Hint: usar la funcion ```rep()``` en los casos que se quiera repetir un caracter.   
+
+e) Crear un dataframe _DFRAME_ como combinación de todos los vectores creados previamente.
+
+f) Crear una lista _LA_LISTA_ con el _OBJETO_ creado en el punto a), alguno de los vectores y el _DFRAME_ del punto e).
+
+#### 4) Loops
+
+a) Para todos los valores del vector _VEC0_, *imprimir* mediante un loop el triple de dichos valores. 
+
+b) Armar un loop que itere sobre los valores únicos de la variable _VEC6_ del dataframe _DFRAME_ e imprima un texto que combine el valor de _VEC6_ y de _VEC0_. 
+
+c) Reescribir el VEC1 del DATAFRAME para que sus elementos sean: el doble de _VEC_0_ cuando éste sea mayor a 2 e iguales a _VEC_0_ para el resto de los casos. Hint: usar la función ```ifelse()``` 
+
+#### 5) Funciones
+
+a) Crear una función llamada _Hola_Mundo_ que imprima el texto "Hola mundo"
+
+b) Crear una función _`Sumatoria_enteros`_ que devuelva la sumatoria de los numeros enteros comprendidos entre 1 y un parametro x a definir. Es decir, una función Sumatoria_enteros(x) que devuelva la sumatoria de los enteros de 1 a x. 
+
+c) Crear una función _primer_elem_matriz_ cuyo parámetro/input X sea una matrix y que devuelva la dimensión de la matriz en cuestión y un texto que diga *"El primer elemento es par"* en caso de que así lo fuera o *"El primer elemento no es par"* en caso contrario. Evaluar la función creada para el dataset _DFRAME_.
+
+## Ejercicio 2
+ 
+#### 1) Dataset EPH
+
+El INDEC^[Fuente: https://www.indec.gob.ar/indec/web/Institucional-Indec-BasesDeDatos] publica las bases de microdatos de la Encuesta Permanente de Hogares (EPH). Para este ejercicio deberán descargar la base "usu_individual_T120.txt" que corresponde a la base Individual del 1er trimestre de 2020 y se encuentra disponible en el campus. 
+
+a) Levantar y guardar la base en un objeto llamado _individualt120_. La misma usa como separador ";". 
+
+b) Visualizar el contenido del dataset. Hint: Se puede utilizar la funcion ```glimpse()``` de la libreria tibble para visualizar el contenido de la base, identificando dimensión, tipos de variables y primeros valores de cada una.   
+
+c) Guardar la base como un archivo de extensión .RDS con la función saveRDS() y volver a levantarla pero desde el nuevo archivo .RDS y asignarla con el nombre _BaseRDS_ ¿tarda más o menos?
+
+#### 2) Función acumulado
+
+Crear una función _acumulado_ que calcule el valor acumulado (suma) de una variable numérica a designar X en un dataset también a designar df. Es decir, que brinde el valor resultante de acumulado(df, X). 
+
+a) Evalúela para la columna "PONDERA" del dataframe _individual_T120_.
+
+b) Utilizar dicha función para calcular el acumulado de PONDERA por Sexo (variable CH04), sabiendo que 1 = varón y 2 = mujer.
+
+c) Modificar la función anterior ( _acumulado2_) para que devuelva un vector que contenga la frecuencia poblacional (el acumulado calculado previamente) y la muestral (número de filas del dataset). 
+
+d) Utilizar la función modificada para calcular la frecuencias frecuencias muestrales y poblacionales por Sexo. 

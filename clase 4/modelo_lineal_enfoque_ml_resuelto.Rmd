@@ -1,0 +1,304 @@
+---
+title: "Regresión Lineal Simple: Enfoque Machine Learning"
+author: "Juan Barriola y Sofía Perini"
+date: "26 de Septiembre de 2020"
+output:
+  html_notebook:
+    theme: spacelab
+    toc: yes
+    toc_float: yes
+    df_print: paged
+---
+
+Estas notas estan basadas en el libro [R for Data Science](http://r4ds.had.co.nz) de Garrett Grolemund y Hadley Wickham
+
+# Modelo Lineal: Enfoque de Machine Learning
+
+```{r setup, message = FALSE}
+library(tidyverse)
+library(modelr)
+library(plotly)
+options(na.action = na.warn)
+```
+
+Usualmente se observa el enfoque "estadístico para hallar las estimaciones de los parámetros en un modelo lineal. Obtenemos los valores con las siguientes fórmulas:
+
+$\hat{\beta_0} = \overline{Y} - \hat{\beta_1} \cdot \overline{X}$
+
+$\hat{\beta_1} = \frac{\sum{(X_i - \overline{X})(Y_i - \overline{Y})}}{\sum{(X_i - \overline{X})^2}}$
+
+En este caso vamos a desarrollar otra manera de hallar los valores de estos parámetros, mediante un enfoque de optimización.
+
+## datos sim1
+
+El paquete modlr viene con un set de datos de juguete llamado sim1
+
+```{r}
+ggplot(sim1, aes(x, y)) + 
+  geom_point() +
+  theme_bw()
+```
+
+Se puede ver un patrón fuerte en los datos. Pareciera que el modelo lineal `y = a_0 + a_1 * x` puede ser apropiado para modelar estos datos 
+
+## Modelos al azar
+
+Para empezar, generemos aleatoriamente varios modelos lineales para ver qué forma tienen. Para eso, podemos usar `geom_abline ()` que toma una pendiente e intercepto como parámetros. 
+
+```{r}
+models <- tibble(
+  a1 = runif(250, -20, 40), # Función para tomar valores al azar de una distribución uniforme
+  a2 = runif(250, -5, 5) # Función para tomar valores al azar de una distribución uniforme
+)
+
+ggplot(sim1, aes(x, y)) + 
+  geom_abline(aes(intercept = a1, slope = a2), data = models, alpha = 1/4) +
+  geom_point() +
+  theme_bw()
+```
+
+
+A simple vista podemos apreciar que algunos modelos son mejores que otros. Pero necesitamos una forma de cuantificar cuales son los _mejores_ modelos. 
+
+## Distancias
+
+Una forma de definir _mejor_ es pensar en aquel modelo que minimiza la distancia vertical de la recta (el modelo) con cada punto:
+
+Para eso, elijamos un modelo cualquiera:
+
+$$ y= 7 + 1.5*x$$
+
+
+```{r}
+dist1 <- sim1 %>% 
+  mutate(
+    dodge = rep(c(-1, 0, 1) / 20, 10),
+    x1 = x + dodge, # para que se vean mejor las distancias, corremos un poquito cada punto sobre el eje x
+    pred = 7 + x1 * 1.5
+  )
+
+ggplot(dist1, aes(x1, y)) + 
+  geom_abline(intercept = 7, slope = 1.5, colour = "grey40") +
+  geom_point(colour = "grey40") +
+  geom_linerange(aes(ymin = y, ymax = pred), colour = "#3366FF") +
+  theme_bw()
+```
+
+
+La distancia de cada punto a la recta es la diferencia entre lo que predice nuestro modelo y el valor real
+
+## Función de Modelo
+
+Para computar la distancia, primero necesitamos una función que permita representar a cualquier modelo.
+
+### Ejercicio
+
+Crear una función que reciba un vector con los parametros del modelo, y el set de datos, y genere la predicción:
+  
+```{r}
+model1 <- function(a, data) {
+   a[1] + data$x * a[2]
+   }
+model1(c(7, 1.5), sim1)
+```
+
+Necesitamos una forma de cuantificar el error de predicción de nuestro modelo en todas las observaciones y resumirlo en única métrica.
+Esta será la función objetivo que buscaremos minimizar. 
+
+Una de las formas de hacerlo es con el error cuadrático medio (ECM)
+
+### Ejercicio 2
+
+Necesitamos una función, que reciba un vector con los parametros del modelo y el set de datos, que calcule el promedio de los errores cuadráticos (ECM)
+ 
+$$ECM = \frac{\sum_i^n{(\hat{y_i} - y_i)^2}}{n}$$
+
+```{r}
+measure_distance <- function(mod, data) {
+ diff <- data$y - model1(mod, data)
+ mean(diff ^ 2)
+   }
+measure_distance(c(7, 1.5), sim1)
+```
+
+## Evaluando los modelos aleatorios
+
+Ahora podemos calcular el __ECM__ para todos los modelos del dataframe _models_. Para eso utilizamos el paquete __purrr__, para ejecutar varias veces la misma función sobre varios elementos. 
+
+### MAP^[basado en https://jennybc.github.io/purrr-tutorial/ls03_map-function-syntax.html]
+
+Nosotros tenemos que pasar pasar los valores de a1 y a2 (dos parámetros --> map2), pero como nuestra función toma sólo uno (el vector a), nos armamos una función de ayuda para wrapear a1 y a2
+
+
+```{r}
+sim1_dist <- function(a1, a2) {
+  measure_distance(c(a1, a2), sim1)
+}
+
+models <- models %>% 
+  mutate(dist = purrr::map2_dbl(a1, a2, sim1_dist))
+models
+```
+
+
+A continuación, superpongamos los 10 mejores modelos a los datos. Coloreamos los modelos por `-dist`: esta es una manera fácil de asegurarse de que los mejores modelos (es decir, los que tienen la menor distancia) obtengan los colores más brillantes.
+
+
+```{r}
+ggplot(sim1, aes(x, y)) + 
+  geom_point(size = 2, colour = "grey30") + 
+  geom_abline(data = filter(models, rank(dist) <= 10),
+              aes(intercept = a1, slope = a2, colour = -dist)) +
+  theme_bw()
+              
+```
+
+
+También podemos pensar en estos modelos como observaciones y visualizar con un gráfico de dispersión de `a1` vs` a2`, nuevamente coloreado por `-dist`. Ya no podemos ver directamente cómo se compara el modelo con los datos, pero podemos ver muchos modelos a la vez. Nuevamente, destacamos los 10 mejores modelos, esta vez dibujando círculos rojos debajo de ellos.
+
+```{r}
+ggplot(models, aes(a1, a2)) +
+  geom_point(data = filter(models, rank(dist) <= 10), size = 4, colour = "red") +
+  geom_point(aes(colour = -dist))  +
+  theme_bw()
+```
+
+## Grid search
+
+En lugar de probar muchos modelos aleatorios, podríamos ser más sistemáticos y generar una cuadrícula de puntos uniformemente espaciada (esto se denomina grid search). Elegimos los parámetros de la grilla aproximadamente mirando dónde estaban los mejores modelos en el gráfico anterior.
+
+
+```{r}
+# Crear la grilla
+grid <- expand.grid(
+  a1 = seq(-5, 20, length = 25),
+  a2 = seq(1, 3, length = 25)
+  ) %>% 
+  # Calcular la distancia
+  mutate(dist = purrr::map2_dbl(a1, a2, sim1_dist))
+
+grid %>% 
+  ggplot(aes(a1, a2)) +
+  geom_point(data = filter(grid, rank(dist) <= 10), size = 4, colour = "red") +
+  geom_point(aes(colour = -dist)) +
+  theme_bw()
+```
+
+Cuando superponemos los 10 mejores modelos en los datos originales, todos se ven bastante bien:
+
+```{r}
+ggplot(sim1, aes(x, y)) + 
+  geom_point(size = 2, colour = "grey30") + 
+  geom_abline(
+    aes(intercept = a1, slope = a2, colour = -dist), 
+    data = filter(grid, rank(dist) <= 10)) +
+  theme_bw()
+```
+
+## Superficie del ECM
+
+Podemos pasar del gráfico de la grilla de puntos a graficar los mismos datos en tres dimensiones. En el plano *xy* tendremos a ambos parámetros y en el eje *z* observamos el valor del del error cuadractico medio (ECM).
+
+Notemos que ya no estamos trabajando con la distancia sino que estamos graficando la superficie del ECM como función de ambos parametros.
+
+Por la fórmula del ECM esta superficie es convexa y presenta un mínimo global.
+
+```{r, echo=FALSE}
+# Modelo lineal
+model_predictions <- function(parameters, data, predictor){
+   pred <- parameters[1] + parameters[2] * data[[predictor]]
+   return(pred)
+}
+
+# Calcular el rss
+get_rss <- function(parameters, data, predictor = 'x', predicted = 'y'){
+  prediction <- model_predictions(parameters, data, predictor = predictor)
+  residuals <- data[[predicted]] - model_predictions(parameters, data, 'x')  
+  rss <- sum((residuals)^2)
+  return(rss)
+}
+
+#Calcular el rss para el dataset sim1
+sim1_get_rss <- function(a0, a1) {
+  get_rss(c(a0, a1), sim1)
+}
+
+# Vectores de parametros
+b0 = seq(2, 6, by = 0.1)
+b1 = seq(1.7, 2.5, length=length(b0))
+
+# Grilla de modelos
+models_grid <- expand.grid(
+  
+  b0 = seq(2, 6, by = 0.1),
+  b1 = seq(1.7, 2.5, length=length(b1))
+) %>% 
+  mutate(dist = purrr::map2_dbl(b0, b1, sim1_get_rss)) 
+
+
+```
+
+```{r}
+# Matriz para el grafico
+rss_matrix <- matrix(models_grid[["dist"]],nrow = length(b1),ncol = length(b1), byrow = TRUE)
+
+# Grafico usando plotly
+rss_graph = plot_ly(x=b0, y=b1, z=rss_matrix) %>% add_surface(contours = list(
+  z = list(
+    show=TRUE,
+    usecolormap=TRUE,
+    highlightcolor="#ff0000",
+    project=list(z=TRUE)
+  )
+), reversescale=TRUE)  %>%
+  layout(
+    title = "Superficie del ECM",
+    scene = list(
+      xaxis = list(title = "a0"),
+      yaxis = list(title = "a1"),
+      zaxis = list(title = "RSS")
+    ))
+
+rss_graph
+```
+
+## Óptimo por métodos numéricos 
+
+Podríamos ir haciendo la cuadrícula más fina y fina hasta que nos centramos en el mejor modelo. Pero hay mejores formas de abordar ese problema como herramientas de optimización numéricas. Algunas de ellas son:
+
+* Búsqueda __Newton-Raphson__.
+* **Gradient Descent**
+
+La intuición de estas dos herramientas es bastante simple: Se elige un punto de partida en la superficie de la función objetivo y se busca la pendiente más inclinada. Luego, desciende por esa pendiente un poco, y se repite una y otra vez, hasta alcanzar la condición de corte. 
+
+
+En R, podemos utilizar la función `optim ()`. Cuenta con los siguientes parámetros:
+
+- **par**: vector de puntos iniciales. Elegimos el origen por poner cualquier cosa
+- **fn**: función objetivo, y los parámetros que nuestra función necesita (data)
+
+```{r}
+# Corremos la optimizacion
+best <- optim(c(0, 0), measure_distance, data = sim1)
+
+best
+```
+
+
+```{r}
+# Obtenemos los mejores parametros
+best$par
+
+# Graficamos la linea de los mejores parametros
+ggplot(sim1, aes(x, y)) + 
+  geom_point(size = 2, colour = "grey30") + 
+  geom_abline(intercept = best$par[1], slope = best$par[2], color="firebrick") +
+  theme_bw()
+```
+
+Al comparar el valor de los parámetros obtenidos mediante el método de optimización con los coeficientes estimados por la función de modelo lineal, observamos que son los mismos.
+
+```{r}
+summary(lm(y~x, data=sim1))
+```
+
