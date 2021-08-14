@@ -1,4 +1,4 @@
-# EEA-UBA 2020
+# EEA-UBA 2021
 
 ## Ayudantes
 
@@ -6,7 +6,7 @@ Juan Manuel Barriola
 
 Sofía Perini
 
-### Clase 1: 05-09
+### Clase 1: 21-08
 
 Fundamentos de programación en R: entorno, objectos, estructuras de datos, loops, control flow y funciones
 
@@ -18,7 +18,7 @@ Fundamentos de programación en R: entorno, objectos, estructuras de datos, loop
 #### Datasets para ejercicios
 - [Dataset EPH](Fuentes/usu_individual_T120.txt) 
 
-### Clase 2: 12-09
+### Clase 2: 28-08
 
 Introducción al paquete Tidyverse: trabajo con datasets (`dplyr` y `tidyr`), fechas (`lubridate`), strings (`stringr`) y gráficos (`ggplot2`)
 
@@ -37,7 +37,7 @@ Introducción al paquete Tidyverse: trabajo con datasets (`dplyr` y `tidyr`), fe
 
 - [Gráficos de kernels y tendencias](clase 2/Clase 2 - Kernels y Tendencias (OPCIONAL).nb.html)
 
-### Clase 3: 19-09
+### Clase 3: 04-09
 
 Estimación y test de correlación entre 2 variables. Matrices de correlación: librerías `corrr` y `GGally` 
 
@@ -51,7 +51,7 @@ Análisis exploratorios, limpieza de datos, análisis de outliers e interpretaci
 
 - [Dataset Encuesta Sueldos IT](Fuentes/encuesta_sueldos_sysarmy_1s2020.csv)
 
-### Clase 4: 26-09
+### Clase 4: 11-09
 
 Inferencia sobre los parámetros, test de significatividad global y R-cuadrado
 
@@ -61,7 +61,7 @@ Modelo lineal desde el enfoque de Machine Learning: random search y grid search 
 
 - [Regresión Lineal Simple: Enfoque de Machine Learning](clase 4/modelo_lineal_enfoque_ml.nb.html)
 
-### Clase 5: 03-10
+### Clase 5: 18-09
 
 Diagnóstico de modelo lineal simple
 
@@ -71,23 +71,27 @@ Introducción a programación funcional con Tidyverse `PURRR`
 
 - [Tidyverse:PURRR](clase 5/PURRR.nb.html)
 
-### Clase 6: 10-10
+### Clase 6: 25-09
 
 Interpretación de coeficientes en Regresión Lineal Múltiple, inclusión de variables categóricas y test de significatividad individual
 
 - [Regresión Lineal Múltiple: Parte I](clase 6/Clase 5 - Regresion Lineal Multiple.nb.html)
 
-### Clase 7: 17-10
+### Clase 7: 02-10
 
 Evaluación y diagnóstico del modelo. Explicación vs predicción
 
 - [Regresión Lineal Múltiple: Parte II](clase 7/Clase 7 - Regresion Multiple II.nb.html)
 
-### Clase 8: 24-10
+### Clase 8: 09-10
 
 - [Tidy models]()
 
-### Clase 9: 07-11
+### Clase 9: 16-10
+
+Parcial
+
+### Clase 10: 23-10
 
 Regresión Logística: modelo de clasificación. Interpretación de coeficientes, métricas y gráficos de evaluación del modelo y evaluación de performance. 
 
@@ -95,19 +99,25 @@ Problema del desbalanceo de clases: comportamiento del modelo, estrategia de ove
 
 - [Regresion Logistica](clase 9/logit.nb.html)
 
-### Clase 10: 14-11
+### Clase 11: 30-10
 
 Regularización: modelos Ridge, Lasso y Elastic Net y trade off sesgo-varianza
 
 - [Regularizacion: Ridge, Lasso y Elastic Net](clase 10/regularizacion.html)
 
+### Clase 12: 06-11
 
-### Clase 11: 21-11
+Smoothing, GAM y Prophet. 
 
 - [Prophet: implementacion de GAM para series de tiempo](clase 11/prophet_shopping.nb.html)
 
+### Clase 13: 13-11
 
-### Clase 12: 28-11
+Redes Neuronales. 
 
 - [Redes I: Fully Conected Neural Networks](clase 12/mnist101.nb.html)
+
+### Clase 14: 20-11
+
+Comparación de modelos.
 
