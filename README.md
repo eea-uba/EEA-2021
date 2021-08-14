@@ -35,53 +35,53 @@ Introducción al paquete Tidyverse: trabajo con datasets (`dplyr` y `tidyr`), fe
 
 #### Material opcional
 
-- [Gráficos de kernels y tendencias](clase 2/Clase 2 - Kernels y Tendencias (OPCIONAL).nb.html)
+- [Gráficos de kernels y tendencias]()
 
 ### Clase 3: 04-09
 
 Estimación y test de correlación entre 2 variables. Matrices de correlación: librerías `corrr` y `GGally` 
 
-- [Correlación](clase 3/Clase 3 - Correlacion.nb.html)
+- [Correlación]()
 
 Análisis exploratorios, limpieza de datos, análisis de outliers e interpretación de los coeficientes de un modelo lineal simple
 
-- [Regresión Lineal Simple: Modelo e interpretación](clase 3/Clase-3---Regresion-Lineal-Simple.html)
+- [Regresión Lineal Simple: Modelo e interpretación]()
 
 #### Dataset Notebook Modelo Lineal
 
-- [Dataset Encuesta Sueldos IT](Fuentes/encuesta_sueldos_sysarmy_1s2020.csv)
+- [Dataset Encuesta Sueldos IT]()
 
 ### Clase 4: 11-09
 
 Inferencia sobre los parámetros, test de significatividad global y R-cuadrado
 
-- [Regresión Lineal Simple: Evaluación y diagnóstico](clase 4/Clase-4---Regresion-Lineal-Simple-Eval.html)
+- [Regresión Lineal Simple: Evaluación y diagnóstico]()
 
 Modelo lineal desde el enfoque de Machine Learning: random search y grid search de parámetros, función objetivo y métodos de optimización para hallar los valores de los parámetros
 
-- [Regresión Lineal Simple: Enfoque de Machine Learning](clase 4/modelo_lineal_enfoque_ml.nb.html)
+- [Regresión Lineal Simple: Enfoque de Machine Learning]()
 
 ### Clase 5: 18-09
 
 Diagnóstico de modelo lineal simple
 
-- [Regresión Lineal Simple: Evaluación y diagnóstico](clase 4/Clase-4---Regresion-Lineal-Simple-Eval.html)
+- [Regresión Lineal Simple: Evaluación y diagnóstico]()
 
 Introducción a programación funcional con Tidyverse `PURRR`
 
-- [Tidyverse:PURRR](clase 5/PURRR.nb.html)
+- [Tidyverse:PURRR]()
 
 ### Clase 6: 25-09
 
 Interpretación de coeficientes en Regresión Lineal Múltiple, inclusión de variables categóricas y test de significatividad individual
 
-- [Regresión Lineal Múltiple: Parte I](clase 6/Clase 5 - Regresion Lineal Multiple.nb.html)
+- [Regresión Lineal Múltiple: Parte I]()
 
 ### Clase 7: 02-10
 
 Evaluación y diagnóstico del modelo. Explicación vs predicción
 
-- [Regresión Lineal Múltiple: Parte II](clase 7/Clase 7 - Regresion Multiple II.nb.html)
+- [Regresión Lineal Múltiple: Parte II]()
 
 ### Clase 8: 09-10
 
@@ -97,25 +97,25 @@ Regresión Logística: modelo de clasificación. Interpretación de coeficientes
 
 Problema del desbalanceo de clases: comportamiento del modelo, estrategia de oversampling y su efecto en el modelo  
 
-- [Regresion Logistica](clase 9/logit.nb.html)
+- [Regresion Logistica]()
 
 ### Clase 11: 30-10
 
 Regularización: modelos Ridge, Lasso y Elastic Net y trade off sesgo-varianza
 
-- [Regularizacion: Ridge, Lasso y Elastic Net](clase 10/regularizacion.html)
+- [Regularizacion: Ridge, Lasso y Elastic Net]()
 
 ### Clase 12: 06-11
 
 Smoothing, GAM y Prophet. 
 
-- [Prophet: implementacion de GAM para series de tiempo](clase 11/prophet_shopping.nb.html)
+- [Prophet: implementacion de GAM para series de tiempo]()
 
 ### Clase 13: 13-11
 
 Redes Neuronales. 
 
-- [Redes I: Fully Conected Neural Networks](clase 12/mnist101.nb.html)
+- [Redes I: Fully Conected Neural Networks]()
 
 ### Clase 14: 20-11
 
