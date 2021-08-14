@@ -1,7 +1,7 @@
 ---
 title: "Regresión Lineal Múltiple I"
 author: "Juan Barriola y Sofía Perini"
-date: "3 de Octubre de 2020"
+date: "25 de Septiembre de 2021"
 output:
   html_notebook:
     theme: spacelab
@@ -20,46 +20,123 @@ div.main-container {
   
 ## Planteo del problema
 
-Nuestro objetivo es crear un modelo lineal múltiple para explicar el sueldo neto de Data Analysts, Data Scientists y Data Engineers en Argentina.
+Nuestro objetivo es crear un modelo lineal múltiple para explicar el precio de venta en dólares de las propiedades en Capital Federal reportadas por la empresa [Properati Argentina](https://www.properati.com.ar/). 
 
-Nuestra idea subyacente de cómo se puede explicar el salario neto es:
+Vamos a utilizar datos del 2019 para no incorporar comportamientos atípicos ocasionados por la pandemia del COVID-19.
 
-$salarioNeto = \beta_0 +\beta_1X_1+\beta_2X_2+...+\epsilon$
+Nuestra idea subyacente de cómo se puede explicar el precio es:
+
+$precio = \beta_0 +\beta_1X_1+\beta_2X_2+...+\epsilon$
 
 ```{r, warning=F, message=F}
 library(tidyverse)
 library(tidymodels)
+library(rsample)
+library(ggplot2)
+library(GGally)
 ```
 
 ## Levantamos Dataset
 
-Vamos a trabajar con el subconjunto de datos que surgió del trabajo de limpieza que se hizo en la clase de regresión lineal simple, correspondiente al grupo de salarios de los data scientists/analyst, de la encuesta de sueldos en el sector de tecnología en Argenina realizada por SysArmy. El informe, realizado por OpenQube lo pueden ver [acá](https://sueldos.openqube.io/encuesta-sueldos-2020.01/).
+Vamos a trabajar con un subconjunto de datos que surgió de un trabajo de limpieza y tratamiento de outliers que se puede consultar en el notebook de Preprocesamiento Dataset Properati, correspondiente a precios de propiedades en Capital Federal, cuyo precio está expresado en dolares (USD), el tipo de propiedad corresponde a Departamento, PH o Casa, y el tipo de operacion sea Venta. 
 
 ```{r, message=F}
-encuesta <- read_csv("../Fuentes/encuesta_RLM_limpia.csv")
+datos_properati <- read.csv("properati_preprocesado.csv")
+glimpse(datos_properati)
 ```
-La limpieza consistió en: eliminar los outliers de acuerdo a los criterios de la clase 3, descartar los sueldos dolarizados, eliminar los registros inconsistentes con la edad laboral, aquellas inconsistencias en las variables sueldo bruto y neto, como también aquellos errores de carga en los años de experiencia y las inconsistencias en relación con los años en la empresa actual, quedando como resultado un dataset de 159 observaciones, con el que trabajaremos a continuación (98 DA y 61 DS). 
+La limpieza consistió en: eliminar la variable bedrooms por registrar gran presencia de faltantes (40%) y correlación positiva fuerte con la variable rooms (0.97), eliminar los registros con faltantes, descartar registros donde la superficie total resulta inferior a la cubierta, por tratarse probablemente de algún error de carga. Por último, se realizó un tratamiento de los outliers, empleando las técnicas vistas en la clase 3, quedando como resultado un dataset de 49.835 observaciones y 9 columnas, con el que trabajaremos a continuación. 
 
 ### Seleccionamos variables de interés
 
+Tiene 9 variables:
+
+- *id*: identificacion.
+- *l3*: barrio.
+- *rooms*: nro de habitaciones.
+- *bathrooms*: nro de baños
+- *surface_total*: superficie total en m2
+- *surface_covered*: superficie cubierta en m2
+- *price*: precio (variable a predecir) en dólares
+- *property_type*: tipo de propiedad (Departamento, PH o Casa)
+- *precio_en_miles*: variable creada por nosotros para graficar 
+
 ```{r}
-df <- encuesta %>%
-  select(me_identifico, edad, donde_estas_trabajando, anos_de_experiencia, anos_en_la_empresa_actual, anos_en_el_puesto_actual, gente_a_cargo, trabajo_de, nivel_de_estudios_alcanzado, estado, salario_bruto, salario_neto) %>%
-  # creamos la variable perfil
-  mutate(perfil = factor(case_when(trabajo_de == "BI Analyst / Data Analyst" ~ "DA", trabajo_de == "Data Scientist / Data Engineer" ~ "DS")))
-df %>%
+datos_properati %>%
   head()
 ```
-Recordemos cómo era la correlación entre las variables numéricas seleccionadas. 
+Veamos cómo es la correlación entre las variables numéricas. 
 
 ```{r, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
-library(GGally)
-df %>%
-  select(edad, anos_de_experiencia, anos_en_la_empresa_actual, anos_en_el_puesto_actual, gente_a_cargo, salario_neto, perfil) %>% 
-  ggpairs(., aes(color = perfil), 
+datos_properati %>%
+  select(-c(id,l3)) %>% #excluyo ids y barrios  
+  ggpairs(., aes(color = property_type), 
           upper = list(continuous = wrap("cor", size = 3, hjust=0.5)), legend = 25) + 
   theme_bw() +
   theme(axis.text.x = element_text(angle=45, vjust=0.5), legend.position = "bottom")
+```
+* Las variables superficie cubierta y total presentan una asociación lineal positiva fuerte (0.945).
+
+Respecto de nuestra variable a predecir, el precio, observamos que:
+
+* Existe una correlación positiva fuerte con las superficies total y cubierta. Respecto a estas últimas existe una gran diferencia en la correlación según el tipo de propiedad. Las casas parecen presentar menor correlación que los departamentos y PHs.
+
+* Existe una correlación positiva menor con el número de habitaciones y baños. 
+
+### Analizamos las demás variables no numéricas. 
+
+Existen 57 barrios de capital federal (variable l3). En los boxplots paralelos de precios por barrios se puede ver que entre los barrios que presentan mayores precios se ubican: Puerto Madero, Catalinas, Las Cañitas, Recoleta y Belgrano, mientras que Constitución, la Boca y Villa Soldati presentan los menores precios de propiedades. 
+
+```{r}
+length(unique(datos_properati$l3)) # 57 barrios
+# armo scatterplot de precios en miles en función de superficie total
+ggplot( datos_properati, aes(x = fct_reorder(l3, price, .desc = T), y = price/1000)) + 
+  geom_boxplot(alpha = 0.75, aes(color = l3)) + 
+  theme_minimal() + 
+  theme(legend.position = 'none')+
+  labs(y = "Precios en miles", x = "Barrios")  +
+  ggtitle("Boxplots de precios en función de los barrios")+
+  theme (axis.text.x = element_text(face="italic", colour="dark grey", size = 8, angle = 90))
+```
+Analizando la variable de **tipo de propiedad** en función de la variable a predecir, se observa una diferencia en los precios según el tipo de propiedad. En particular, las casas presentan mayores precios y a su vez, mayor variabilidad que los departamentos y PHs. 
+
+```{r}
+# armo boxplots paralelos segun el tipo de propiedad (casa, dpto o ph)
+ggplot(datos_properati, aes(y = precio_en_miles, group = property_type, fill = property_type )) +
+  geom_boxplot() +
+  labs(title = "Boxplots de precios por tipo de propiedad")+
+  theme(legend.position = 'none') +
+  scale_fill_brewer(palette = "PRGn") +
+  labs(y = "Precio en miles de USD") +
+  labs(x = "Tipo de propiedad") +
+  facet_wrap(~ property_type)
+# Acotando la escala del grafico para visualizar mejor el 50% centra de datos
+ggplot(datos_limpios, aes(y = precio_en_miles, group = property_type, fill = property_type )) +
+  geom_boxplot() +
+  labs(title = "Boxplots de precios por tipo de propiedad (escala acotada)")+
+  scale_fill_brewer(palette = "PRGn") +
+  theme(legend.position = 'none') +
+  scale_y_continuous(limits = c(0, 1000)) +
+  labs(y = "Precio en miles de USD") +
+  labs(x = "Tipo de propiedad") +
+  facet_wrap(~ property_type)
+```
+
+## Partición del dataset en train y test
+
+Realizamos una partición una partición entre dataset de entrenamiento (75%) y testeo (25%) usando la función initial_split del paquete rsample de tidymodels.
+
+```{r}
+# fijamos semilla
+set.seed(2021)
+# Partición Train y Test, indicando proporción
+train_test <- initial_split(datos_properati, prop = 0.75)
+train_data <- training(train_test)
+test_data <- testing(train_test)
+# vemos las dimensiones de cada particion
+train_data %>%
+  dim_desc() 
+test_data %>%
+  dim_desc() 
 ```
 
 ## Modelo Múltiple
@@ -83,15 +160,15 @@ El modelo se denomina *lineal* puesto que la esperanza de Y condicional a las X'
 
 ### Estimación de los Parámetros (ajuste del modelo)
 
-Se quiere ajustar un modelo para el salario neto en función de 2 variables:
+Se quiere ajustar un modelo para el precio de las propiedades en función de 2 variables:
 
-$salarioNeto = \beta_0 + \beta_1x_{i1} + \beta_2x_{i2} + \epsilon_i$
+$precio = \beta_0 + \beta_1x_{i1} + \beta_2x_{i2} + \epsilon_i$
 
 Veamos cómo se interpretan los ajustes para los distintos tipos de predictores. 
 
 ### *1) Predictores numéricos*
 
-Armemos un modelo para predecir el salario_neto en función de los años de experiencia y la gente_a_cargo. Veamos los resultados del modelo empleando la función tidy(). 
+Armemos un modelo para predecir el precio en función de los años de experiencia y la gente_a_cargo. Veamos los resultados del modelo empleando la función tidy(). 
 
 ```{r}
 # ajustamos modelo lineal multiple
