@@ -1,4 +1,4 @@
-#### Resoluci贸n de Ejercicios - Clase 1 ####
+#### Resolucion de Ejercicios - Clase 1 ####
 
 ## Ejercicio 1 ##
  
@@ -6,15 +6,15 @@
 df <- state.x77
 df
 
-# a) 驴Cu谩l es la poblaci贸n total de Estados Unidos?
+# a) 緾ual es la poblacion total de Estados Unidos?
 apply(X = as.data.frame(df[,1]), MARGIN = 2 , FUN = sum) # 212321
 
-# b) 驴Cu谩l es la media de la expectativa de vida?
+# b) 緾ual es la media de la expectativa de vida?
 apply(X = as.data.frame(df[,4]), MARGIN = 2 , FUN = mean) # 70.8786
 
-# c) 驴Cual es la mediana del ingreso en pesos argentinos?
+# c) 緾ual es la mediana del ingreso en pesos argentinos?
 apply(X = as.data.frame(df[,2]), MARGIN = 2 , FUN = function(x) median(x)*71.75) 
-# el resultado depender谩 de la cotizaci贸n del d贸lar que se emplee
+# el resultado dependera de la cotizacion del dolar que se emplee
 
 # 2) Crear el dataset con las dos columnas
 df_indice <- df[,c(3, 5)]
@@ -24,7 +24,7 @@ df_indice
 ilit_murd <- apply(X = df_indice, MARGIN = 1, FUN = sum)
 ilit_murd
 
-# b) Buscar los m谩ximos y m铆nimos
+# b) Buscar los maximos y minimos
 ilit_murd[ilit_murd == max(ilit_murd)] # Alabama 17.2
 ilit_murd[ilit_murd == min(ilit_murd)] # North y South Dakota 2.2
 
@@ -47,7 +47,7 @@ VEC4 <- c(rep("NO",5), rep("SI",5))
 VEC5 <- c(rep("PAGO",7), rep("LIBRE",3))
 VEC6 <- c(rep("SAS",2),rep("SPSS",2),rep("R",6))
 
-# e) Un dataframe _DFRAME_ como combinaci贸n de todos los vectores creados previamente
+# e) Un dataframe _DFRAME_ como combinacion de todos los vectores creados previamente
 DFRAME <- data.frame(VEC0,VEC1,VEC2,VEC3,VEC4,VEC5,VEC6)
 DFRAME
 
@@ -63,7 +63,7 @@ for(i in VEC0){
   print(i*3)
 }
 
-# b) Armar un loop que itere sobre los valores 煤nicos de la variable _VEC6_ del
+# b) Armar un loop que itere sobre los valores unicos de la variable _VEC6_ del
 # dataframe _DFRAME_ e imprima un texto que combine el valor de _VEC6_ y _VEC0_. 
 for(i in unique(DFRAME$VEC6)) {
           A <- paste(DFRAME$VEC6[VEC6 == i], DFRAME$VEC0[VEC6 == i])
@@ -71,41 +71,41 @@ for(i in unique(DFRAME$VEC6)) {
           }
 
 # c) Reescribir el VEC1 del DATAFRAME para que sus elementos sean el doble de 
-# VEC_0 cuando 茅ste sea mayor a 2 o iguales a VEC_0 para el resto de los casos. 
+# VEC_0 cuando este sea mayor a 2 o iguales a VEC_0 para el resto de los casos. 
 
 DFRAME$VEC1 <- ifelse(DFRAME$VEC0 > 2, DFRAME$VEC0 * 2, DFRAME$VEC0)
 DFRAME
 
 # 5) Funciones 
 
-# a) Crear una funci贸n llamada _Hola_Mundo_ que imprima el texto "Hola mundo"
+# a) Crear una funcion llamada _Hola_Mundo_ que imprima el texto "Hola mundo"
 Hola_Mundo <- function(){
   print("Hola mundo")
 }
 
-# b) Crear una funci贸n devuelva la sumatoria de los numeros enteros comprendidos entre 1 y un parametro x a definir
+# b) Crear una funcion devuelva la sumatoria de los numeros enteros comprendidos entre 1 y un parametro x a definir
 Sumatoria_enteros<- function(x){
   y <- 1:x 
   sum(y)
 }
 
-# c) Crear una funci贸n cuyo par谩metro/input X sea una matrix y que devuelva: 
-# la dimensi贸n de la matriz en cuesti贸n y un texto que diga "El primer elemento
-# es par" en caso de que as铆 lo fuera o "El primer elemento no es par" en caso contrario. 
+# c) Crear una funcion cuyo parametro/input X sea una matrix y que devuelva: 
+# la dimension de la matriz en cuestion y un texto que diga "El primer elemento
+# es par" en caso de que asi lo fuera o "El primer elemento no es par" en caso contrario. 
 
 primer_elem_matriz <- function(matriz) {
   # Obtengo las dimensiones
   print(dim(matriz))
   # Chequeo si el primer elemento es par
   primer_elem <- matriz[1,1]
-  # indico que imprima el texto en caso de cumplirse la condici贸n
+  # indico que imprima el texto en caso de cumplirse la condicion
   if (primer_elem %% 2 == 0) {
     print('El primer elemento es par')
   }
   else{print('El primer elemento no es par')}
 }
 
-# evaluo la funci贸n sobre el dataframe creado previamente
+# evaluo la funcion sobre el dataframe creado previamente
 primer_elem_matriz(DFRAME)
 
 ## Ejercicio 2 ## 
@@ -121,14 +121,14 @@ individual_T120 <-  data.table::fread("Fuentes/usu_individual_T120.txt",
 # b) Visualizar el contenido
 tibble::glimpse(individual_T120) # 51643 filas y 177 columnas
 
-# c) Guardar la base como un archivo de extensi贸n .RDS
+# c) Guardar la base como un archivo de extension .RDS
 saveRDS(individual_T120,"Fuentes/individual_T120.RDS")
 
 # Vuelvo a levantar la base, pero como .RDS y le asigno nombre _BaseRDS_ 
 BaseRDS <- readRDS("Fuentes/individual_T120.RDS")
 
-# 2) Crear una funci贸n _acumulado_ que calcule el valor acumulado de una 
-# variable num茅rica a designar X en un dataset tambi茅n a designar df.  
+# 2) Crear una funcion _acumulado_ que calcule el valor acumulado de una 
+# variable numerica a designar X en un dataset tambien a designar df.  
 # Es decir, que brinde el valor resultante de acumulado(df, X). 
 
 acumulado <- function(data, variable){
@@ -137,13 +137,13 @@ acumulado <- function(data, variable){
   print (acum)
 }
 
-# a) Eval煤ela para la columna "PONDERA" del dataframe individual_T120.
+# a) Evaluela para la columna "PONDERA" del dataframe individual_T120.
 acumulado(individual_T120, "PONDERA")
 # chequeo el resultado
 sum(individual_T120[,PONDERA])
 
-# b) Utilizar dicha funci贸n para calcular el acumulado de la frecuencia poblacional 
-# (variable PONDERA) por Sexo (variable CH04). Sabiendo que 1 = var贸n, 2 = mujer. 
+# b) Utilizar dicha funcion para calcular el acumulado de la frecuencia poblacional 
+# (variable PONDERA) por Sexo (variable CH04). Sabiendo que 1 = var髇, 2 = mujer. 
 
 df_m = individual_T120[individual_T120$CH04 == 2,]
 df_v = individual_T120[individual_T120$CH04 == 1,]
@@ -151,9 +151,9 @@ df_v = individual_T120[individual_T120$CH04 == 1,]
 acumulado(df_m, "PONDERA")
 acumulado(df_v, "PONDERA")
 
-# 3) Modificar la funci贸n anterior para que devuelva un vector que contenga 
+# 3) Modificar la funcion anterior para que devuelva un vector que contenga 
 # la frecuencia poblacional (el acumulado calculado previamente) y 
-# la muestral (n煤mero de filas del dataset). 
+# la muestral (numero de filas del dataset). 
 
 acumulado2 <- function(data, variable){
   df <- as.data.frame(data)  
