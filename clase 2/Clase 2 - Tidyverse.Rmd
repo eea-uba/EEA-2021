@@ -1,9 +1,9 @@
 ---
 title: "Clase 2. Tidyverse y Ggplot"
 author: "Juan Barriola y Sofía Perini ^[Basado en la [clase](https://diegokoz.github.io/EEA2019/clase%202/Clase%202-%20Tidyverse.nb.html) de Juan Barriola y Diego Kozlowski]"
-date: "12 de Septiembre de 2020"
+date: "28 de agosto de 2021"
 output: 
-  html_document:
+  html_notebook:
     df_print: paged
     toc: yes
     toc_float: true
@@ -27,7 +27,7 @@ Entre ellos principalmente usaremos:
 * [__dplyr__](https://dplyr.tidyverse.org/) y [__tidyr__](https://tidyr.tidyverse.org/) para consultar, realizar transformaciones y agregaciones sobre los sets de datos
 * [__lubridate__](https://lubridate.tidyverse.org/) para trabajar con datos tipo fecha
 * [__stringr__](https://stringr.tidyverse.org/) para trabajar con datos tipo string
-* [__gplot2__](https://ggplot2.tidyverse.org/) para realizar gráficos
+* [__ggplot2__](https://ggplot2.tidyverse.org/) para realizar gráficos
 
 A continuación cargamos la librería a nuestro ambiente. Para ello debe estar previamente instalada en nuestra pc o se instala con ```install.packages()```.
 
@@ -36,19 +36,18 @@ library(tidyverse)
 library(lubridate) # para trabajar con fechas
 ```
 
+[library(tidyverse)](tidyverse.PNG){width=300}
 
-Para mostrar el funcionamiento básico del tidyverse retomaremos el ejemplo de la Clase 1, con lo cual volvemos a crear el set de datos del [Indice de salarios](https://www.indec.gob.ar/indec/web/Nivel4-Tema-4-31-61) del INDEC.
+Para mostrar el funcionamiento básico de tidyverse retomaremos el ejemplo de la Clase 1, con lo cual volvemos a crear el set de datos del [Indice de salarios](https://www.indec.gob.ar/indec/web/Nivel4-Tema-4-31-61) del INDEC.
 
 ``` {r, warning=FALSE}
+INDICE  <- c( 394.5, 350.7, 346.3,
+              408.4, 360.8, 349.5,
+              415.6, 375.3, 353.5 )
 
-INDICE  <- c( 286.4,	262.1,	248.5,
-              285.7,	263.5,	250.2,
-              285.1,	264.9,	249.0 )
-
-
-FECHA  <-  c("Mar-20", "Mar-20", "Mar-20",
-             "Abr-20", "Abr-20", "Abr-20",
-             "May-20", "May-20", "May-20")
+FECHA  <-  c("Abr-21", "Abr-21", "Abr-21",
+             "May-21", "May-21", "May-21", 
+             "Jun-21", "Jun-21", "Jun-21")
 
 GRUPO  <-  c("Privado_Registrado","Público","Privado_No_Registrado",
              "Privado_Registrado","Público","Privado_No_Registrado",
@@ -56,7 +55,6 @@ GRUPO  <-  c("Privado_Registrado","Público","Privado_No_Registrado",
 
 Datos <- data.frame(INDICE, FECHA, GRUPO)
 Datos
-
 ```
 
 ## Dplyr
@@ -230,6 +228,8 @@ Datos_Indice_Gral <- Datos_join %>%
 Datos_Indice_Gral
 ```
 
+Para más detalle sobre joins, ver notebook opcional de distintos tipos de [joins](https://eea-uba.github.io/EEA-2021/clase%202/Clase 2. Distintos tipos de Join (OPCIONAL).nb.html).
+
 ## Tidyr
 
 El paquete tidyr esta pensado para "emprolijar los datos". Tiene un conjunto de funciones para implementar las nociones de Tidy Data desarrolladas por Hadley Wickham en su [paper](http://www.jstatsoft.org/v59/i10/paper).
@@ -257,8 +257,8 @@ En la siguiente tabla (iris) cada observación es una planta con la medición de
 library(datasets)
 data(iris)
 iris <- iris %>% 
-  mutate(id = 1:nrow(.)) %>% # le agrego un ID
-  select(id, everything()) # lo acomodo para que el id este primero. 
+  mutate(id = 1:nrow(.)) %>% # se agrega un ID
+  select(id, everything()) # se acomoda para que el id este primero. 
 iris
 ```
 
@@ -268,10 +268,12 @@ Ahora se considera que cada observación es la medición de cada uno de los 4 at
 
 ```{r}
 iris_vertical <- iris %>% 
-                    pivot_longer(cols = c(Sepal.Length, Sepal.Width, Petal.Length,Petal.Width), # Columnas a pivotear al formato "largo
-                                 names_to = "tipo_medicion", # nombre de la nueva columna sobre la que pivoteo el dataframe
-                                 values_to = "valor" # nombre de la nueva columna de valores
-                                )
+                    pivot_longer(# Columnas a pivotear al formato "largo"
+                                 cols = c(Sepal.Length, Sepal.Width, Petal.Length,Petal.Width),       
+                                 # nombre de la nueva columna sobre la que se pivotea el dataframe
+                                 names_to = "tipo_medicion", 
+                                 # nombre de la nueva columna de valores
+                                 values_to = "valor" )
 iris_vertical
 ```
 
@@ -281,8 +283,10 @@ Podemos deshacer el __pivot_longer__ con un __pivot_wider__
 
 ```{r}
 iris_horizontal <- iris_vertical %>%
-                      pivot_wider(names_from = tipo_medicion, # nombre de la variable a expandir
-                                  values_from = valor) # nombre de la columna con valores
+                      pivot_wider(# nombre de la variable a expandir
+                                  names_from = tipo_medicion, 
+                                  # nombre de la columna con valores
+                                  values_from = valor) 
 iris_horizontal
 ```
 
@@ -363,7 +367,6 @@ str_length(string1)
 ```{r}
 string2 <- "abcd efghi"
 str_length(string2)
-str_sub
 ```
 
 La función ```str_sub()``` nos permite extraer los caracteres que se encuentran entre determinadas posiciones. Tiene tres argumentos: el **string**, el orden del caracter **a partir** del cual tiene que empezar a extraer y el orden del caracter **hasta** el cual tiene que extraer.
@@ -565,7 +568,7 @@ La librería GGplot tiene a su vez muchas otras librerías que extienden sus pot
 - [ggridge](https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html): Para hacer gráficos de densidad faceteados
 - [ggally](https://ggobi.github.io/ggally/): Para hacer varios gráficos juntos.
 
-```{r message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, fig.width=8, fig.height=6, results='hide',fig.keep='all'}
 library(GGally)
 ggpairs(iris,  mapping = aes(color = Species))
 ```
@@ -595,7 +598,7 @@ Cuando queremos utilizar estos parámetros para representar una variable, los de
 Para ejemplificar el uso de los gráficos se levanta una base de microdatos de Encuesta Permanente de Hogares (EPH) que publica INDEC.
 
 ```{r}
-Individual_T120 <- read.table(paste0("../Fuentes/usu_individual_T120.txt"),
+Individual_T120 <- read.table("../Fuentes/usu_individual_T120.txt",
                               sep=";", dec=",", header = TRUE, fill = TRUE)
 ```
 

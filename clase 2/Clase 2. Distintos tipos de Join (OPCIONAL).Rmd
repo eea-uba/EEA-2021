@@ -1,0 +1,160 @@
+---
+title: "OPCIONAL: Joins con Dplyr"
+author: "Juan Barriola y Sofía Perini"
+date: "28 de agosto de 2021"
+output: 
+  html_notebook: 
+    toc: true
+    toc_float: true
+    depth: 2
+---
+
+<style type="text/css">
+div.main-container {
+  max-width: 1600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+## Diferencias entre Joins
+
+Creamos un primer dataframe que luego vamos a unir. 
+
+```{r}
+INDICE  <- c( 394.5, 350.7, 346.3,
+              408.4, 360.8, 349.5,
+              415.6, 375.3, 353.5 )
+
+FECHA  <-  c("Abr-21", "Abr-21", "Abr-21",
+             "May-21", "May-21", "May-21", 
+             "Jun-21", "Jun-21", "Jun-21")
+
+GRUPO  <-  c("Privado_Registrado","Público","Privado_No_Registrado",
+             "Privado_Registrado","Público","Privado_No_Registrado",
+             "Privado_Registrado","Público","Privado_No_Registrado")
+
+Datos <- data.frame(INDICE, FECHA, GRUPO)
+Datos
+```
+
+Creamos un segundo data frame.
+
+```{r}
+# creamos un dataframe de ponderadores con la columna GRUPO igual al dataset original
+Ponderadores <- data.frame(GRUPO = c("Privado_Registrado", "Público", "Otro"), 
+                           PONDERADOR = c(50.16,29.91, 10.4))
+Ponderadores
+```
+
+La variable clave que servirá para unir ambos dataframes será GRUPO. Probemos distintos tipos de join así observamos sus diferencias. 
+
+### left_join(x,y)
+
+Devuelve **todas las filas de x**, y todas las columnas de x e y. Las filas en x sin coincidencia en y tendrán valores NA en las nuevas columnas. Si hay varias coincidencias entre x e y, se devuelven todas las combinaciones de las coincidencias.
+
+```{r}
+# hacemos el join con el dataframe Datos 
+Datos_join <- Datos %>% 
+# especificamos la variable que será utilizada para unir ambas tablas con "by"
+  left_join(., Ponderadores, by = "GRUPO")
+Datos_join
+```
+
+### right_join(x,y)
+
+Devuelve **todas las filas de y**, y todas las columnas de x e y. Las filas en y sin coincidencia en x tendrán valores NA en las nuevas columnas. Si hay varias coincidencias entre xey, se devuelven todas las combinaciones de las coincidencias.
+
+```{r}
+# hacemos el join con el dataframe Datos 
+Datos_join <- Datos %>% 
+# especificamos la variable que será utilizada para unir ambas tablas con "by"
+  right_join(., Ponderadores, by = "GRUPO")
+Datos_join
+```
+
+### inner_join(x,y)
+
+Devuelve todas las filas de x donde hay valores coincidentes en y, y **todas las columnas de x e y**. Si hay varias coincidencias entre xey, se devuelven todas las combinaciones de las coincidencias.
+
+```{r}
+# hacemos el join con el dataframe Datos 
+Datos_join <- Datos %>% 
+# especificamos la variable que será utilizada para unir ambas tablas con "by"
+  inner_join(., Ponderadores, by = "GRUPO")
+Datos_join
+```
+### semi_join(x,y)
+
+Devuelve todas las filas de x donde hay valores coincidentes en y, **manteniendo solo las columnas de x**. Un semi_join se diferencia de inner_join porque este última devuelve una fila de x por cada fila coincidente de y, mientras semi_join nunca duplicará filas de x.
+
+```{r}
+# hacemos el join con el dataframe Datos 
+Datos_join <- Datos %>% 
+  semi_join(., Ponderadores, by = "GRUPO")
+Datos_join
+```
+### full_join(x,y) 
+
+Devuelve **todas las filas y todas las columnas tanto de x como de y**. Donde no hay valores coincidentes, devuelve NA para el que falta.
+
+```{r}
+# hacemos el join con el dataframe Datos 
+Datos_join <- Datos %>% 
+  full_join(., Ponderadores, by = "GRUPO")
+Datos_join
+```
+
+### anti_join(x,y) 
+
+Eevuelve **todas las filas de x donde no hay valores coincidentes en y**, manteniendo solo las columnas de x
+
+```{r}
+# hacemos el join con el dataframe Datos 
+Datos_join <- Datos %>% 
+  anti_join(., Ponderadores, by = "GRUPO")
+Datos_join
+```
+
+Si los nombres de la variable key son distintos, debemos poner:
+
+* by = c("key1" = "key2")
+
+```{r}
+df1 %>% left_join(df2, by = c("key1" = "key2"))
+```
+
+```{r}
+library(ggridges)
+ggplot(iris, aes(x = Sepal.Length, y = Species, fill = Species)) + 
+  geom_density_ridges() +
+  labs(title = "Usando Ridges") + 
+  theme(legend.position = "bottom")
+
+ggplot(iris, aes(x = Sepal.Length, y = Species, fill = Species)) + 
+  geom_boxplot() +
+  labs(title = "Boxplot") + 
+  theme(legend.position = "bottom") # +
+#  coord_flip()
+
+ggplot(iris, aes(x = Sepal.Length, y = Species, fill = Species)) + 
+  geom_point(shape=23) +
+  labs(title = "Boxplot") + 
+  theme(legend.position = "bottom") +
+  coord_flip()
+
+ggplot(iris, aes(x = Sepal.Length, y = Species, fill = Species)) + 
+  geom_boxplot() +
+  labs(title = "Boxplot") + 
+  theme(legend.position = "bottom") +
+  facet_wrap(~ Species, labeller = "label_both")
+
+ggplot(iris, aes(x = Sepal.Length, y = Species, fill = Species)) + 
+  geom_boxplot() +
+  labs(title = "Boxplot") + 
+  scale_x_continuous(limits = c(4,8)) +
+  theme(legend.position = "bottom") +
+  facet_wrap(~ Species)
+```
+
+

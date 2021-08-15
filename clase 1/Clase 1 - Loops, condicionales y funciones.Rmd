@@ -1,7 +1,7 @@
 ---
 title: "Clase 1 - Loops, estructuras condicionales y funciones"
 author: "Juan Barriola y Sofía Perini"
-date: "5 de Septiembre 2020"
+date: "21 de agosto de 2021"
 output:
   html_notebook:
     toc: yes
@@ -39,12 +39,12 @@ for(Valores in 1:10){
 
 Un loop puede iterar sobre cualquier tipo de vector, independientemente de lo que contenga.
 
-> Los loops son una estructura básica que existen en cualquier lenguaje de programación. En R no recomendamos abusar de ellos porque hacen que el código sea más lento.
+> Los loops son una estructura básica que existe en cualquier lenguaje de programación. En R no recomendamos abusar de ellos porque hacen que el código sea más lento.
 
 
 # Estructuras Condicionales
 
-Las __estructuras condiconales__ nos permiten ejecutar una porción de código en caso de que cumplan una condición lógica
+Las __estructuras condiconales__ nos permiten ejecutar una porción de código en caso de que cumplan una condición lógica.
 
 ## if
 
@@ -74,7 +74,10 @@ Su funcionamiento es el siguiente:
 ```if_else(condición, función a aplicar si se cumple la condición, función a aplicar si no se cumple la condición)```
 
 ```{r}
-if_else(2+2 == 4, true = "Joya", false = "Error")
+library(dplyr)
+if_else(2+2 == 4, # condicion
+        true = "Joya", # si se cumple la condición
+        false = "Error") # si no se cumple
 ```
 
 # Funciones
@@ -82,7 +85,6 @@ if_else(2+2 == 4, true = "Joya", false = "Error")
 La creación de __funciones__ propias nos permite automatizar todas aquellas partes del código que se repiten mucho. Una vez diseñadas, funcionan igual que cualquier comando. 
 
 Por ejemplo, podemos definir la suma de dos elementos como
-
 
 ```{r}
 suma <- function(valor1, valor2) {
@@ -106,12 +108,12 @@ funcion_prueba(parametro1 = "A ver", parametro2 = "Qué pasa")
 También podemos asignar un valor por default para los parametros en caso de que el usuario no defina su valor al utilizar la función.
 
 ```{r}
-Otra_funcion_prueba <- function(parametro1 ,parametro2 = "String default") {
+Otra_funcion_prueba <- function(parametro1, parametro2 = "String default") {
   paste(parametro1, parametro2, sep = " <--> ")
   
 }
 Otra_funcion_prueba(parametro1 = "Valor 1")
-
+Otra_funcion_prueba(parametro1 = "Valor 1", parametro2 = "Valor 2" )
 ```
 
 Las funciones que creamos nosotros permanecen en el ambiente de R temporariamente. Cuando removemos los objetos del ambiente, la función deja de existir. Por ende, debemos incorporarla en cada uno de los scripts en la cual la necesitemos. Una buena práctica, es incorporar nuestras funciones útiles al comienzo de cada script junto a la carga de las librerías.                         
