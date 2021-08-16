@@ -82,45 +82,6 @@ Respecto de nuestra variable a predecir, el precio, observamos que:
 
 * Existe una correlación positiva menor con el número de habitaciones y baños. 
 
-### Analizamos las demás variables no numéricas. 
-
-Existen 57 barrios de capital federal (variable l3). En los boxplots paralelos de precios por barrios se puede ver que entre los barrios que presentan mayores precios se ubican: Puerto Madero, Catalinas, Las Cañitas, Recoleta y Belgrano, mientras que Constitución, la Boca y Villa Soldati presentan los menores precios de propiedades. 
-
-```{r}
-length(unique(datos_properati$l3)) # 57 barrios
-# armo scatterplot de precios en miles en función de superficie total
-ggplot( datos_properati, aes(x = fct_reorder(l3, price, .desc = T), y = price/1000)) + 
-  geom_boxplot(alpha = 0.75, aes(color = l3)) + 
-  theme_minimal() + 
-  theme(legend.position = 'none')+
-  labs(y = "Precios en miles", x = "Barrios")  +
-  ggtitle("Boxplots de precios en función de los barrios")+
-  theme (axis.text.x = element_text(face="italic", colour="dark grey", size = 8, angle = 90))
-```
-Analizando la variable de **tipo de propiedad** en función de la variable a predecir, se observa una diferencia en los precios según el tipo de propiedad. En particular, las casas presentan mayores precios y a su vez, mayor variabilidad que los departamentos y PHs. 
-
-```{r}
-# armo boxplots paralelos segun el tipo de propiedad (casa, dpto o ph)
-ggplot(datos_properati, aes(y = precio_en_miles, group = property_type, fill = property_type )) +
-  geom_boxplot() +
-  labs(title = "Boxplots de precios por tipo de propiedad")+
-  theme(legend.position = 'none') +
-  scale_fill_brewer(palette = "PRGn") +
-  labs(y = "Precio en miles de USD") +
-  labs(x = "Tipo de propiedad") +
-  facet_wrap(~ property_type)
-# Acotando la escala del grafico para visualizar mejor el 50% centra de datos
-ggplot(datos_limpios, aes(y = precio_en_miles, group = property_type, fill = property_type )) +
-  geom_boxplot() +
-  labs(title = "Boxplots de precios por tipo de propiedad (escala acotada)")+
-  scale_fill_brewer(palette = "PRGn") +
-  theme(legend.position = 'none') +
-  scale_y_continuous(limits = c(0, 1000)) +
-  labs(y = "Precio en miles de USD") +
-  labs(x = "Tipo de propiedad") +
-  facet_wrap(~ property_type)
-```
-
 ## Partición del dataset en train y test
 
 Realizamos una partición una partición entre dataset de entrenamiento (75%) y testeo (25%) usando la función initial_split del paquete rsample de tidymodels.
@@ -168,153 +129,139 @@ Veamos cómo se interpretan los ajustes para los distintos tipos de predictores.
 
 ### *1) Predictores numéricos*
 
-Armemos un modelo para predecir el precio en función de los años de experiencia y la gente_a_cargo. Veamos los resultados del modelo empleando la función tidy(). 
+Armemos un modelo para predecir el precio en función de la superficie total y la cantidad de habitaciones. Veamos los resultados del modelo empleando la función tidy(). 
 
 ```{r}
 # ajustamos modelo lineal multiple
-modelo_exp_gc <- lm(salario_neto ~ anos_de_experiencia + gente_a_cargo, data = df)
+modelo_st_r <- lm(price ~ surface_total + rooms, data = train_data)
 # Resumen del modelo
-tidy_meg <- tidy(modelo_exp_gc, conf.int = TRUE)
-tidy_meg
+tidy_st_r <- tidy(modelo_st_r, conf.int = TRUE)
+tidy_st_r
 ```
 
 #### Significado de los coeficientes estimados
 
-* El valor de la ordenada al origen (61.303) es el valor de salario neto **esperado** para alguien sin experiencia laboral (0 años de experiencia) y sin gente a cargo, es decir, para alguien que recién comienza. 
+* El valor de $\hat{\beta_0}$ (ordenada al origen) es 16.944 dólares, lo que corresponde al precio **esperado** de una propiedad con 0 habitaciones y sin superficie. Lo cual, este caso carecería de sentido ya que las propiedades deberían tener superficie y al menos alguna habitación/ambiente.  
 
-* El coeficiente estimado de años de experiencia  es 967,23. Si mantenemos el número de gente a cargo constante, cada incremento de un año en los años de experiencia corresponde a un aumento de 967 pesos, **en promedio** en el sueldo neto. O lo que es igual, dadas dos personas con la misma cantidad de gente a cargo pero teniendo uno un año más de experiencia que el otro, el sueldo neto **esperado** para el de mayor experiencia será 967 pesos más alto que el de menor experiencia.
+* El coeficiente estimado de $\hat{\beta_{surface\_total}}$ (superficie total) es de 2.247 dólares, lo que indica que si mantenemos el número de habitaciones constante, cada incremento de un m2 adicional de superficie corresponde a un aumento de 2.247 dólares, **en promedio** en el precio de la propiedad. O lo que es igual, dadas dos propiedades con la misma cantidad de habitaciones pero teniendo una un m2 más de superficie que la otra, el precio **esperado** para la de mayor superficie será 2.247 dólares más alto que la de menor superficie.
 
-¿Cómo se interpretaría el coeficiente estimado de gente a cargo?
+¿Cómo se interpretaría el coeficiente estimado del número de habitaciones?
 
 ### *2) Predictores Categóricos*
 
-### *i) Predictor binario*
-
-Armemos un modelo para predecir el salario_neto en función de los años de experiencia y el género (me_identifico), que es categórica con dos niveles (hombres y mujeres). Para ello, vamos a analizar primero el comportamiento de la variable que queremos predecir para ambos géneros a través de un boxplot. 
+Armemos un modelo para predecir el precio de la propiedad en función de la superficie total y el tipo de propiedad (*property_type*), que es categórica con tres niveles (Casa, Departamento o PH). Para ello, vamos a analizar primero el comportamiento de la variable que queremos predecir para cada tipo de propiedad a través de un boxplot. 
 
 ```{r}
-# armamos boxplots paralelos de salario neto según género
-ggplot(data = df, aes(y=salario_neto/1000, group = me_identifico, fill = me_identifico)) +
+# armamos boxplots paralelos de precio segun el tipo de propiedad (casa, dpto o ph)
+ggplot(data = train_data, aes(y = precio_en_miles, group = property_type, fill = property_type)) +
          geom_boxplot() + 
          scale_fill_brewer(palette="Dark2") +
   theme_bw() +
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
+  theme(axis.text.x=element_blank(),
         axis.ticks.x=element_blank()) +
-         labs(title = "Boxplots de salario neto según género", subtitle = "En miles de pesos") +
-  facet_wrap(~me_identifico)
+         labs(title = "Boxplots de precio según tipo de propiedad", subtitle = "En miles de dólares") +
+  labs(y = "Precio en miles de USD") +
+  labs(x = "Tipo de propiedad") +
+  facet_wrap(~property_type)
 ```
+```{r}
+# Acotando la escala del grafico para visualizar mejor el rango intercuartil
+ggplot(data = train_data, aes(y = precio_en_miles, group = property_type, fill = property_type)) +
+         geom_boxplot() + 
+         scale_fill_brewer(palette="Dark2") +
+  theme_bw() +
+  scale_y_continuous(limits = c(0, 1000)) +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+         labs(title = "Boxplots de precio según tipo de propiedad", subtitle = "En miles de dólares") +
+  labs(y = "Precio en miles de USD") +
+  labs(x = "Tipo de propiedad") +
+  facet_wrap(~property_type)
+```
+Analizando la variable de *tipo de propiedad* en función de la variable a predecir, se observa una diferencia en los precios según el tipo de propiedad. En particular, las casas presentan mayores precios y a su vez, mayor variabilidad que los departamentos y PHs. 
 
 Veamos qué ocurre cuando **ajustamos el modelo**:
 
 ```{r}
 # ajustamos el modelo
-modelo_exp_sex <- lm(salario_neto ~ anos_de_experiencia + me_identifico, data = df)
-tidy_mes <- tidy(modelo_exp_sex, conf.int = TRUE)
-tidy_mes
+modelo_st_pt <- lm(price ~ surface_total + property_type, data = train_data)
+tidy_st_pt <- tidy(modelo_st_pt, conf.int = TRUE)
+tidy_st_pt
 ```
 
 #### Significado de los coeficientes estimados
 
-¿Cómo cambia la **interpretación** de los coeficientes para la variable dicotómica?
+¿Cómo cambia la **interpretación** de los coeficientes para la variable categórica?
 
-* El modelo de regresión lineal en este caso consiste simplemente en expresar
-la media del nivel de sueldo neto en cada población (de hombres y mujeres) mediante dos coeficientes distintos, donde $\beta_0$ es la media del sueldo neto para los hombres y $\beta_0 + \beta_2$ es la media del salario neto para las mujeres, dados los años de experiencia. Por lo tanto, $\beta_2$ es la diferencia (en este caso negativa) en los **niveles medios** de salario neto de las mujeres respecto de los hombres (categoría basal).
+El modelo de regresión lineal en este caso consiste simplemente en expresar
+la media del nivel de precios en cada población (de casas, departamentos o PHs) mediante tres coeficientes distintos, donde: 
 
-* Vemos que el nivel medio del sueldo neto es una función lineal de los años de experiencia de la persona, con una misma pendiente $\beta_1$ (896) para mujeres y hombres. Por otro lado, $\beta_2$ (-12.850) indica cuánto más baja es la función de respuesta (sueldo) para las mujeres respecto de los hombres (categoría basal), dados los años de experiencia.
+* $\beta_0$ (categoría basal de variable categórica) es la media del precio para las Casas sin superficie. En este modelo es de -232.257 dólares, lo que carece de sentido económico ya que las casas deberían tener alguna superficie y no podrían tener un precio negativo.  
 
-#### Grafiquemos la regresión para ambas poblaciones
+* $\beta_0 + \beta_{property\_typeDepartamento}$ es la media del precio para los departamentos, dada la superficie. Por lo tanto, $\beta_{property\_typeDepartamento}$ es la diferencia en los **niveles medios** de precios de los departamentos respecto de las casas (categoría basal).
 
-A continuación se muestra el gráfico de esta situación en que tenemos una variable categórica con solo dos niveles y una numérica. De la interpretación de coeficientes, se pudo ver que la regresión se puede expresar como dos rectas paralelas con igual pendiente pero distinto intercepto. Veamos cómo hacerla. 
+* Vemos que el nivel medio del precio es una función lineal de la superficie de la propiedad, con una misma pendiente $\beta_{surface_total}$ (2.668) para casas, departamentos y PHs. Por otro lado, $\beta_{property\_typeDepartamento}$ (251.740) indica cuánto más alta es la función de respuesta (precio) para los departamentos respecto de las casas (categoría basal), dada la superficie.
+
+¿Cómo se interpretaría entonces $\beta_{property\_typePH}$? ¿Y $\beta_0 + \beta_{property\_typePH}$?
+
+#### Grafiquemos la regresión para las tres poblaciones
+
+A continuación se muestra el gráfico de esta situación en que tenemos una variable categórica con tres niveles y una numérica. De la interpretación de coeficientes, se pudo ver que la regresión se puede expresar como rectas paralelas con igual pendiente pero distinto intercepto. Veamos cómo hacerla. 
 
 ```{r}
 # Accedemos a la información de los coeficientes estimados
-intercepto_H = modelo_exp_sex$coefficients[1] # β0
-pendiente1 = modelo_exp_sex$coefficients[2] # β1
-intercepto_M = modelo_exp_sex$coefficients[1] + modelo_exp_sex$coefficients[3] # β0 + β2
+intercepto_C = modelo_st_pt$coefficients[1] # β0
+pendiente = modelo_st_pt$coefficients[2] # β1
+intercepto_D = modelo_st_pt$coefficients[1] + modelo_st_pt$coefficients[3] # β0 + β2
+intercepto_PH = modelo_st_pt$coefficients[1] + modelo_st_pt$coefficients[4] # β0 + β3
 # Graficamos el dataset y el modelo
-df %>% ggplot(., aes(x = anos_de_experiencia, y = salario_neto)) + 
-  geom_abline(intercept = intercepto_H, slope = pendiente1, color = "forestgreen", size=1.5) + # capa del modelo
-  geom_abline(intercept = intercepto_M, slope = pendiente1, color = "darkorange", size=1.5) + # capa del modelo 
+train_data %>% ggplot(., aes(x = surface_total, y = price)) + 
+  geom_abline(intercept = intercepto_C, slope = pendiente, color = "forestgreen", size=1) + # capa del modelo
+  geom_abline(intercept = intercepto_D, slope = pendiente, color = "darkorange", size=1) + # capa del modelo 
+    geom_abline(intercept = intercepto_PH, slope = pendiente, color = "slateblue3", size=1) + # capa del modelo 
   geom_point() + #capa de los datos
   theme_bw() +
-  scale_x_continuous(limits = c(0,40)) +
-  scale_y_continuous(limits = c(0,150000)) +
-  labs(title="Modelo Lineal Múltiple: Años en la empresa y Género", x="Años de experiencia", y="Salario Neto") 
+  labs(title="Modelo Lineal Múltiple: Superficie y Tipo de Propiedad", x="Superficie en m2", y="Precio en miles de USD") 
 ```
 
-### *ii) Predictores Cualitativos con más de dos clases*
+### *Predictores Cualitativos con muchas clases*
 
-Como hay dos variables que se refieren al nivel de estudios alcanzado, vamos a unificar en una misma y reagrupar los datos.
+La variable barrios (l3) tiene 57 niveles distintos. Veamos a través de boxplots paralelos cómo se comportan. 
 
 ```{r}
-# armamos nuevas variables de nivel educativo y educativo alcanzado
-df2 <- df %>% 
-  mutate(nivel_educativo = case_when(nivel_de_estudios_alcanzado %in% c("Posgrado", "Posdoctorado", "Doctorado") ~ "Posgrado", 
-                                     TRUE ~ nivel_de_estudios_alcanzado),
-         # unificamos nivel educativo y estado 
-         nivel_edu_alcanzado = paste(nivel_educativo, sep = " ", estado)) 
-unique(sort(df2$nivel_edu_alcanzado)) # quedan 9 categorías
+length(unique(datos_properati$l3)) # 57 barrios
+# armo scatterplot de precios en miles en función de superficie total
+ggplot( datos_properati, aes(x = fct_reorder(l3, price, .desc = T), y = price/1000)) + 
+  geom_boxplot(alpha = 0.75, aes(color = l3)) + 
+  theme_minimal() + 
+  theme(legend.position = 'none')+
+  labs(y = "Precios en miles", x = "Barrios")  +
+  ggtitle("Boxplots de precios en función de los barrios")+
+  theme (axis.text.x = element_text(face="italic", colour="dark grey", size = 8, angle = 90))
 ```
+En los boxplots paralelos de precios por barrios se puede ver que entre los barrios que presentan mayores precios se ubican: Puerto Madero,Las Cañitas, Catalinas, Recoleta y Belgrano, mientras que Villa Soldati, Constitución, Villa lugano y la Boca presentan los menores precios de propiedades. 
 
-Quedan 9 categorías de nivel educativo alcanzado. Veamos a través de boxplots paralelos cómo se comportan. 
-
-```{r}
-# graficamos los boxplot paralelos
-ggplot(data = df2, aes(y=salario_neto/1000, group = nivel_edu_alcanzado, fill = nivel_edu_alcanzado)) +
-         geom_boxplot() +
-         theme_bw() +
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) +
-  labs(title = "Boxplots de salario neto según nivel educativo alcanzado", subtitle = "En miles de pesos")
-```
-
-Probemos **ajustar un modelo lineal** para el sueldo neto en función de los años de experiencia y esta nueva variable de nivel_edu_alcanzado.  
+Probemos **ajustar un modelo lineal** para el precio en función de la superficie total y los barrios.  
 
 ```{r}
 # ajustamos el modelo
-modelo_exp_edu <- lm(salario_neto ~ anos_de_experiencia + nivel_edu_alcanzado, data = df2)
-tidy_meed <- tidy(modelo_exp_edu, conf.int = TRUE)
-tidy_meed
+modelo_st_l3 <- lm(price ~ surface_total + l3, data = train_data)
+tidy_st_l3 <- tidy(modelo_st_l3, conf.int = TRUE)
+tidy_st_l3
 ```
 
-R cuando efectúa la regresión calcula automáticamente las variables indicadoras (dummies) para las covariables categóricas, en general según orden alfabético. Podemos chequear el orden para verificar cuál es la categoría basal. En este caso, la categoría de referencia corresponde al nivel educativo *Posgrado Completado*.
+R cuando efectúa la regresión calcula automáticamente las variables indicadoras (dummies) para las covariables categóricas, en general según orden alfabético. Podemos chequear el orden para verificar cuál es la categoría basal. En este caso, la categoría de referencia corresponde al barrio de *Abasto*.
 
 #### Significado de los coeficientes estimados
 
-¿Qué significan los coeficientes de la nueva variable categórica?
+¿Qué significan los coeficientes de esta variable categórica?
 
-* Este modelo propone ajustar una recta distinta para el sueldo neto **medio**
-de cada grupo de personas definido por el nivel educativo alcanzado, todas con igual pendiente (definida por los años de experiencia), y nueve ordenadas al origen diferentes, una por cada grupo (nivel educativo alcanzado).
+* Este modelo propone ajustar una recta distinta para el precio **medio**
+de cada población definida por el barrio, todas con igual pendiente (definida por la superficie), y 57 ordenadas al origen diferentes, una por cada barrio.
 
-* Por ejemplo, $\beta_2$ = nivel_edu_alcanzado **Posgrado En curso**, indica cuánto se reduce el sueldo neto medio para las personas cuyo nivel educativo es Posgrado En curso respecto de aquellas cuyo nivel es Posgrado Completado (categoría basal), dados los años de experiencia.
+* Por ejemplo, eligiendo un barrio de precios altos, vemos que $\beta_{Belgrano}$ indica cuánto se incrementa el precio medio de las propiedades para aquellos inmuebles ubicados en Belgrano respecto de aquellos ubicados en Abasto (categoría basal), dada la superficie.
 
-```{r}
-# Accedemos a la información de los coeficientes estimados
-intercepto_1 = modelo_exp_edu$coefficients[1]
-pendiente_meed = modelo_exp_edu$coefficients[2]
-intercepto = c()
-for (i in 3:9) {
-  intercepto[i] = modelo_exp_edu$coefficients[1] + modelo_exp_edu$coefficients[i]
- }
-# Graficamos el dataset y el modelo
-df %>% 
-  ggplot(., aes(x = anos_de_experiencia, y = salario_neto)) + 
-  geom_abline(intercept = intercepto_1, slope = pendiente_meed, color = "forestgreen", size=1) +
-  geom_abline(intercept = intercepto[3], slope = pendiente_meed, color = "darkorange", size=1) + 
-    geom_abline(intercept = intercepto[4], slope = pendiente_meed, color = "red", size=1) + 
-    geom_abline(intercept = intercepto[5], slope = pendiente_meed, color = "violet", size=1) +  
-    geom_abline(intercept = intercepto[6], slope = pendiente_meed, color = "blue", size=1) +  
-    geom_abline(intercept = intercepto[7], slope = pendiente_meed, color = "black", size=1) +  
-    geom_abline(intercept = intercepto[8], slope = pendiente_meed, color = "brown", size=1) + 
-    geom_abline(intercept = intercepto[9], slope = pendiente_meed, color = "yellow", size=1) + 
-  geom_point() +
-  theme_bw() +
-  scale_x_continuous(limits = c(0,40)) +
-  scale_y_continuous(limits = c(0,150000)) +
-  labs(title="Modelo Lineal Múltiple: Años en la empresa y Nivel Educativo", x="Años de experiencia", y="Salario Neto") 
-```
+* Analizando un barrio de precios bajos, $\beta_{Boca}$ indica cuánto se reduce el precio medio de las propiedades ubicadas en la Boca respecto de aquellas ubicadas en Abasto (categoría basal), dada la superficie.
 
 ## Inferencia de los $β_k$ (test de significatividad individual)
 
@@ -328,55 +275,52 @@ Es decir, busca probar:
 
 * $H_1: \hat{\beta_k} ≠ 0$. 
 
-**Modelo Años de experiencia y Gente a cargo**
+**Modelo Superficie Total y Habitaciones**
 
 ```{r}
-options(scipen=1)
-# Modelo Años de experiencia y gente a cargo
-tidy_meg %>%
+options("scipen"=1)
+tidy_st_r %>%
   select(term, statistic, p.value, conf.low, conf.high)
 ```
 
-* En este primer modelo se observa que la variable años de experiencia resulta estadísticamente significativa para explicar al sueldo neto (p-valor = 0.001 < 0.05), mientras que la gente a cargo no (p-valor = 0.84 > 0.05). 
+* En este primer modelo se observa que tanto la variable *surface_total* como *rooms* resultan estadísticamente significativas para explicar el precio de las propiedades (p-valores < 0.05). 
 
-* Además del resultado del test, podemos apreciar que el intervalo de confianza (IC) del 95% de la variable años de experiencia no contiene al 0, mientras el IC de la variable gente_a_cargo sí. 
+* Además del resultado del test, podemos apreciar que los intervalos de confianza (IC) del 95% de las variables de superficie y habitaciones no contienen al 0. 
 
-**Modelo Años de experiencia y Género**
+**Modelo Superficie Total y Tipo de Propiedad**
 
 ```{r}
-# Modelo Años de experiencia y Género
-tidy_mes %>%
-  select(term, statistic, p.value, conf.low, conf.high)
+tidy_st_pt %>%
+  select(term, statistic, p.value, conf.low, conf.high) 
 ```
 
-* En este caso se observa que la variable años de experiencia y la categoría Mujer de la variable me_identifico resultan estadísticamente significativas para explicar al sueldo neto (p-valores < 0.05). 
+* En este caso también se observa que todas las variables resultan estadísticamente significativas para explicar al precio de las propiedades (p-valores < 0.05). 
 
 * Además del resultado del test, podemos corroborar que los intervalos de confianza del 95% para los coeficientes estimados no contienen al 0 en ninguno de los casos.  
 
-##### ¿Cómo se interpreta la significatividad de las variables dummies?
+##### ¿Cómo se interpreta la significatividad de las variables categóricas?
 
-* En el caso de la variable dicotómica me_identifico (género), este test permite chequear si los valores medios del sueldo neto son los mismos para las mujeres respecto de los hombres (categoría basal).
+* En el caso de la variable tipo de propiedad, este test permite chequear si los valores medios del precio son los mismos para los departamentos o PHs respecto de las casas (categoría basal).
 
-**Modelo Años de experiencia y Nivel Educativo Alcanzado** 
+**Modelo Superficie Total y Barrios** 
 
 ```{r}
-# Modelo Años de experiencia y Nivel Educativo Alcanzado
-tidy_meed %>%
+tidy_st_l3 %>%
   select(term, statistic, p.value, conf.low, conf.high) %>% 
   arrange(p.value)
 ```
 
-* En este modelo se observa que mientras la variable años de experiencia resulta estadísticamente significativa para explicar al sueldo neto (p-valores < 0.05), las categorías de nivel educativo no. Hay algunas que resultan significativas y otras no.
+* En este modelo se observa que mientras la variable superficie total resulta estadísticamente significativa para explicar al precio (p-valores < 0.05), las categorías de barrios no. Hay algunos que resultan significativos y otros no.
 
-* Esto mismo se observa a través de los intervalos de confianza del 95% donde algunos contienen al 0 (por ej. Terciario Incompleto) y otros no (por ej. Universitario En Curso).  
+* Esto mismo se observa a través de los intervalos de confianza del 95% donde algunos contienen al 0 (por ej. Caballito) y otros no (por ej. Puerto Madero).  
 
 ##### ¿Cómo se interpreta la significatividad de las variables indicadoras?
 
-* Este test permite chequear si los valores medios del sueldo neto son los mismos en las distintas categorías de nivel educativo alcanzado respecto de la categoría basal. Cabe destacar, que estos p-valores son válidos para las comparaciones individuales respecto de la categoría basal pero no abarcan todas las comparaciones de a pares.
+* Este test permite chequear si los valores medios del precio de propiedades son los mismos en los distintos barrios respecto de la categoría basal. Cabe destacar, que estos p-valores son válidos para las comparaciones individuales respecto de la categoría basal pero no abarcan todas las comparaciones de a pares.
 
-* Es decir, que los niveles medios de sueldo neto en los distintos grupos del nivel educativo alcanzado en algunos casos difieren del basal y en otros no.
+* Es decir, que los niveles medios de precio de inmuebles en los distintos barrios en algunos casos difieren de los nivels medios del Abasto (basal) y en otros no.
 
-* Si queremos evaluar a la variable nivel_edu_alcanzado en su conjunto, debemos recurrir a un test F. 
+* Si queremos evaluar las variables *property_type* o *l3* en su conjunto, debemos recurrir a un test F. 
 
 ## Test F (test de significatividad global)
 
@@ -391,60 +335,67 @@ Test F se construye para testear si varios parámetros son cero, es decir, para 
 Dichos tests F se obtienen para cada variable de la tabla de ANOVA del modelo. Veamos qué ocurre en este caso. 
 
 ```{r}
-# Modelo Años de experiencia y Nivel Educativo Alcanzado
-tidy(anova(modelo_exp_edu))
+# Modelo Superficie Total y Tipo de Propiedad
+tidy(anova(modelo_st_pt))
 ```
 
-La tabla de ANOVA muestra que, según el resultado del test F, la variable nivel educativo alcanzado en su conjunto no resulta estadísticamente significativa para explicar al sueldo neto (p-valor > 0.05).
+La tabla de ANOVA muestra que, según el resultado del test F, la variable *property_type* en su conjunto resulta estadísticamente significativa para explicar al precio (p-valor < 0.05).
 
-Si este test no resulta significativo, suele descartarse la variable categórica de entre las covariables de interés, y se la excluye del modelo. Por el contrario, si este test resulta estadísticamente significativo, entonces suelen mirarse con más detalle cuáles de las comparaciones entre grupos son estadísticamente significativas, para proporcionar un mejor análisis de los datos. 
+```{r}
+# Modelo Superficie Total y Barrios
+tidy(anova(modelo_st_l3))
+```
+
+La tabla de ANOVA muestra que, según el resultado del test F, la variable *l3* en su conjunto resulta estadísticamente significativa para explicar al precio (p-valor < 0.05). Es decir, que pese a que algunas categorías en su comparación individual con la categoría basal sean poco significativas, la variable en su conjunto sí resulta significativa para el modelo. 
+
+Si este test no resultara significativo, suele descartarse la variable categórica de entre las covariables de interés, y se la excluye del modelo. Por el contrario, si este test resulta estadísticamente significativo, entonces suelen mirarse con más detalle cuáles de las comparaciones entre grupos son estadísticamente significativas, para proporcionar un mejor análisis de los datos. 
 
 ### Colinealidad de los Predictores
 
 Cuando las variables predictoras están correlacionadas entre sí, decimos que existe intercorrelación o multicolinealidad. 
 
-¿Qué pasa en nuestro dataset con los años de experiencia y de edad?
+¿Qué pasa en nuestro dataset con la superficie cubierta y descubierta?
 
 ```{r}
-cor(df2$anos_de_experiencia, df2$edad)
+cor(train_data$surface_total, train_data$surface_covered)
 ```
 Como ya habíamos visto en el gráfico ggpairs inicial, estas variables tienen alta correlación. Veamos qué ocurre con los coeficientes de ambas variables al armar distintos modelos múltiples que las incluyan. 
 
-Armamos un **modelo con edad, años de experiencia, gente a cargo y género**. 
+Armamos un **modelo con superficie total, superficie cubierta, habitaciones y tipo de propiedad**. 
 
 ```{r}
-modelo_4 <- lm(salario_neto ~ anos_de_experiencia + edad + gente_a_cargo + me_identifico, data = df2)
-tidy(modelo_4)
+modelo_stsc_r_pt <- lm(price ~ surface_total + surface_covered + rooms + property_type, data = train_data)
+tidy(modelo_stsc_r_pt)
 ```
 
-Armamos un **modelo con edad y años de experiencia**. 
+Armamos un **modelo con superficie total y cubierta**. 
 
 ```{r}
-modelo_exp_edad <- lm(salario_neto ~ anos_de_experiencia + edad, data = df2)
+modelo_exp_edad <- lm(price ~ surface_total + surface_covered, data = train_data)
 tidy(modelo_exp_edad)
 ```
 
-Armamos un **modelo con los años de experiencia, gente a cargo y género** pero sin contemplar la edad. 
+Armamos un **modelo con superficie total, habitaciones y tipo de propiedad** pero sin contemplar superficie cubierta. 
 
 ```{r}
-modelo_3 <- lm(salario_neto ~ anos_de_experiencia + gente_a_cargo + me_identifico, data = df2)
-tidy(modelo_3)
+modelo_st_r_pt <- lm(price ~ surface_total + rooms + property_type, data = train_data)
+tidy(modelo_st_r_pt)
 ```
 
-##### ¿Qué diferencias encuentran con los coeficientes de edad y años de experiencia en los 3 modelos?
+##### ¿Qué diferencias encuentran con los coeficientes de superficie total y cubierta en los 3 modelos?
 
-* Los coeficientes de regresión estimados se modifican sustancialmente cuando agregamos o quitamos variables del modelo. En el modelo_4 vs exp_edad el beta estimado de los años de experiencia cambia de 974 a 919 y la edad de -80 a 48. 
-* Los errores estándares de los estimadores de los coeficientes aumentan espúreamente cuando se incluyen covariables muy correlacionadas. Se infla la varianza estimada de los estimadores. En nuestro caso: el error estándar de la variable años de experiencia en el modelo_4 donde está incluida la edad es de alrededor de 557, mientras que en el modelo_3 que se excluye dicha variable es de 287.
+* Los coeficientes de regresión estimados se modifican sustancialmente cuando agregamos o quitamos variables del modelo. En el modelo que tiene las 4 variables vs el que solo tiene las superficies cubierta y total el beta estimado de la superficie total cambia de 918 a 412 y la cubierta de 2421 a 2516. 
 
-* En el modelo de experiencia y edad, los p-valores de los coeficientes estimados superan el umbral de 0.10. Es decir, ninguno de los dos resulta significativo cuando ambas variables están en el modelo.
+* Los errores estándares de los estimadores de los coeficientes aumentan espúreamente cuando se incluyen covariables muy correlacionadas. Se infla la varianza estimada de los estimadores. En nuestro caso: el error estándar de la variable superficie total en el primer modelo donde está incluida la superficie cubierta es de alrededor de 918, mientras que en el modelo último que se excluye dicha variable es de 2560.
 
-Veamos qué ocurre si en vez de usar los años de experiencia en el modelo_3 usamos la edad.
+Veamos qué ocurre si en vez de usar la superficie total en el modelo último usamos la superficie cubierta.
 
 ```{r}
-tidy(lm(salario_neto ~ edad + gente_a_cargo + me_identifico, data = df2))
+modelo_sc_r_pt <- lm(price ~ surface_covered + rooms + property_type, data = train_data)
+tidy(modelo_sc_r_pt)
 ```
 
-Observamos que ahora sí resulta estadísticamente significativa la edad para explicar el sueldo neto. 
+Observamos que otra vez cambia el valor del estimador. 
 
 Los coeficientes pueden ser no significativos aún cuando exista una asociación verdadera entre la variable de respuesta y el conjunto de regresoras cuando armamos un modelo con multicolinealidad de variables regresoras. 
 
@@ -452,71 +403,55 @@ Los coeficientes pueden ser no significativos aún cuando exista una asociación
 
 ### Observaciones sobre la interpretación de los coeficientes
 
-Supongamos que consideramos el siguiente modelo para explicar el salario neto: 
-$E(salarioNeto|...) = \beta_0 + \beta_1AñosExperiencia + \beta_2AñosEmpresaActual$
+**Modelo con superficies total y cubierta**
 
-##### ¿Cuál es la interpretación correcta del parámetro estimado $\beta_2$?
+La interpretación de los coeficientes estimados sería:
 
-Comencemos analizando la correlación entre estas variables:
+* $\hat{\beta_{surface\_total}}$ indica que por cada m2 adicional de superficie total el precio esperado aumenta en 412 dólares, dada la superficie cubierta.
 
-```{r}
-cor(df2$anos_de_experiencia, df2$anos_en_la_empresa_actual)
-```
-Tiene una correlación positiva bastante fuerte. 
-
-Construimos el modelo lineal que planteamos 
-
-**Modelo experiencia y experiencia en la empresa actual**
-
-```{r}
-# modelo 1: salario en función de anos de experiencia y anos en empresa actual
-tidy(lm(salario_neto ~ anos_de_experiencia + anos_en_la_empresa_actual, data = df2))
-```
-
-La interpretación de los coeficientes estimados es:
-
-* $\hat{\beta_1}=1068$ indica que por cada año de experiencia adicional el salario neto **esperado** aumenta en 1068 pesos dados los años de en la empresa actual.
-
-* $\hat{\beta_2}=-431$ indica que por cada año adicional en la empresa actual el salario neto **esperado** disminuye en -431 pesos dados los años de experiencia.
+* $\hat{\beta_{surface\_covered}}$ indica que por cada m2 adicional de superficie cubierta el precio esperado aumenta en 2516 dólares, dada la superficie total.
 
 Respecto a la segunda interpretación alguien podría objetar lo siguiente:
 
-$AñosExperiencia = AñosEmpresaActual + AñosEmpresasPasadas$
+$surface\_total = suface\_covered + suface\_uncovered$
 
-Entonces, si aumento en un año la variable AñosEmpresaActual no puedo sostener que variable AñosExperiencia se mantiene constante.
+Entonces, si aumento en un m2 la superficie cubierta no puedo sostener que variable superficie total se mantiene constante.
 
 ¿Es esta observación correcta?
 
-No, el coeficiente de $\hat{\beta_2}$ nos permite evaluar cual es el efecto en el salario neto esperado de estar un año más en la misma empresa para igual cantidad de años de experiencia.
+El coeficiente de $\hat{\beta_{surface\_total}}$ en realidad nos permite evaluar cual es el efecto en el precio esperado de un m2 más de superficie descubierta para igual cantidad de m2 de superficie cubierta. Es decir, lo que cambia es la interpretación en este caso de dicho coeficiente.
 
-Por ejemplo, si existen dos personas con 5 años de experiencia en total y la persona A está hace 2 años en la empresa actual y la persona B está hace 3 años, nuestro modelo nos indica que el salario predicho para la persona B va a ser 431 menor al salario de la persona A.
+Por ejemplo, si existen dos propiedades de 50m2 de superficie total y la propiedad A tiene 5 m2 de superficie descubierta y la propiedad B 4 m2, nuestro modelo nos indica que el precio predicho para la propiedad B va a ser 412 dólares menor al precio de la propiedad A.
 
-De todas maneras, observamos que el p valor asociado a $\beta_2$ indica que no se puede rechazar la hipotesis nula del test de significatividad individual.
+**Modelo superficies cubierta y descubierta**
 
-**Modelo experiencia previa y experiencia actual**
+Si quisieramos poder separar el efecto de la superficie cubierta y descubierta deberíamos crear una variable nueva que sea:
 
-Si quisieramos poder separar el efecto de los años de experiencia previa y experiencia actual deberíamos crear una variable nueva que sea:
-
-$AñosExperienciaPrevia = AñosExperiencia - AñosEmpresaActual$
+$surface\_uncovered = suface\_total + suface\_covered$
 
 Ahora nuestro modelo es:
 
-$E(salarioNeto|...) = \beta_0 + \beta_1AñosExperienciaPrevia + \beta_2AñosEmpresaActual$
+$E(precio|...) = \beta_0 + \beta_{sc}surface\_covered + \beta_{su}surface\_uncovered$
+
+Para ello creamos una nueva variable de superficie descubierta que sea resultado de la resta entre superficie total y cubierta. 
 
 ```{r}
-# armamos nueva variable de experiencia previa
-df3 <- df2 %>%
-  mutate(exp_previa = anos_de_experiencia - anos_en_la_empresa_actual)
-# modelo 2: separando experiencia previa y empresa actual  
-tidy(lm(salario_neto ~ exp_previa + anos_en_la_empresa_actual, data = df3))
+df2 = train_data %>%
+  mutate(surface_uncovered = surface_total - surface_covered)
+```
+
+Construimos el modelo lineal que planteamos 
+
+```{r}
+tidy(lm(price ~ surface_covered + surface_uncovered, data = df2))
 ```
 
 La interpretación de los coeficientes estimados es:
 
-* $\hat{\beta_1}=1068$ indica que por cada año de experiencia previa el salario neto **esperado** aumenta en 1068 pesos, dados los años de en la empresa actual.
+* $\hat{\beta_{suface\_covered}}$ indica que por cada m2 adicional de superficie cubierta el precio **esperado** de las propiedades aumenta en 2.929 dólares, dada la superficie descubierta.
 
-* $\hat{\beta_2}=637$ indica que por cada año adicional en la empresa actual el salario neto **esperado** aumenta en 637 pesos dados los años de experiencia previa.
+* $\hat{\beta_{suface\_uncovered}}$ indica que por cada m2 adicional de superficie descubierta el precio **esperado** aumenta 412 dólares, dada la superficie cubierta.
 
-En este caso la regresión ayuda a entender cómo afecta la experiencia previa y la actual el sueldo neto. Es decir, cuánto aumenta el sueldo neto medio un año adicional de experiencia previa, dados los años en la empresa actual, y cuánto aumenta el sueldo neto promedio un año adicional de experiencia en la empresa actual, dada la experiencia previa. 
+En este caso la regresión ayuda a entender cómo afecta la superficie cubierta y descubierta al precio del inmueble. Es decir, cuánto aumenta el precio medio un m2 adicional de superficie cubierta, dada la superficie descubierta, y cuánto aumenta el precio promedio un m2 adicional de superficie descubierta, dada la superficie cubierta. 
 
 Volvemos a observar que el p valor asociado a $\beta_2$ indica que no se puede rechazar la hipotesis nula del test de significatividad individual.
