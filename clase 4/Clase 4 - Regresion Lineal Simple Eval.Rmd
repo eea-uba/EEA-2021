@@ -1,7 +1,7 @@
 ---
 title: "Regresión Lineal Simple: Evaluación y Diagnóstico"
 author: "Juan Barriola y Sofía Perini"
-date: "26 de Septiembre de 2020"
+date: "11 de Septiembre de 2021"
 output:
   html_document:
     df_print: paged
@@ -22,9 +22,9 @@ div.main-container {
 
 ## Planteo del problema
 
-Vamos a continuar trabajando con el dataset de la encuesta de sueldos en el sector de tecnología en Argenina realizada por SysArmy. El informe, realizado por OpenQube lo pueden ver [acá](https://sueldos.openqube.io/encuesta-sueldos-2020.01/).
+Vamos a trabajar con un dataset de la encuesta de sueldos en el sector de tecnología en Argentina realizada por SysArmy para el segundo semestre de 2020. El informe, realizado por OpenQube lo pueden ver [acá](https://sueldos.openqube.io/encuesta-sueldos-2020.02/).
 
-El objetivo es crear un modelo lineal simple para explicar el sueldo neto de los Data Analysts, Data Scientists y Data Engineers en Argentina.
+El objetivo es crear un modelo lineal simple para explicar el sueldo bruto de los Data Analysts, Data Scientists y Data Engineers en Argentina.
 
 La idea subyacente de cómo se puede explicar el salario neto es:
 
@@ -57,11 +57,11 @@ Volvemos a realizar estos modelos:
 
 ```{r}
 # Modelo Edad
-modelo_edad = lm(formula = salario_neto ~ edad, data = encuesta_sueldos)
+modelo_edad = lm(formula = salario_bruto ~ edad, data = encuesta_sueldos)
 # Modelo experiencia
-modelo_experiencia = lm(formula = salario_neto ~ anos_de_experiencia, data = encuesta_sueldos)
+modelo_experiencia = lm(formula = salario_bruto ~ anos_de_experiencia, data = encuesta_sueldos)
 # Modelo empresa
-modelo_empresa = lm(formula = salario_neto ~ anos_en_la_empresa_actual, data = encuesta_sueldos)
+modelo_empresa = lm(formula = salario_bruto ~ anos_en_la_empresa_actual, data = encuesta_sueldos)
 ```
 
 En el notebook previo sólo habíamos interpretado el valor de los parámetros estimados. Ahora buscaremos responder preguntas tales como:
@@ -146,7 +146,7 @@ Al contar con los datos de los límites de los intervalos de confianza podemos c
 tidy(modelo_edad,conf.int = TRUE, conf.level = 0.99)
 ```
 
-Al aumentar el nivel de confianza los intervalos se volvieron más anchos. De todas formas, siguen sin contener al cero.
+Al aumentar el nivel de confianza los intervalos se volvieron más anchos. De todas formas,  el correspondiente a la edad sigue sin contener al cero.
 
 Veamos los resultados para los otros dos modelos
 
@@ -164,9 +164,7 @@ Al igual que en el modelo anterior el p-valor es muy pequeño y el intervalo no 
 tidy(modelo_empresa,conf.int = TRUE)
 ```
 
-En este modelo, el p-valor asociado al test sobre $\beta_1$ es igual a 0.067. Si nuestro nivel de significancia es 0.05 no rechazamos la hipótesis nula.
-
-Esto también se puede observar en el intervalo de confianza asociado ya que el mismo contiene el cero.
+En este modelo, el p-valor asociado al test sobre $\beta_1$ es igual el mayor que hemos obtenido pero sigue siendo posible rechazar la hipótesis nula.
 
 ### Test F (test de significatividad global)
 
@@ -219,7 +217,7 @@ glance(modelo_experiencia)
 glance(modelo_empresa)
 ```
 
-Observamos que el modelo que utiliza los años de experiencia como variable explicativa tiene el mayor R-cuadrado: $R^2=0.1698$ y por lo tanto es el mejor modelo entre los que probamos para **explicar** el salario neto del grupo de personas que estamos analizando.
+Observamos que el modelo que utiliza los años de experiencia como variable explicativa tiene el mayor R-cuadrado: $R^2=0.2098$ y por lo tanto es el mejor modelo entre los que probamos para **explicar** el salario neto del grupo de personas que estamos analizando.
 
 ## Diagnóstico del modelo
 
@@ -247,17 +245,17 @@ Observemos estos gráficos para el modelo de edad
 plot(modelo_edad)
 ```
 
-1) **Residuos** vs **valores predichos**:  Parece existir cierta estructura en los datos: una leve curvatura y varianza que depende de la covariable
+1) **Residuos** vs **valores predichos**:  Parece existir cierta estructura en los datos: hay una leve curvatura 
 
 2) **Normal QQ plot**: los extremos no se ajustan a la distribución teórica
 
-4) **Residual** vs **leverage**: Existen dos puntos con un leverage bastante alto, el gráfico destaca la observación 82.
+4) **Residual** vs **leverage**: Existen tres puntos con un leverage bastante alto, el gráfico destaca las observaciones 52, 73 y 90.
 
 ```{r}
-encuesta_sueldos[82,]
+encuesta_sueldos[52,]
 ```
 
-**Diagnóstico**: el modelo no cumple con los supuestos del modelo lineal. Parecen existir dos problemas: la existencia de heterocedasticidad (varianza no constante) y la presencia de observaciones de alto leverage
+**Diagnóstico**: el modelo no cumple con los supuestos del modelo lineal. Parecen existir dos problemas: falta de normalidad y la presencia de observaciones de alto leverage
 
 **Modelo de experiencia**
 
@@ -275,7 +273,7 @@ Con la función `augment_columns()` del paquete broom podemos agregar informaci�
 
 ```{r}
 # Agregamos las columnas
-encuesta_aumentada = augment_columns(x=modelo_edad, data=encuesta_sueldos)
+encuesta_aumentada = augment_columns(x=modelo_experiencia, data=encuesta_sueldos)
 # Observamos los resultados
 glimpse(encuesta_aumentada)
 ```

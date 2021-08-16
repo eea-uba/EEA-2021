@@ -1,7 +1,7 @@
 ---
 title: "Regresión Lineal Simple"
 author: "Juan Barriola y Sofía Perini"
-date: "19 de Septiembre de 2020"
+date: "04 de Septiembre de 2021"
 output:
   html_document:
     df_print: paged
@@ -24,11 +24,11 @@ div.main-container {
 
 Vamos a trabajar con un dataset de la encuesta de sueldos en el sector de tecnología en Argentina realizada por SysArmy para el segundo semestre de 2020. El informe, realizado por OpenQube lo pueden ver [acá](https://sueldos.openqube.io/encuesta-sueldos-2020.02/).
 
-El objetivo es crear un modelo lineal simple para explicar el sueldo neto de los Data Analysts, Data Scientists y Data Engineers en Argentina.
+El objetivo es crear un modelo lineal simple para explicar el sueldo bruto de los Data Analysts, Data Scientists y Data Engineers en Argentina.
 
-La idea subyacente de cómo se puede explicar el salario neto es:
+La idea subyacente de cómo se puede explicar el salario bruto es:
 
-$salarioNeto = \beta_0 +\beta_1X+\epsilon$
+$salarioBruto = \beta_0 +\beta_1X+\epsilon$
 
 Entonces, vamos a trabajar el set de datos con esta idea de modelo presente.
 
@@ -40,7 +40,6 @@ library(knitr)
 library(kableExtra)
 library(GGally)
 ```
-
 
 ## Preparación de Datos
 
@@ -95,7 +94,7 @@ ggplot(., aes(x=reorder(variables, -porcentaje_faltantes), y=porcentaje_faltante
   labs(title='Porcentaje de valores faltantes', y='Porcentaje de faltantes', x='') 
 ```
 
-La variable a explicar: **salario bruto** presenta 10 valores faltantes.
+La variable a explicar: **salario bruto** no presenta valores faltantes.
 
 ### Selección de variables 
 
@@ -125,11 +124,11 @@ encuesta_ds_relevantes %>% select(-sueldo_dolarizado) %>%
   theme(axis.text.x = element_text(angle=45, vjust=0.5), legend.position = "bottom")
 ```
 
-Respecto de nuestra variable a predecir, el **salario neto**, observamos:
+Respecto de nuestra variable a predecir, el **salario bruto**, observamos:
 
-  * Todas las variables (excepto el salario bruto) presentan una correlación muy baja con esta variable.
+  * Todas las variables (excepto el salario neto) presentan una correlación muy baja con esta variable.
   
-  * En los gráficos de dispersión con las variables de edad, salario bruto, años de experiencia y años en el puesto se observan varios puntos que parecen ser outliers. 
+  * En los gráficos de dispersión con las variables de edad, salario neto, años de experiencia y años en el puesto se observan varios puntos que parecen ser outliers. 
 
 Existen más respuestas de *Data Scientist/Data Engineer* que de *BI Analyst/Data Analyst* aunque es una diferencia muy pequeña.
   
@@ -153,15 +152,6 @@ n_dolarizados <- encuesta_ds_relevantes %>%
   nrow()
 ```
 Este filtro elimina `r n_dolarizados` observaciones.
-
-### Datos faltantes
-
-En el apartado anterior observamos que, de las variables relevantes, sólo nuestra variable a predecir **salario_neto** presentaba 10 valores faltantes. Frente a esta situación podríamos elegir una estrategia para imputar valores faltantes o eliminarlos. Como no se tratan de muchos registros vamos a eliminarlos con la función `drop_na`.
-
-```{r}
-encuesta_ds_relevantes = encuesta_ds_relevantes %>% 
-  drop_na(salario_bruto)
-```
 
 ### Datos inconsistentes
 
@@ -262,7 +252,7 @@ Respecto de nuestra variable a predecir, el **salario bruto**, observamos:
   
   * Sin embargo, los años de experiencia en la empresa actual y los años de experiencia en el puesto actual presentan un correlación positiva moderada para el grupo de *BI Analyst/Data Analyst*.
   
-  * Siguen existiendo outliers.
+  * Siguen existiendo outliers severos.
 
 ### Outliers Univariados
 
@@ -438,7 +428,7 @@ modelo_edad = lm(formula = salario_bruto ~ edad, data = encuesta_ds_final)
 modelo_edad 
 ```
 
-El modelo nos muestra la llamada utilizada y los valores de los coeficientes estimados: $\hat{\beta_0} =$`r modelo_edad$coefficients[1]` y $\hat{\beta_1} = 2827$.
+El modelo nos muestra la llamada utilizada y los valores de los coeficientes estimados: $\hat{\beta_0} =13506$ y $\hat{\beta_1} = 2827$.
 
 #### Interpretación de los coeficientes estimados
 
@@ -450,7 +440,7 @@ modelo_edad$coefficients
 
   * Teóricamente el valor $\hat{\beta_0} = 13505.51$ es el salario bruto **esperado** para una persona recién nacida (0 años). Por este motivo este valor carece de interpretación práctica.
   
-  * El valor de $\hat{\beta_1}$ indica que por cada aumento de un año de edad el salario neto **esperado** aumenta en `modelo_edad$coefficients[2]` pesos  
+  * El valor de $\hat{\beta_1}$ indica que por cada aumento de un año de edad el salario neto **esperado** aumenta en 2826.66 pesos  
   
 #### Gráfico del modelo
 
@@ -489,9 +479,9 @@ coeficientes_experiencia = modelo_experiencia$coefficients
 coeficientes_experiencia
 ```
 
-  * El valor de $\hat{\beta_0}$ indica que el salario bruto **esperado** es de $`r coeficientes_experiencia[1]` para una persona con perfil de Data Scientist/Engineer o Data Analyst sin experiencia laboral.
+  * El valor de $\hat{\beta_0}$ indica que el salario bruto **esperado** es de $ 79503.83 para una persona con perfil de Data Scientist/Engineer o Data Analyst sin experiencia laboral.
   
-  * El valor de $\hat{\beta_1}$ indica que por cada aumento de un año de experiencia el salario bruto **esperado** aumenta en $`r coeficientes_experiencia[2]`.  
+  * El valor de $\hat{\beta_1}$ indica que por cada aumento de un año de experiencia el salario bruto **esperado** aumenta en $3370.48.  
   
 #### Gráfico del modelo
 
@@ -528,9 +518,9 @@ coeficientes_empresa = modelo_empresa$coefficients
 coeficientes_empresa
 ```
 
-  * El valor de $\hat{\beta_0}$ indica que el salario neto **esperado** es de $`r coeficientes_empresa[1]` para una persona con perfil de Data Scientist/Engineer o Data Analyst que recién comienza en una empresa. 
+  * El valor de $\hat{\beta_0}$ indica que el salario neto **esperado** es de $97064.91 para una persona con perfil de Data Scientist/Engineer o Data Analyst que recién comienza en una empresa. 
   
-  * El valor de $\hat{\beta_1}$ indica que por cada aumento de un año de experiencia en la misma empresa el salario neto **esperado** aumenta en $`r coeficientes_empresa[2]`.  
+  * El valor de $\hat{\beta_1}$ indica que por cada aumento de un año de experiencia en la misma empresa el salario neto **esperado** aumenta en $1896.04.  
   
 #### Gráfico del modelo
 
@@ -548,5 +538,4 @@ encuesta_ds_final %>% ggplot(., aes(x = anos_en_la_empresa_actual, y = salario_b
   scale_y_continuous(limits = c(0,250000)) +
   labs(title="Modelo Lineal Simple: Años en la empresa ", x="Años en la empresa actual", y="Salario Bruto") 
 ```
-
 
