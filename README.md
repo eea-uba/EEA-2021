@@ -77,6 +77,11 @@ Interpretación de coeficientes en Regresión Lineal Múltiple, inclusión de va
 
 - [Regresión Lineal Múltiple: Parte I]()
 
+#### Dataset Notebook Modelo Lineal Múltiple
+
+- [Dataset Properati]()
+- [Preprocesamiento Dataset Properati]()
+
 ### Clase 7: 02-10
 
 Evaluación y diagnóstico del modelo. Explicación vs predicción
