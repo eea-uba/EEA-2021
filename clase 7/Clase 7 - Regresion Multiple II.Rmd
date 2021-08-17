@@ -217,7 +217,7 @@ Los errores tienen distribución normal con media cero y varianza constante y so
 
 Vamos a efectuar el diagnóstico de dos de los mejores modelos según el R-cuadrado ajustado. 
 
-**Diagnóstico para el Modelo Años de experiencia y Género**
+**Diagnóstico para el Modelo Varias con Barrios**
 
 ```{r}
 plot(modelo_varias_l3)
@@ -246,7 +246,7 @@ au_modelos %>%
 Al contar con esta información como dataframe, podemos realizar los gráficos de diagnóstico con ggplot. Vamos a ver dos ejemplos con los mejores modelos, pero se podría hacer para todos el mismo ejercicio. 
 
 ```{r}
-# Modelo experiencia y género
+# Modelo varias con barrios
 g1 = ggplot(au_modelos %>% filter(model == "modelo_varias_l3"), 
        aes(.fitted, .resid)) +
   geom_point() +
@@ -293,7 +293,7 @@ plot(modelo_varias)
 Calculamos los mismos gráficos con ggplot. 
 
 ```{r}
-# Modelo varias
+# Modelo varias sin barrios
 g1 = ggplot(au_modelos %>% filter(model ==  "modelo_varias"), 
        aes(.fitted, .resid)) +
   geom_point() +

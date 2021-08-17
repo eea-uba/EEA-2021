@@ -1,0 +1,208 @@
+---
+title: "Regresión Lineal Múltiple III"
+author: "Juan Barriola y Sofía Perini"
+date: "9 de Octubre de 2021"
+output:
+  html_notebook:
+    theme: spacelab
+    toc: yes
+    toc_float: yes
+    df_print: paged
+---
+
+<style type="text/css">
+div.main-container {
+  max-width: 1600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+```{r, warning=F, message=F}
+library(tidyverse)
+library(tidymodels)
+library(gridExtra)
+```
+
+### Dataset 
+
+Vamos a trabajar con el subconjunto de datos que se utilizó en la clase anterior, precio de venta en dólares de las propiedades en Capital Federal reportadas por la empresa [Properati Argentina](https://www.properati.com.ar/). 
+
+Nuestro objetivo es ajustar e interpretar un modelo de regresión lineal múltiple que buscan explicar el precio de venta en dólares de dichas propiedades pero distinto a los que vimos hasta ahora:
+
+$$
+log(price) = \beta_0 + \beta_{r}log(rooms) + \beta_{b}log(bathrooms) + \beta_{sc}log(surface\_covered) + \beta_{pt}property\_type + \beta_{l3}l3 + \beta_{su}surface\_uncovered
+$$
+## Repaso Diagnóstico del Modelo Lineal previo
+
+**Diagnóstico para el Modelo Varias con Barrios**
+
+El diagnóstico del modelo consiste en utilizar técnicas para validar el cumplimiento (o no) de los supuestos del modelo lineal. Recordemos que estos supuestos se puede resumir en:
+
+$ε_i ∼ N(0,σ^2)$ independientes entre sí.
+
+* A través del análisis gráfico se pudo notar que los residuos parecen tener algún tipo de estructura: se distingue un incremento de la varianza al aumentar el valor predicho. Esto podría indicar que el **supuesto de homogeneidad de varianzas** no se satisface. La variabilidad que se observa frente a precios más altos puede tener que ver con que existen diferencias significativas de precios según el tipo de propiedad o el barrio.
+
+* El QQplot permitió verificar que los puntos se alejan un poco de la diagonal hacia los extremos, lo que puede indicar que los residuos no tienen una **distribución normal** y, por lo tanto, los errores tampoco.
+
+* Es decir, que se puede detectar cierto patrón en los residuos y, por ende, existe margen de mejora del modelo.
+
+### Modelo usando trasnformación logarítmica sobre la variable a predecir
+
+Para resolver el hecho de que la varianza no sea constante se puede emplear una transformación estabilizadora de la varianza para transformar a las Y, ya que el reemplazo de Y por Ytransformada puede inducir varianza constante en la escala transformada. 
+
+La forma más común de mejorar un modelo es transformar una o más variables, generalmente usando una transformación logarítmica dado que permite modificar la forma de su distribución. Es por ello, que se efectúa un nuevo modelo empleando dichas transformaciones y se analizan sus resultados. 
+
+#### Levantamos Dataset 
+
+```{r}
+datos_properati <- read.csv("properati_preprocesado.csv")
+# creamos nueva variable de superficie descubierta
+datos_properati = datos_properati %>%
+  mutate(surface_uncovered = surface_total - surface_covered)
+# creamos variables log
+datos_properati = datos_properati %>% 
+  mutate(log.price = log(price), log.rooms = log(rooms), log.bathrooms = log(bathrooms), log.surf_cov = log(surface_covered))
+head(datos_properati)
+summary(datos_properati)
+```
+
+### Partición del dataset en train y test
+
+En este caso para evaluar los modelos vamos a realizar una partición entre dataset de entrenamiento (75%) y testeo (25%) usando la función `initial_split` del paquete [rsample](https://rsample.tidymodels.org/) de tidymodels.
+
+```{r}
+# fijamos semilla
+set.seed(2021)
+# Partición Train y Test, indicando proporción
+train_test <- initial_split(datos_properati, prop = 0.75)
+train_data <- training(train_test)
+test_data <- testing(train_test)
+# vemos las dimensiones de cada particion
+train_data %>%
+  dim_desc() 
+test_data %>%
+  dim_desc() 
+```
+
+```{r}
+# modelo log
+modelo_log <- lm(log.price ~ l3 + log.rooms + log.bathrooms + log.surf_cov + surface_uncovered + property_type, data = train_data)
+summary(modelo_log)
+```
+```{r}
+tidy(modelo_log, conf.int = TRUE) %>% arrange(p.value)
+```
+
+### Interpretación de coeficientes
+
+* En este nuevo modelo (resultante de la transformación logarítimica), se entiende que los coeficientes que acompanan a las variables representan el cambio porcentual en el precio dado por el aumento en un 1% de las varaibles numéricas (transformadas log). Por ejemplo, se puede notar que por cada incremento de 1% en la superficie cubierta hay un aumento de aproximadamente 0.78% en el precio medio de las propiedades. 
+
+* A continuación se analizan gráficos de residuos similares a los calculados en el punto anterior, y se observa como en este caso la distribución de residuos (y residuos estandarizados) no tiene una forma que indique que sigue a la variable predicha (representando una mayor varianza a mayor valor predicho, como veiamos en el anterior modelo) sino que parece más bien una nube de puntos sin demasiada forma. Asimismo, el QQ-plot muestra que los puntos se mantienen alrededor de la recta diagonal lo que puede indicar que los residuos tienen una distribución normal y, por lo tanto, los errores también. 
+
+```{r}
+eval2 <- broom::augment(modelo_log, train_data)
+# grafico histograma de los residuos
+g6 <- ggplot(eval2, aes(.resid/1000)) + 
+  geom_histogram(col = "white", aes( fill = ..count..), alpha = 0.75) +
+  labs(title = "Histograma de Residuos") +
+  theme(legend.position = 'none') +
+  labs(y = "Cuenta") +
+  labs(x = "Residuos") + 
+  theme_bw()
+# grafico de residuos en funcion de valores predichos
+g7 <-ggplot(eval2, aes(.fitted/1000, .resid/1000)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0) +
+  geom_smooth(se = FALSE) +
+  labs(title = "Distribución de Residuos")+
+  theme(legend.position = 'none') +
+  labs(y = "Residuos") +
+  labs(x = "Predicción precio (miles USD)") + 
+  theme_bw()
+# grafico de residuos estandarizados en funcion de valores predichos
+g8 <- ggplot(eval2, aes(sample= .std.resid))+
+  stat_qq(alpha = 0.5)+
+  geom_abline(color = "blue")+
+  labs(title = "QQ-plot de Residuos estandarizados")+
+  theme(legend.position = 'none') +
+  labs(y = "Residuos") +
+  labs(x = "Cuantiles teóricos") + 
+  theme_bw()
+# gráfico de la distribución de la raíz de residuos estandarizados
+g9 <-ggplot(eval2, aes(.fitted/1000, sqrt(abs(.std.resid))))+
+  geom_point(alpha = 0.5) +
+  geom_smooth(se = FALSE)+
+  labs(title = "Distribución Raíz de residuos estand.")+
+  theme(legend.position = 'none') +
+  labs(y = "Raíz Resid.estand.") +
+  labs(x = "Predicción precio (miles USD)") + 
+  theme_bw()
+# gráfico de la distribución de la raíz de residuos estandarizados
+g10 <-ggplot(eval2, aes(.hat, .std.resid)) +
+  geom_vline(size = 2, colour = "white", xintercept = 0) +
+  geom_hline(size = 2, colour = "white", yintercept = 0) +
+  geom_point(alpha = 0.7) + geom_smooth(se = FALSE) +
+  labs(title = "Leverage vs. Residuos estandarizados")+
+  theme(legend.position = 'none') +
+  labs(y = "Resid. estand.") +
+  labs(x = "Leverage (hat matrix)") + 
+  theme_bw()
+# organizo graficos para mostrarlos juntos
+g6
+grid.arrange(g7, g8, g9, g10)
+```
+
+```{r}
+library(caret)
+# para ejecutar el anti-log usamos función exponencial
+fitted_antilog = exp(eval2$.fitted)
+# calculamos RMSE y R2 para las variables originales y no log(price) para que sea comparable con los demás modelos
+metricas = round(postResample(fitted_antilog, train_data$price),4)
+metricas
+```
+
+* Analizando el R2 ajustado, se observa que este modelo explica 80,2% de la variabilidad del precio, es decir, más que todos los modelos anteriores. Comparando la performance con el mejor modelo de la clase previa, se observa que el ajuste mejoró en este último modelo. De acuerdo a la literatura, y como se pudo comprobar, el uso del logaritmo de una o más variables mejora el ajuste del modelo al transformar la distribución de las características en una curva de campana de forma más normal.
+
+## Selección de modelos
+
+```{r}
+modelo_log2 <- lm(log.price ~ l3 + rooms + bathrooms + surface_covered + surface_uncovered + property_type, data = train_data)
+summary(modelo_log2)
+eval3 = broom::augment(modelo_log2, train_data)
+# para ejecutar el anti-log usamos función exponencial
+fitted_antilog2 = exp(eval3$.fitted)
+# calculamos RMSE y R2 para las variables originales y no log(price) para que sea comparable con los demás modelos
+metricas2 = round(postResample(fitted_antilog2, train_data$price),4)
+metricas2 
+```
+
+```{r}
+models <- list(modelo_log = modelo_log, modelo_log2 = modelo_log2)
+# calculamos las variables resumen
+purrr::map_df(models, broom::tidy, .id = "model")
+df_evaluacion_train = map_df(models, broom::glance, .id = "model") 
+df_evaluacion_train
+```
+
+## Métricas en TRAIN 
+
+```{r}
+modelos = data.frame(list(metricas1 = metricas, metricas2 = metricas2))
+modelos
+```
+
+## Métricas en TEST
+
+```{r}
+lista_predicciones_testing = map(.x = models, .f = augment, newdata = test_data) 
+lista_predicciones_testing
+
+metricast = round(postResample(lista_predicciones_testing$modelo_log$.fitted, test_data$price),4)
+metricas2t = round(postResample(lista_predicciones_testing$modelo_log2$.fitted, test_data$price),4)
+
+modelost = data.frame(list(metricas1t = metricast, metricas2t = metricas2t))
+modelost
+```
+
+
