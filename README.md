@@ -8,6 +8,10 @@ Sofía Perini
 
 ### Clase 1: 21-08
 
+Presentación / Encuesta inicio de curso
+
+### Clase 2: 28-08
+
 Fundamentos de programación en R: entorno, objectos, estructuras de datos, loops, control flow y funciones
 
 - [Introducción al entorno R](clase 1/Clase 1 - Introduccion a R.nb.html)
@@ -18,7 +22,7 @@ Fundamentos de programación en R: entorno, objectos, estructuras de datos, loop
 #### Datasets para ejercicios
 - [Dataset EPH](Fuentes/usu_individual_T120.txt) 
 
-### Clase 2: 28-08
+### Clase 3: 04-09
 
 Introducción al paquete Tidyverse: trabajo con datasets (`dplyr` y `tidyr`), fechas (`lubridate`), strings (`stringr`) y gráficos (`ggplot2`)
 
@@ -37,7 +41,7 @@ Introducción al paquete Tidyverse: trabajo con datasets (`dplyr` y `tidyr`), fe
 
 - [Gráficos de kernels y tendencias]()
 
-### Clase 3: 04-09
+### Clase 4: 11-09
 
 Estimación y test de correlación entre 2 variables. Matrices de correlación: librerías `corrr` y `GGally` 
 
@@ -51,7 +55,7 @@ Análisis exploratorios, limpieza de datos, análisis de outliers e interpretaci
 
 - [Dataset Encuesta Sueldos IT]()
 
-### Clase 4: 11-09
+### Clase 5: 18-09
 
 Inferencia sobre los parámetros, test de significatividad global y R-cuadrado
 
@@ -61,7 +65,7 @@ Modelo lineal desde el enfoque de Machine Learning: random search y grid search 
 
 - [Regresión Lineal Simple: Enfoque de Machine Learning]()
 
-### Clase 5: 18-09
+### Clase 6: 25-09
 
 Diagnóstico de modelo lineal simple
 
@@ -71,27 +75,32 @@ Introducción a programación funcional con Tidyverse `PURRR`
 
 - [Tidyverse:PURRR]()
 
-### Clase 6: 25-09
+### Clase 7: 02-10
 
 Interpretación de coeficientes en Regresión Lineal Múltiple, inclusión de variables categóricas y test de significatividad individual
 
 - [Regresión Lineal Múltiple: Parte I]()
 
-### Clase 7: 02-10
+#### Dataset Notebook Modelo Lineal Múltiple
+
+- [Dataset Properati]()
+- [Preprocesamiento Dataset Properati]()
+
+### Clase 8: 09-10
 
 Evaluación y diagnóstico del modelo. Explicación vs predicción
 
 - [Regresión Lineal Múltiple: Parte II]()
 
-### Clase 8: 09-10
+### Clase 9: 16-10
 
 - [Tidy models]()
 
-### Clase 9: 16-10
+### Clase 10: 23-10
 
 Parcial
 
-### Clase 10: 23-10
+### Clase 11: 30-10
 
 Regresión Logística: modelo de clasificación. Interpretación de coeficientes, métricas y gráficos de evaluación del modelo y evaluación de performance. 
 
@@ -99,25 +108,24 @@ Problema del desbalanceo de clases: comportamiento del modelo, estrategia de ove
 
 - [Regresion Logistica]()
 
-### Clase 11: 30-10
+### Clase 12: 06-11
 
 Regularización: modelos Ridge, Lasso y Elastic Net y trade off sesgo-varianza
 
 - [Regularizacion: Ridge, Lasso y Elastic Net]()
 
-### Clase 12: 06-11
+### Clase 13: 13-11
 
 Smoothing, GAM y Prophet. 
 
 - [Prophet: implementacion de GAM para series de tiempo]()
 
-### Clase 13: 13-11
+### Clase 14: 20-11
+
+Examen final integrador. 
+
+### Clase 15: 27-11
 
 Redes Neuronales. 
 
 - [Redes I: Fully Conected Neural Networks]()
-
-### Clase 14: 20-11
-
-Comparación de modelos.
-
