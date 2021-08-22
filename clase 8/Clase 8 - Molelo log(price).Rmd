@@ -24,16 +24,31 @@ library(tidymodels)
 library(gridExtra)
 ```
 
-### Dataset 
+## Dataset 
 
 Vamos a trabajar con el subconjunto de datos que se utilizó en la clase anterior, precio de venta en dólares de las propiedades en Capital Federal reportadas por la empresa [Properati Argentina](https://www.properati.com.ar/). 
+
+```{r}
+# Levantamos Dataset 
+datos_properati <- read.csv("../clase 6/properati_preprocesado.csv")
+# creamos nueva variable de superficie descubierta
+datos_properati = datos_properati %>%
+  mutate(surface_uncovered = surface_total - surface_covered)
+# creamos variables log
+datos_properati = datos_properati %>% 
+  mutate(log.price = log(price), log.rooms = log(rooms), log.bathrooms = log(bathrooms), log.surf_cov = log(surface_covered))
+head(datos_properati)
+summary(datos_properati)
+```
+
+## Modelo log 
 
 Nuestro objetivo es ajustar e interpretar un modelo de regresión lineal múltiple que buscan explicar el precio de venta en dólares de dichas propiedades pero distinto a los que vimos hasta ahora:
 
 $$
 log(price) = \beta_0 + \beta_{r}log(rooms) + \beta_{b}log(bathrooms) + \beta_{sc}log(surface\_covered) + \beta_{pt}property\_type + \beta_{l3}l3 + \beta_{su}surface\_uncovered
 $$
-## Repaso Diagnóstico del Modelo Lineal previo
+### Repaso Diagnóstico del Modelo Lineal previo
 
 **Diagnóstico para el Modelo Varias con Barrios**
 
@@ -47,25 +62,12 @@ $ε_i ∼ N(0,σ^2)$ independientes entre sí.
 
 * Es decir, que se puede detectar cierto patrón en los residuos y, por ende, existe margen de mejora del modelo.
 
-### Modelo usando trasnformación logarítmica sobre la variable a predecir
+## Modelo usando trasnformación logarítmica sobre la variable a predecir
 
 Para resolver el hecho de que la varianza no sea constante se puede emplear una transformación estabilizadora de la varianza para transformar a las Y, ya que el reemplazo de Y por Ytransformada puede inducir varianza constante en la escala transformada. 
 
 La forma más común de mejorar un modelo es transformar una o más variables, generalmente usando una transformación logarítmica dado que permite modificar la forma de su distribución. Es por ello, que se efectúa un nuevo modelo empleando dichas transformaciones y se analizan sus resultados. 
 
-#### Levantamos Dataset 
-
-```{r}
-datos_properati <- read.csv("properati_preprocesado.csv")
-# creamos nueva variable de superficie descubierta
-datos_properati = datos_properati %>%
-  mutate(surface_uncovered = surface_total - surface_covered)
-# creamos variables log
-datos_properati = datos_properati %>% 
-  mutate(log.price = log(price), log.rooms = log(rooms), log.bathrooms = log(bathrooms), log.surf_cov = log(surface_covered))
-head(datos_properati)
-summary(datos_properati)
-```
 
 ### Partición del dataset en train y test
 
@@ -84,26 +86,48 @@ train_data %>%
 test_data %>%
   dim_desc() 
 ```
+### Ajuste del modelo
+
+Vamos a ajustar un modelo con las nuevas variables log. 
 
 ```{r}
 # modelo log
 modelo_log <- lm(log.price ~ l3 + log.rooms + log.bathrooms + log.surf_cov + surface_uncovered + property_type, data = train_data)
-summary(modelo_log)
 ```
+
 ```{r}
 tidy(modelo_log, conf.int = TRUE) %>% arrange(p.value)
 ```
 
 ### Interpretación de coeficientes
 
-* En este nuevo modelo (resultante de la transformación logarítimica), se entiende que los coeficientes que acompanan a las variables representan el cambio porcentual en el precio dado por el aumento en un 1% de las varaibles numéricas (transformadas log). Por ejemplo, se puede notar que por cada incremento de 1% en la superficie cubierta hay un aumento de aproximadamente 0.78% en el precio medio de las propiedades. 
+Los coeficientes en modelos que incluyen variables con tranformación logarítmica tienen una interpretación distinta según el caso, a saber: 
 
-* A continuación se analizan gráficos de residuos similares a los calculados en el punto anterior, y se observa como en este caso la distribución de residuos (y residuos estandarizados) no tiene una forma que indique que sigue a la variable predicha (representando una mayor varianza a mayor valor predicho, como veiamos en el anterior modelo) sino que parece más bien una nube de puntos sin demasiada forma. Asimismo, el QQ-plot muestra que los puntos se mantienen alrededor de la recta diagonal lo que puede indicar que los residuos tienen una distribución normal y, por lo tanto, los errores también. 
+* El **modelo Nivel-Nivel** representa las variables en su forma original. Es decir, la interpretación de los coeficientes en este modelo consiste en: un cambio de una unidad en X, afecta en β unidades a Y.
+* En el **modelo Nivel-Log** esa interpretación cambia: un incremento del 1% en X está asociado a un cambio en Y de 0,01*β.
+* En el **modelo Log-Nivel** dicho coeficiente se conoce como la semielasticidad de Y respecto a X. Se interpreta como: un incremento de una unidad en X está asociado a un cambio en Y de (100·β)%.
+* En el **modelo Log-Log** se conoce como la elasticidad de Y respecto a X. Se interpreta como: un incremento del 1% en X está asociado a un cambio en Y de β%.
+
+Sugerimos leer el paper de [Wooldrige](Wooldrige.pdf) para profundizar el entendimiento de estas interpretaciones. 
+
+Veamos cómo aplican estas interpretaciones en nuestro modelo log, con algunos ejemplos: 
+
+* El coeficiente de log(surf_cov) es la elasticidad estimada del precio respecto a la superficie cubierta. Es decir, que por cada aumento del 1% en la superficie cubierta hay un aumento de aproximadamente 0,78% en el precio medio de los inmuebles.
+
+* El coeficiente de surface_uncovered representa una semielasticidad del precio respecto de la superficie descubierta. Este coeficiente tiene una interpretación porcentual multiplicándolo por 100: el precio medio del inmueble aumenta 0,22% por cada metro cuadrado adicional de superficie descubierta. 
+
+### Diagnóstico del modelo 
+
+* *Residuos vs valores predichos*: en este caso la distribución de residuos (y residuos estandarizados) no parece tener una forma que indique que sigue a la variable predicha (representando una mayor varianza a mayor valor predicho, como veiamos en el anterior modelo) sino que parece más bien una nube de puntos sin demasiada forma. 
+
+* *Normal QQ plot*: El extremo superior derecho no se ajusta a la distribución teórica, por lo que no parecen seguir una distribución normal.
+
+* *Residual vs leverage*: Existe un punto con un leverage más alto.
 
 ```{r}
-eval2 <- broom::augment(modelo_log, train_data)
+eval1 <- broom::augment(modelo_log, train_data)
 # grafico histograma de los residuos
-g6 <- ggplot(eval2, aes(.resid/1000)) + 
+g6 <- ggplot(eval1, aes(.resid/1000)) + 
   geom_histogram(col = "white", aes( fill = ..count..), alpha = 0.75) +
   labs(title = "Histograma de Residuos") +
   theme(legend.position = 'none') +
@@ -111,7 +135,7 @@ g6 <- ggplot(eval2, aes(.resid/1000)) +
   labs(x = "Residuos") + 
   theme_bw()
 # grafico de residuos en funcion de valores predichos
-g7 <-ggplot(eval2, aes(.fitted/1000, .resid/1000)) +
+g7 <-ggplot(eval1, aes(.fitted/1000, .resid/1000)) +
   geom_point(alpha = 0.5) +
   geom_hline(yintercept = 0) +
   geom_smooth(se = FALSE) +
@@ -121,7 +145,7 @@ g7 <-ggplot(eval2, aes(.fitted/1000, .resid/1000)) +
   labs(x = "Predicción precio (miles USD)") + 
   theme_bw()
 # grafico de residuos estandarizados en funcion de valores predichos
-g8 <- ggplot(eval2, aes(sample= .std.resid))+
+g8 <- ggplot(eval1, aes(sample= .std.resid))+
   stat_qq(alpha = 0.5)+
   geom_abline(color = "blue")+
   labs(title = "QQ-plot de Residuos estandarizados")+
@@ -130,7 +154,7 @@ g8 <- ggplot(eval2, aes(sample= .std.resid))+
   labs(x = "Cuantiles teóricos") + 
   theme_bw()
 # gráfico de la distribución de la raíz de residuos estandarizados
-g9 <-ggplot(eval2, aes(.fitted/1000, sqrt(abs(.std.resid))))+
+g9 <-ggplot(eval1, aes(.fitted/1000, sqrt(abs(.std.resid))))+
   geom_point(alpha = 0.5) +
   geom_smooth(se = FALSE)+
   labs(title = "Distribución Raíz de residuos estand.")+
@@ -139,7 +163,7 @@ g9 <-ggplot(eval2, aes(.fitted/1000, sqrt(abs(.std.resid))))+
   labs(x = "Predicción precio (miles USD)") + 
   theme_bw()
 # gráfico de la distribución de la raíz de residuos estandarizados
-g10 <-ggplot(eval2, aes(.hat, .std.resid)) +
+g10 <-ggplot(eval1, aes(.hat, .std.resid)) +
   geom_vline(size = 2, colour = "white", xintercept = 0) +
   geom_hline(size = 2, colour = "white", yintercept = 0) +
   geom_point(alpha = 0.7) + geom_smooth(se = FALSE) +
@@ -152,57 +176,88 @@ g10 <-ggplot(eval2, aes(.hat, .std.resid)) +
 g6
 grid.arrange(g7, g8, g9, g10)
 ```
+### Evaluación y comparación de modelos
+
+Volvemos a crear modelo varias con tipo de barrio para poder comparar con los resultados del modelo log. 
+
+```{r}
+# Modelo varias + tipo de barrio
+modelo_varias_l3 <- lm(price ~ surface_covered + surface_uncovered + rooms + property_type + l3, data = train_data)
+# armamos lista con todos los modelos
+models <- list(modelo_varias_l3 = modelo_varias_l3, modelo_log = modelo_log)
+# calculamos las métricas para todos los modelos
+df_evaluacion_train = map_df(models, broom::glance, .id = "model") %>%
+  # ordenamos por R2 ajustado
+  arrange(desc(adj.r.squared))
+df_evaluacion_train
+```
+**¿Creen que se puede comparar el $R^2$ de ambos modelos? ¿Por qué?**
+
+Una comparación de $R^2$ es significativa sólo si la variable dependiente es la misma para ambos modelos. Entonces, el  $R^2$ del modelo lineal no se puede comparar con el $R^2$ del modelo log-log ya que en el primer caso el $R^2$ muestra la proporción de variabilidad del precio explicada por el modelo, mientras que en el modelo log-log, el $R^2$ muestra la variabilidad de log(precio) explicada por el modelo. 
+
+Para fines de comparación, nos gustaría una medida que utilice el anti-log del log(precio). Para el modelo log-log, la forma de proceder es obtener los valores predichos del antilogaritmo y calcular el $R^2$ entre el antilogaritmo de los valores observados y predichos. Este $R^2$ sí será comparable con el obtenido a partir de la estimación MCO del modelo lineal.
+
+Para ello, se puede calcular el anti-log de los valores de log(precios) predichos (así obtener los precios predichos), y luego computar la función “postResample” de la librería caret pasandole los vectores de precios predichos y observados para que devuelva: RMSE, R2 y MAE. Veamos cómo hacerlo. 
 
 ```{r}
 library(caret)
 # para ejecutar el anti-log usamos función exponencial
-fitted_antilog = exp(eval2$.fitted)
+fitted_antilog = exp(eval1$.fitted)
 # calculamos RMSE y R2 para las variables originales y no log(price) para que sea comparable con los demás modelos
-metricas = round(postResample(fitted_antilog, train_data$price),4)
-metricas
+metricas1 = round(postResample(fitted_antilog, train_data$price),4)
+metricas1
+eval2 <- broom::augment(modelo_varias_l3, train_data)
+metricas2 = round(postResample(eval2$.fitted, train_data$price),4)
+metricas2
 ```
+* Analizando el $R^2$, se observa que este modelo explica 80,2% de la variabilidad del precio, es decir, más que el modelo sin log (74,3%). De acuerdo a la literatura, y como se pudo comprobar, el uso del logaritmo de una o más variables mejora el ajuste del modelo al transformar la distribución de las características en una curva de campana de forma más normal.
 
-* Analizando el R2 ajustado, se observa que este modelo explica 80,2% de la variabilidad del precio, es decir, más que todos los modelos anteriores. Comparando la performance con el mejor modelo de la clase previa, se observa que el ajuste mejoró en este último modelo. De acuerdo a la literatura, y como se pudo comprobar, el uso del logaritmo de una o más variables mejora el ajuste del modelo al transformar la distribución de las características en una curva de campana de forma más normal.
-
-## Selección de modelos
+### Métricas en TRAIN 
 
 ```{r}
-modelo_log2 <- lm(log.price ~ l3 + rooms + bathrooms + surface_covered + surface_uncovered + property_type, data = train_data)
-summary(modelo_log2)
-eval3 = broom::augment(modelo_log2, train_data)
-# para ejecutar el anti-log usamos función exponencial
-fitted_antilog2 = exp(eval3$.fitted)
-# calculamos RMSE y R2 para las variables originales y no log(price) para que sea comparable con los demás modelos
-metricas2 = round(postResample(fitted_antilog2, train_data$price),4)
-metricas2 
-```
-
-```{r}
-models <- list(modelo_log = modelo_log, modelo_log2 = modelo_log2)
-# calculamos las variables resumen
-purrr::map_df(models, broom::tidy, .id = "model")
-df_evaluacion_train = map_df(models, broom::glance, .id = "model") 
-df_evaluacion_train
-```
-
-## Métricas en TRAIN 
-
-```{r}
-modelos = data.frame(list(metricas1 = metricas, metricas2 = metricas2))
+modelos = data.frame(list(metricas_log = metricas1, metricas_varias = metricas2))
 modelos
 ```
 
-## Métricas en TEST
+### Métricas en TEST
 
 ```{r}
 lista_predicciones_testing = map(.x = models, .f = augment, newdata = test_data) 
 lista_predicciones_testing
 
-metricast = round(postResample(lista_predicciones_testing$modelo_log$.fitted, test_data$price),4)
-metricas2t = round(postResample(lista_predicciones_testing$modelo_log2$.fitted, test_data$price),4)
-
-modelost = data.frame(list(metricas1t = metricast, metricas2t = metricas2t))
+metricas1t = round(postResample(exp(lista_predicciones_testing$modelo_log$.fitted), test_data$price),4)
+metricas2t = round(postResample(lista_predicciones_testing$modelo_varias_l3$.fitted, test_data$price),4)
+modelost = data.frame(list(metricas_logt = metricas1t, metricas_variast = metricas2t))
 modelost
 ```
 
+Observamos que el modelo_log presenta menor RMSE y mayor R2 tanto en training como en testing. Por lo que parece ser el mejor modelo para predecir el precio. 
+
+
+## Modelo log-log sin interacción
+ 
+Si bien en el apunte de Woolridge se encuentra simplificado, para entender la interpretación de un coeficiente en un modelo log-log como el siguiente:
+
+$$ln(Y) = \beta_0 + \beta_1X_1 +\beta_2ln(X_2)$$
+Podemos tomar la derivada parcial respecto $X_2$ y nos queda:
+ 
+$$\frac{1}{Y} \frac{\delta Y}{\delta X_2} = \beta_2 \frac{1}{X_2} $$
+$$\frac{X_2}{Y} \frac{\delta Y}{\delta X_2} = \beta_2 $$
+
+El término izquierdo es la elasticidad de $Y$ respecto a $X_2$, con lo cual $\beta_2$ equivale a eso.
+ 
+### Caso de interacción entre una variable log y otra sin transformación
+ 
+Ahora si aplicamos el mismo procedimiento para un modelo en el cual realizamos la interacción entre $X_1$ y $ln(X_2)$:
+
+$$ln(Y) = \beta_0 + \beta_1X_1 +\beta_2ln(X_2) + \beta_3X_1.ln(X_2) $$
+ 
+Tomando la derivada parcial respecto $X_2$:
+
+$$\frac{1}{Y} \frac{\delta Y}{\delta X_2} = \beta_2 \frac{1}{X_2} + \beta_3X_1.\frac{1}{X_2}$$
+$$\frac{X_2}{Y} \frac{\delta Y}{\delta X_2} = \beta_2 + \beta_3X_1 $$
+ 
+Ahora nos queda que el valor de la elasticidad de $Y$ respecto de $X_2$ depende de $X_1$. Dependiendo de si $X_1$ es una variable binaria o numérica es cómo se va a poder interpretar el coeficiente $\beta_3$.
+
+Para mayor detalle de caso de interacción entre dos variables log recomendamos ver [How to interpret interaction in Log Log models](https://stats.stackexchange.com/questions/405707/how-to-interpret-interaction-in-log-log-models). También sugerimos para el caso de variables dummies revisar [Log-Log Regression - Dummy Variable and Index](https://stats.stackexchange.com/questions/240572/log-log-regression-dummy-variable-and-index).
 

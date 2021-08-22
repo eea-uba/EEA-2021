@@ -145,10 +145,10 @@ Armemos un modelo para predecir el precio en función de la superficie cubierta 
 
 ```{r}
 # ajustamos modelo lineal multiple
-modelo_st_r <- lm(price ~ surface_covered + rooms, data = train_data)
+modelo_sc_r <- lm(price ~ surface_covered + rooms, data = train_data)
 # Resumen del modelo
-tidy_st_r <- tidy(modelo_st_r, conf.int = TRUE)
-tidy_st_r
+tidy_sc_r <- tidy(modelo_sc_r, conf.int = TRUE)
+tidy_sc_r
 ```
 
 #### Significado de los coeficientes estimados
@@ -196,9 +196,9 @@ Veamos qué ocurre cuando **ajustamos el modelo**:
 
 ```{r}
 # ajustamos el modelo de superficie y tipo de propiedad
-modelo_st_pt <- lm(price ~ surface_covered + property_type, data = train_data)
-tidy_st_pt <- tidy(modelo_st_pt, conf.int = TRUE)
-tidy_st_pt
+modelo_sc_pt <- lm(price ~ surface_covered + property_type, data = train_data)
+tidy_sc_pt <- tidy(modelo_sc_pt, conf.int = TRUE)
+tidy_sc_pt
 ```
 
 #### Significado de los coeficientes estimados
@@ -222,10 +222,10 @@ A continuación se muestra el gráfico de esta situación en que tenemos una var
 
 ```{r}
 # Accedemos a la información de los coeficientes estimados
-intercepto_C = modelo_st_pt$coefficients[1] # β0
-pendiente = modelo_st_pt$coefficients[2] # β1
-intercepto_D = modelo_st_pt$coefficients[1] + modelo_st_pt$coefficients[3] # β0 + β2
-intercepto_PH = modelo_st_pt$coefficients[1] + modelo_st_pt$coefficients[4] # β0 + β3
+intercepto_C = modelo_sc_pt$coefficients[1] # β0
+pendiente = modelo_sc_pt$coefficients[2] # β1
+intercepto_D = modelo_sc_pt$coefficients[1] + modelo_sc_pt$coefficients[3] # β0 + β2
+intercepto_PH = modelo_sc_pt$coefficients[1] + modelo_sc_pt$coefficients[4] # β0 + β3
 # Graficamos el dataset y el modelo
 train_data %>% ggplot(., aes(x = surface_covered, y = price)) + 
   geom_abline(intercept = intercepto_C, slope = pendiente, color = "forestgreen", size=1) + # capa del modelo
@@ -257,9 +257,9 @@ Probemos **ajustar un modelo lineal** para el precio en función de la superfici
 
 ```{r}
 # ajustamos el modelo
-modelo_st_l3 <- lm(price ~ surface_covered + l3, data = train_data)
-tidy_st_l3 <- tidy(modelo_st_l3, conf.int = TRUE)
-tidy_st_l3
+modelo_sc_l3 <- lm(price ~ surface_covered + l3, data = train_data)
+tidy_sc_l3 <- tidy(modelo_sc_l3, conf.int = TRUE)
+tidy_sc_l3
 ```
 
 R cuando efectúa la regresión calcula automáticamente las variables indicadoras (dummies) para las covariables categóricas, en general según orden alfabético. Podemos chequear el orden para verificar cuál es la categoría basal. En este caso, la categoría de referencia corresponde al barrio de *Abasto*.
@@ -291,7 +291,7 @@ Es decir, busca probar:
 
 ```{r}
 options("scipen"=1)
-tidy_st_r %>%
+tidy_sc_r %>%
   select(term, statistic, p.value, conf.low, conf.high)
 ```
 
@@ -361,6 +361,67 @@ tidy(anova(modelo_sc_l3))
 La tabla de ANOVA muestra que, según el resultado del test F, la variable *l3* en su conjunto resulta estadísticamente significativa para explicar al precio (p-valor < 0.05). Es decir, que pese a que algunas categorías en su comparación individual con la categoría basal sean poco significativas, la variable en su conjunto sí resulta significativa para el modelo. 
 
 Si este test no resultara significativo, suele descartarse la variable categórica de entre las covariables de interés, y se la excluye del modelo. Por el contrario, si este test resulta estadísticamente significativo, entonces suelen mirarse con más detalle cuáles de las comparaciones entre grupos son estadísticamente significativas, para proporcionar un mejor análisis de los datos. 
+
+Otra alternativa sería generar una nueva variable con menor número de variables categóricas que sean significativas, sin perder capacidad explicativa. Por ejemplo, se podría armar una nueva variable que agrupe los barrios. 
+
+### Generación de nueva varible `tipo_barrio`
+
+* Se crea una nueva variable `tipo_barrio` que clasifica a los barrios según el precio por metro cuadrado promedio de las propiedades en ellos, de acuerdo a precios altos, medios y bajos. 
+
+* Para ello, primero se genera una nueva variable de precios por metro cuadrado `pxm2` para poder generar una clasificación del barrio en base a una decisión de negocio (lo que vale en promedio el metro cuadrado en cada barrio). 
+
+```{r}
+# Creamos una nueva variable  de precios por metro cuadrado
+train_data = train_data %>% 
+  mutate(pxm2 = round(price/surface_total,0))
+# Armamos un dataframe que muestre los promedios de pxm2 en cada barrio
+AVG_pxm2_l3 = train_data %>% 
+  group_by(l3) %>%
+  summarise(AVG_pxm2_l3 = mean(pxm2))
+AVG_pxm2_l3
+```
+
+Observemos la distribución de los precios promedio por m2. 
+
+```{r}
+# boxplot de precios por metro cuadrado
+ggplot(data = AVG_pxm2_l3, aes(x = AVG_pxm2_l3)) + 
+  geom_boxplot(alpha = 0.75) +
+  labs(title = "Boxplot de precios promedio de barrios por m2") +
+  labs(x = "Precios promedio de barrios por m2")
+```
+Aplicaremos el siguiente criterio para agrupar los barrios en:
+
+* **precio_bajo**:  barrios cuyo precio promedio por m2 sea menor al Q1
+* **precio_medio**: barrios cuyo precio promedio se encuentre en el RI
+* **precio_alto**: barrios cuyo precio promedio por m2 sea mayor al Q3
+
+```{r}
+# armamos nueva variable siguiendo tales criterios
+AVG_pxm2_l3 = AVG_pxm2_l3 %>%
+  mutate(tipo_barrio = case_when(
+    AVG_pxm2_l3 < quantile(AVG_pxm2_l3)[2] ~ "precio_bajo",
+    AVG_pxm2_l3 >= quantile(AVG_pxm2_l3)[2] & AVG_pxm2_l3 < quantile(AVG_pxm2_l3)[4] ~ "precio_medio",
+    TRUE ~ "precio_alto"
+                                 )
+         )
+write.csv(AVG_pxm2_l3, 'AVG_pxm2_l3.csv')
+# write_csv(AVG_pxm2_l3, 'AVG_pxm2_l3_.csv')
+# unimos esta clasificación al dataset original
+train_data = train_data %>% left_join(AVG_pxm2_l3, by = 'l3') 
+head(train_data)
+```
+
+Ajustamos el modelo con la nueva variable tipo_barrio en vez de l3. 
+
+```{r}
+# ajustamos el modelo
+modelo_sc_tb <- lm(price ~ surface_covered + tipo_barrio, data = train_data)
+tidy_sc_tb <- tidy(modelo_sc_tb, conf.int = TRUE)
+tidy_sc_tb
+```
+
+¿Qué pasa ahora con la significatividad de los predictores?
 
 ### Colinealidad de los Predictores
 

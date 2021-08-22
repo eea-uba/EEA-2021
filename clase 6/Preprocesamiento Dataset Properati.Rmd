@@ -471,5 +471,6 @@ Respecto de nuestra variable a predecir, el precio en miles, observamos:
 ```{r}
 glimpse(datos_sin_outliers)
 write.csv(datos_sin_outliers %>% select(-c(pxmt)), file = "properati_preprocesado.csv", row.names=FALSE)
+write_csv(datos_sin_outliers %>% select(-c(pxmt)), file = "properati_preprocesado_.csv")
 ```
 

@@ -39,6 +39,7 @@ library(gridExtra)
 #### Levantamos Dataset 
 
 ```{r}
+# levantamos dataset preprocesado
 datos_properati <- read.csv("../clase 6/properati_preprocesado.csv")
 # creamos nueva variable de superficie descubierta
 datos_properati = datos_properati %>%
@@ -63,9 +64,23 @@ test_data %>%
   dim_desc() 
 ```
 
-#### Ajuste
+Vamos a traer el dataset de clasificación de barrios para poder utilizarlo en los modelos. Cabe aclarar que es posible utilizar esta clasificación en ambos datasets ya que cuando generamos la clasificación usamos los datos de training. Si para generar una clasificación usáramos precios por metro cuadrado de todo el dataset antes de particionar (train y test) estaríamos incurriendo en data leakage, dado que estaríamos usando la variable a predecir en el ajuste del modelo. 
 
-Habíamos realizado tres modelos distintos para tratar de explicar el precio de las propiedades: 
+```{r}
+# levantamos dataset de tipo de barrio
+AVG_pxm2_l3 <- read.csv("../clase 6/AVG_pxm2_l3.csv")
+# unimos la clasificación de tipo de barrio creada en la clase anterior al dataset
+train_data = train_data %>% left_join(AVG_pxm2_l3[c("l3","tipo_barrio")], by = 'l3') 
+test_data = test_data %>% left_join(AVG_pxm2_l3[c("l3","tipo_barrio")], by = 'l3') 
+head(train_data)
+```
+El data leakage (o fuga de datos) es el uso de información en el proceso de entrenamiento del modelo que no se esperaría que estuviera disponible en el momento de la predicción, lo que hace que las métricas sobreestimen la utilidad del modelo. 
+
+Se produce cuando se utiliza información externa al conjunto de datos de entrenamiento para crear el modelo. Esta información adicional puede permitir que el modelo aprenda o sepa algo que de otro modo no sabría y, a su vez, invalidará el rendimiento estimado del modo que se está construyendo.
+
+### Ajuste
+
+Habíamos realizado cuatro modelos distintos para tratar de explicar el precio de las propiedades: 
 
 * Modelo **Superficie y Habitaciones**
 
@@ -73,11 +88,15 @@ Habíamos realizado tres modelos distintos para tratar de explicar el precio de 
 
 * Modelo **Superficie y Barrios**
 
+* Modelo **Superficie y Tipo de barrio**
+
 Agregamos dos adicionales: 
 
 * **Modelo varias**: Superficie cubierta, descubierta, habitaciones y tipo de propiedad. 
 
 * **Modelo varias con barrios**: Superficie cubierta, descubierta, barrios, habitaciones y tipo de propiedad. 
+
+* **Modelo varias con tipo de barrio**: Superficie cubierta, descubierta, barrios, habitaciones y tipo de propiedad. 
 
 Volvemos a realizar estos modelos utilizando el dataset de entrenamiento:
 
@@ -88,10 +107,14 @@ modelo_sc_r <- lm(price ~ surface_covered + rooms, data = train_data)
 modelo_sc_pt <- lm(price ~ surface_covered + property_type, data = train_data)
 # Modelo de superficie y barrios
 modelo_sc_l3 <- lm(price ~ surface_covered + l3, data = train_data)
-# Modelo varias + barrios
+# Modelo de superficie y tipo de barrio
+modelo_sc_tb <- lm(price ~ surface_covered + tipo_barrio, data = train_data)
+# Modelo varias 
 modelo_varias <- lm(price ~ surface_covered + surface_uncovered + rooms + property_type, data = train_data)
 # Modelo varias + barrios
 modelo_varias_l3 <- lm(price ~ surface_covered + surface_uncovered + rooms + property_type + l3, data = train_data)
+# Modelo varias + tipo de barrio
+modelo_varias_tb <- lm(price ~ surface_covered + surface_uncovered + rooms + property_type + tipo_barrio, data = train_data)
 ```
 
 En el notebook previo sólo habíamos interpretado el valor de los parámetros estimados y su nivel de significación. Ahora buscaremos responder preguntas tales como:
@@ -102,23 +125,7 @@ En el notebook previo sólo habíamos interpretado el valor de los parámetros e
 
 ## Evaluación del Modelo 
 
-Utilizando el paquete broom, vamos a analizar las medidas de resumen del modelo y graficamos coeficientes estimados. 
-
-**Modelo Superficie y Habitaciones**
-
-```{r}
-# medidas de resumen tidy (incluido el intervalo de confianza)
-tidy_sc_r <- tidy(modelo_st_r, conf.int = TRUE)
-tidy_sc_r
-# Plot de los Coeficientes
-ggplot(tidy_sc_r, aes(estimate, term, xmin = conf.low, xmax = conf.high, height = 0)) +
-  geom_point(color = "forestgreen", size=2) +
-  geom_vline(xintercept = 0, lty = 4, color = "black") +
-  geom_errorbarh(color = "forestgreen", size=1) +
-  theme_bw() +
-  labs(y = "Coeficientes β", x = "Estimación")
-```
-En este gráfico podemos observar los coeficientes estimados para este modelo con sus respectivos intervalos de confianza. Tanto el gráfico como la salida del modelo tidy se puede apreciar que el intervalo de confianza (IC) del 95% de las variables no contienen al 0. Es decir, que tanto la superficie como las habitaciones resultan significativas para explicar el precio. 
+Utilizando el paquete broom, vamos a analizar las medidas de resumen del modelo y graficamos coeficientes estimados. Mostramos el ejemplo para algunos de estos modelos.
 
 **Modelo Superficie y Tipo de Propiedad**
 
@@ -134,8 +141,7 @@ ggplot(tidy_sc_pt, aes(estimate, term, xmin = conf.low, xmax = conf.high, height
   theme_bw() +
   labs(y = "Coeficientes β", x = "Estimación")
 ```
-
-En este caso se observa también que todas las variables resultan estadísticamente significativa para explicar al precio. Esto se ve reflejado en que el intervalo de confianza del 95% no contiene el cero.
+En este gráfico podemos observar los coeficientes estimados para este modelo con sus respectivos intervalos de confianza. Tanto el gráfico como la salida del modelo tidy se puede apreciar que el intervalo de confianza (IC) del 95% de las variables no contienen al 0. Es decir, que tanto la superficie cubierta como los tipos de propiedades resultan significativas para explicar el precio. 
 
 **Modelo Superficie y Barrios**
 
@@ -151,27 +157,29 @@ ggplot(tidy_sc_l3, aes(estimate, term, xmin = conf.low, xmax = conf.high, height
   theme_bw() +
   labs(y = "Coeficientes β", x = "Estimación")
 ```
-En este caso se observa que no todas las categorías de barrios resultan estadísticamente significativa para explicar al precio (p-valor > 0.05) y como se verifica a través de los IC que algunos barrios (niveles de la variable l3) incluyen al 0 y otros no.  
+En el caso de la variable barrios, este test permite chequear si los valores medios del precio son los mismos para los distintos barrios respecto del Abasto (categoría basal). En este caso se observa que los niveles medios de precio de inmuebles en los distintos barrios en algunos casos difieren de los niveles medios del Abasto (tienen p-valor > 0.05 y sus IC incluyen al 0).
 
 **Modelo Varias**
 
 ```{r}
 # medidas de resumen tidy (incluido el intervalo de confianza)
-tidy_varias <- tidy(modelo_varias, conf.int = TRUE) %>% arrange(p.value)
-tidy_varias
+tidy_sc_tb <- tidy(modelo_sc_tb, conf.int = TRUE) %>% arrange(p.value)
+tidy_sc_tb
 # Plot de los Coeficientes
-ggplot(tidy_varias, aes(estimate, term, xmin = conf.low, xmax = conf.high, height = 0)) +
+ggplot(tidy_sc_tb, aes(estimate, term, xmin = conf.low, xmax = conf.high, height = 0)) +
   geom_point(color = "forestgreen") +
   geom_vline(xintercept = 0, lty = 4, color = "black") +
   geom_errorbarh(color = "forestgreen") +
   theme_bw() +
   labs(y = "Coeficientes β", x = "Estimación")
 ```
+¿Cómo se interpretan estos coeficientes?
+
 Podemos calcular las variables resumen para todos los modelos juntos, usando la función map_df de la librería purrr para poder mostrar las salidas todas en un mismo dataframe. 
 
 ```{r}
 # armamos lista con todos los modelos
-models <- list(modelo_sc_r = modelo_sc_r, modelo_sc_pt = modelo_sc_pt, modelo_sc_l3 = modelo_sc_l3, modelo_varias = modelo_varias, modelo_varias_l3 = modelo_varias_l3)
+models <- list(modelo_sc_r = modelo_sc_r, modelo_sc_pt = modelo_sc_pt, modelo_sc_l3 = modelo_sc_l3, modelo_sc_tb = modelo_sc_tb, modelo_varias = modelo_varias, modelo_varias_l3 = modelo_varias_l3, modelo_varias_tb = modelo_varias_tb)
 # calculamos las variables resumen
 purrr::map_df(models, broom::tidy, .id = "model")
 ```
@@ -290,6 +298,7 @@ au_modelos %>% filter(model == "modelo_varias_l3") %>%
 ```{r}
 plot(modelo_varias)
 ```
+
 Calculamos los mismos gráficos con ggplot. 
 
 ```{r}
@@ -352,7 +361,7 @@ $RMSE = \sqrt{\frac{\sum(\hat{y_i}-y_i)^2}{n}}$
 
 Primero vamos a emplear la función `augment` para predecir el precio sobre el dataset de testeo. Cuando se proporciona newdata, solo devuelve las columnas .fitted y .resid. 
 
-Observemos el resultado para el modelo **Años de experiencia y Género**
+Observemos el resultado para el **modelo varias con barrios**
 
 ```{r}
 # Agregamos la predicciones al dataset de testeo
@@ -372,19 +381,20 @@ rmse(data = pred_varias_l3, truth = price, estimate = .fitted)
 
 ### Comparación entre training y testing
 
-Podemos obtener los valores del RMSE en el dataset de **training** para los cinco modelos evaluados usando `map`
+Podemos obtener los valores del RMSE en el dataset de **training** para los cinco modelos evaluados usando `map`.
 
 ```{r}
-# Aplicamos la función augment a los 4 modelos
+# Aplicamos la función augment a los modelos
 lista_predicciones_training = map(.x = models, .f = augment) 
 ```
 
-Creamos una lista de 5 dataframes con los valores predichos. Luego podemos aplicar la función para calcular el RMSE de los cuatro modelos en el set de **training**
+Creamos una lista de dataframes con los valores predichos para cada modelo. Luego podemos aplicar la función para calcular el RMSE de todos los modelos en el set de **training**.
 
 ```{r}
 # Obtenemos el RMSE para los 4 modelos
 map_dfr(.x = lista_predicciones_training, .f = rmse, truth = price, estimate = .fitted, .id="modelo") %>% arrange(.estimate)
 ```
+
 Se observa que el modelo que obtiene el menor RMSE es el **modelo_varias_l3** (con barrios). Coincide con los resultados del R-cuadrado ajustado.
 
 ¿Qué resultado obtuvimos al observar el R-cuadrado ajustado?
