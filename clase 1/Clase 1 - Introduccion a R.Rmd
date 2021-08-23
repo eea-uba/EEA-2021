@@ -3,8 +3,9 @@ title: Introducción a R
 author: "Juan Barriola y Sofía Perini ^[Basado en la [clase](https://diegokoz.github.io/EEA2019/clase%201/Clase%201-%20Introduccion.nb.html) de Juan Barriola y Diego Kozlowski]"
 date: "28 de Agosto de 2021"
 output: 
-  html_notebook: 
-    toc: true
+  html_notebook:
+    df_print: paged
+    toc: yes
     toc_float: true
     depth: 2
 ---
