@@ -2,11 +2,11 @@
 title: "Ejercicio 1: Tidyverse"
 author: "Juan Barriola y Sofía Perini"
 date: "04 de Septiembre de 2021"
-output:
-  html_document:
-    df_print: paged
-    toc: yes
-    toc_float: yes
+output: 
+  html_notebook: 
+    toc: true
+    toc_float: true
+    depth: 2
 ---
 
 <style type="text/css">
