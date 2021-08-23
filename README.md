@@ -26,7 +26,7 @@ Fundamentos de programación en R: entorno, objectos, estructuras de datos, loop
 
 Introducción al paquete Tidyverse: trabajo con datasets (`dplyr` y `tidyr`), fechas (`lubridate`), strings (`stringr`) y gráficos (`ggplot2`)
 
-- [Tidyverse](clase 2/Clase_2_-_Tidyverse.html )
+- [Tidyverse](clase 2/Clase 2 - Tidyverse.nb.html )
 - [Ejercicios](clase 2/Clase 2 - Ejercicios.nb.html )
 - [Resueltos](clase 2/resueltos)
 
