@@ -1,7 +1,7 @@
 ---
 title: "OPCIONAL: Joins con Dplyr"
 author: "Juan Barriola y Sofía Perini"
-date: "28 de agosto de 2021"
+date: "04 de septiembre de 2021"
 output: 
   html_notebook: 
     toc: true
@@ -16,6 +16,11 @@ div.main-container {
   margin-right: auto;
 }
 </style>
+
+
+```{r}
+library(tidyverse)
+```
 
 ## Diferencias entre Joins
 
@@ -120,41 +125,5 @@ Si los nombres de la variable key son distintos, debemos poner:
 
 * by = c("key1" = "key2")
 
-```{r}
-df1 %>% left_join(df2, by = c("key1" = "key2"))
-```
-
-```{r}
-library(ggridges)
-ggplot(iris, aes(x = Sepal.Length, y = Species, fill = Species)) + 
-  geom_density_ridges() +
-  labs(title = "Usando Ridges") + 
-  theme(legend.position = "bottom")
-
-ggplot(iris, aes(x = Sepal.Length, y = Species, fill = Species)) + 
-  geom_boxplot() +
-  labs(title = "Boxplot") + 
-  theme(legend.position = "bottom") # +
-#  coord_flip()
-
-ggplot(iris, aes(x = Sepal.Length, y = Species, fill = Species)) + 
-  geom_point(shape=23) +
-  labs(title = "Boxplot") + 
-  theme(legend.position = "bottom") +
-  coord_flip()
-
-ggplot(iris, aes(x = Sepal.Length, y = Species, fill = Species)) + 
-  geom_boxplot() +
-  labs(title = "Boxplot") + 
-  theme(legend.position = "bottom") +
-  facet_wrap(~ Species, labeller = "label_both")
-
-ggplot(iris, aes(x = Sepal.Length, y = Species, fill = Species)) + 
-  geom_boxplot() +
-  labs(title = "Boxplot") + 
-  scale_x_continuous(limits = c(4,8)) +
-  theme(legend.position = "bottom") +
-  facet_wrap(~ Species)
-```
 
 

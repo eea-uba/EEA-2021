@@ -1,7 +1,7 @@
 ---
 title: Introducción a R
 author: "Juan Barriola y Sofía Perini ^[Basado en la [clase](https://diegokoz.github.io/EEA2019/clase%201/Clase%201-%20Introduccion.nb.html) de Juan Barriola y Diego Kozlowski]"
-date: "21 de agosto de 2021"
+date: "28 de Agosto de 2021"
 output: 
   html_notebook: 
     toc: true
@@ -30,6 +30,8 @@ div.main-container {
 [^1]: Más allá de los comandos elementales, comandos más sofisticados tienen muchas versiones, y algunas quedan en desuso en el tiempo.
 
 ![Fuente: https://gist.github.com/daroczig/3cf06d6db4be2bbe3368](number-of-submitted-packages-to-CRAN.png){width=1000}
+
+
 ![https://www.rstudio.com/](RStudiologo.png){width=200}
 
 Uno de los _entornos_ más cómodos para utilizar el _lenguaje_ __R__ es el _programa_ __R studio__.
@@ -79,6 +81,7 @@ A <- B
 A      # Ahora A toma el valor de B, y B continúa conservando el mismo valor
 B
 ```
+
 
 ### R base
 
@@ -297,13 +300,14 @@ Este objeto suele ser central en el proceso de trabajo, y suele ser la forma en 
 También se puede crear como la combinación de N vectores de igual tamaño. Por ejemplo, tomamos algunos valores del [Indice de salarios](https://www.indec.gob.ar/indec/web/Nivel4-Tema-4-31-61) del INDEC.
 
 ```{r}
-INDICE  <- c( 394.5, 350.7, 346.3,
-              408.4, 360.8, 349.5,
-              415.6, 375.3, 353.5 )
+INDICE  <- c( 286.4,	262.1,	248.5,
+              285.7,	263.5,	250.2,
+              285.1,	264.9,	249.0 )
 
-FECHA  <-  c("Abr-21", "Abr-21", "Abr-21",
-             "May-21", "May-21", "May-21", 
-             "Jun-21", "Jun-21", "Jun-21")
+
+FECHA  <-  c("Mar-20", "Mar-20", "Mar-20",
+             "Abr-20", "Abr-20", "Abr-20",
+             "May-20", "May-20", "May-20")
 
 GRUPO  <-  c("Privado_Registrado","Público","Privado_No_Registrado",
              "Privado_Registrado","Público","Privado_No_Registrado",
@@ -331,19 +335,19 @@ Datos$FECHA[3,2]
 
 Nótese que el último comando tiene un número incorrecto de dimensiones, porque estamos refiriendonos 2 veces a la columna FECHA.    
 
-Acorde a lo visto anteriormente, el acceso a los __dataframes__ mediante  ```[ ]``` puede utilizarse para realizar filtros sobre la base, especificando una condición para las filas. Por ejemplo, puedo utilizar los  ```[ ]``` para conservar del __dataframe__ ```Datos ```  unicamente los registros con fecha de Mayo de 2021:
+Acorde a lo visto anteriormente, el acceso a los __dataframes__ mediante  ```[ ]``` puede utilizarse para realizar filtros sobre la base, especificando una condición para las filas. Por ejemplo, puedo utilizar los  ```[ ]``` para conservar del __dataframe__ ```Datos ```  unicamente los registros con fecha de Diciembre 2016:
 
 ```{r error=TRUE}
-Datos[Datos$FECHA == "May-21",]
+Datos[Datos$FECHA == "May-20",]
 ```
 
-La lógica del paso anterior sería: Accedo al dataframe ```Datos```, pidiendo únicamente conservar las filas (por eso la condición se ubica a la _izquierda_ de la  ```, ```) que cumplan el requisito de pertenecer a la categoría __"May-21"__ de la variable __FECHA__. 
+La lógica del paso anterior sería: Accedo al dataframe ```Datos```, pidiendo únicamente conservar las filas (por eso la condición se ubica a la _izquierda_ de la  ```, ```) que cumplan el requisito de pertenecer a la categoría __"May-20"__ de la variable __FECHA__.    
 
 Aún más, podría aplicar el filtro y al mismo tiempo identificar una variable de interés para luego realizar un cálculo sobre aquella. Por ejemplo, podría calcular la media de los indices en el mes de Diciembre. 
 
 ```{r error=TRUE}
 # Por separado
-Indices_May <- Datos$INDICE[Datos$FECHA == "May-21"]
+Indices_May <- Datos$INDICE[Datos$FECHA == "May-20"]
 Indices_May
 ```
 
@@ -353,10 +357,10 @@ mean(Indices_May)
 
 ```{r error=TRUE}
 # Todo junto
-mean(Datos$INDICE[Datos$FECHA == "May-21"])
+mean(Datos$INDICE[Datos$FECHA == "May-20"])
 ```
 
-La lógica de esta sintaxis sería: "Me quedo con la variable __INDICE__, cuando la variable FECHA sea igual a __"May-21"__, luego calculo la media de dichos valores".
+La lógica de esta sintaxis sería: "Me quedo con la variable __INDICE__, cuando la variable FECHA sea igual a __"May-20"__, luego calculo la media de dichos valores".
 
 #### 4. Listas
 
