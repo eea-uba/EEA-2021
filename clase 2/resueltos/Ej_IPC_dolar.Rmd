@@ -1,7 +1,7 @@
 ---
 title: "Ejercicio 1: Tidyverse"
 author: "Juan Barriola y Sofía Perini"
-date: "12 de Septiembre de 2020"
+date: "04 de Septiembre de 2021"
 output:
   html_document:
     df_print: paged
@@ -37,7 +37,7 @@ library(lubridate)
 Realizamos la lectura de los datasets y miramos su estructura
 
 ```{r, message=FALSE}
-dolar = read_csv(file='~/EEA-2020/Fuentes/dolar_oficial_ambito.csv')
+dolar = read_csv(file='../../Fuentes/dolar_oficial_ambito.csv')
 glimpse(dolar)
 ```
 
@@ -80,7 +80,7 @@ glimpse(dolar_mensual)
 1. Leer el dataset 
 
 ```{r}
-ipc = read_csv('~/EEA-2020/Fuentes/ipc-mensual.csv')
+ipc = read_csv('../../Fuentes/ipc-mensual.csv')
 glimpse(ipc)
 ```
 
