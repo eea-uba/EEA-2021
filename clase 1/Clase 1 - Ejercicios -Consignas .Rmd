@@ -1,5 +1,5 @@
 ---
-title: "Clase 2 - Ejercicios para practicar"
+title: "Ejercicios para practicar"
 author: "Juan Barriola y Sofía Perini"
 date: "28 de agosto de 2021"
 output:

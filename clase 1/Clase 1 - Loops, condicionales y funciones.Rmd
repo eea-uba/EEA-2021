@@ -1,5 +1,5 @@
 ---
-title: "Clase 2 - Loops, estructuras condicionales y funciones"
+title: "Loops, estructuras condicionales y funciones"
 author: "Juan Barriola y Sofía Perini"
 date: "28 de agosto de 2021"
 output:
