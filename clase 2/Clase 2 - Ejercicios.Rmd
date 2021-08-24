@@ -1,5 +1,5 @@
 ---
-title: "Clase 3. Ejercicios de Práctica"
+title: "Ejercicios de Práctica"
 author: "Juan Barriola y Sofía Perini"
 date: "04 de Septiembre de 2021"
 output: 
