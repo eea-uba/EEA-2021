@@ -1,7 +1,7 @@
 ---
 title: "Regresión Lineal Simple: Evaluación y Diagnóstico"
 author: "Juan Barriola y Sofía Perini"
-date: "11 de Septiembre de 2021"
+date: "18 de Septiembre de 2021"
 output:
   html_document:
     df_print: paged
@@ -42,7 +42,7 @@ En el notebook previo realizamos un análisis extenso de nuestro dataset, limpie
 
 ```{r}
 # Cargamos el dataset limpio
-encuesta_sueldos = read_csv("~/Fuentes/encuesta_sueldos_it_limpia.csv")
+encuesta_sueldos = read_csv("../Fuentes/regresion_simple/encuesta_ds_limpia.csv")
 ```
 
 Habíamos realizado tres modelos distintos para tratar de explicar el salario neto
@@ -171,7 +171,7 @@ En este modelo, el p-valor asociado al test sobre $\beta_1$ es igual el mayor qu
 La información del Test F o de significatividad global se pueden encontrar en el `summary` del modelo en los siguientes campos:
 
 * F-statistic: estadístico del test F
-* p-value: es el p-valos de dicho test (se encuenta al lado del F-statistic)
+* p-value: es el p-valor de dicho test (se encuentra al lado del F-statistic)
 
 ```{r}
 resumen_modelo_edad
@@ -185,13 +185,9 @@ El $R^2$ permite medir el porcentaje de variabilidad del fenómeno que el modelo
 
 Observemos nuevamente el resumen del **Modelo Edad**
 
-```{r}
-resumen_modelo_edad
-```
-
 Existen dos valores de $R^2$ en esta salida: el R-cuadrado multiple y el R-cuadrado ajustado. Podemos observar cualquiera de los dos valores ya que estamos trabajando con modelos con una sola variable independiente, el R-cuadrado ajustado tendrá mayor utilidad cuando trabajemos con regresiones múltiples. 
 
-El valor de $R^2$ es `r resumen_modelo_edad$r.squared` (el que corresponde al R-cuadrado multiple)
+El valor de $R^2$ es `r resumen_modelo_edad$r.squared` (el que corresponde al R-cuadrado multiple).
 
 #### Broom: glance
 

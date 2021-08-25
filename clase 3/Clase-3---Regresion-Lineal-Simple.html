@@ -552,7 +552,7 @@ outliers_sueldo</code></pre>
 </div>
 <p>Son 11 registros en total. Existen registros que parecen ser errores de carga y otros que parecen ser outliers “genuinos”.</p>
 <p>Construimos el límite inferior:</p>
-<pre class="r"><code>limite_inferior_outliers =quantile(encuesta_ds_filtrada$salario_neto, 0.25)[[1]] - IQR(encuesta_ds_filtrada$salario_neto) * 1.5
+<pre class="r"><code>limite_inferior_outliers = quantile(encuesta_ds_filtrada$salario_neto, 0.25)[[1]] - IQR(encuesta_ds_filtrada$salario_neto) * 1.5
 limite_inferior_outliers </code></pre>
 <pre><code>## [1] -15000</code></pre>
 <p>El límite inferior es negativo, por lo tanto, no tiene sentido filtrar por dicho valor.</p>

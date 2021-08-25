@@ -50,7 +50,6 @@ encuesta <- read_csv("../Fuentes/regresion_simple/encuesta_sueldos_sysarmy_2s202
 encuesta %>%
   glimpse()
 ```
-
 Existen `r encuesta %>% nrow()` respuestas de `r encuesta %>% ncol()` preguntas distintas. Nos vamos a quedar con las respuestas de las personas que trabajan como Data Analysts, Data Scientists y Data Engineers. Entonces, construimos un subconjunto de los datos que incluya esos perfiles. 
 
 ```{r}
