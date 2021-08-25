@@ -1,7 +1,7 @@
 ---
 title: "Regresión Lineal Simple"
 author: "Juan Barriola y Sofía Perini"
-date: "04 de Septiembre de 2021"
+date: "11 de Septiembre de 2021"
 output:
   html_document:
     df_print: paged
@@ -60,6 +60,7 @@ encuesta_ds = encuesta %>%
 # Función para describir las dimensiones
 dim_desc(encuesta_ds)
 ```
+
 Existen `r encuesta_ds %>% nrow()` respuestas (observaciones) que cumplen con este criterio.
 
 ## Análisis exploratorios
@@ -151,6 +152,7 @@ n_dolarizados <- encuesta_ds_relevantes %>%
   filter(sueldo_dolarizado==1) %>% # Observaciones con el sueldo dolarizado
   nrow()
 ```
+
 Este filtro elimina `r n_dolarizados` observaciones.
 
 ### Datos inconsistentes
@@ -297,12 +299,12 @@ outliers_sueldo <- encuesta_ds_filtrada %>% filter(salario_bruto>limite_superior
 outliers_sueldo
 ```
 
-Son `outliers_sueldo %>%  nrow()` registros en total. Existen registros que parecen ser errores de carga y otros que parecen ser outliers "genuinos".
+Son `r outliers_sueldo %>% nrow()` registros en total. Existen registros que parecen ser errores de carga y otros que parecen ser outliers "genuinos".
 
 Construimos el límite inferior:
 
 ```{r}
-limite_inferior_outliers =quantile(encuesta_ds_filtrada$salario_neto, 0.25)[[1]] - IQR(encuesta_ds_filtrada$salario_neto) * 1.5
+limite_inferior_outliers = quantile(encuesta_ds_filtrada$salario_neto, 0.25)[[1]] - IQR(encuesta_ds_filtrada$salario_neto) * 1.5
 limite_inferior_outliers 
 ```
 El límite inferior es negativo, por lo tanto, no tiene sentido filtrar por dicho valor. 

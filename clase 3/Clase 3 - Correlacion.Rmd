@@ -1,9 +1,9 @@
 ---
 title: "Correlación"
 author: "Juan Barriola y Sofía Perini"
-date: "04 de Septiembre de 2021"
+date: "11 de Septiembre de 2021"
 output:
-  html_notebook:
+  html_document:
     theme: spacelab
     toc: yes
     toc_float: yes
@@ -25,7 +25,6 @@ library(GGally)
 library(corrr)
 library(knitr)
 library(kableExtra)
-options(knitr.table.format = "html") 
 ```
 
 ## Covarianza vs. Correlación
@@ -34,7 +33,7 @@ Tanto la covarianza como la correlación miden la asociación lineal y la depend
 
 #### Covarianza poblacional:
 
-$$cov(x,y) = E[(x-\mu_x)(y-\mu_y)]$$
+$cov(x,y) = E[(x-\mu_x)(y-\mu_y)]$
 
 El valor (magnitud) de la covarianza depende las unidades en que se miden las variables. Si las escalas de medida de las variables fueran muy diferentes, la variabilidad estaría dominada por las variables con mayores magnitudes. 
 
@@ -42,7 +41,7 @@ La Correlación se define como la covarianza de los datos estandarizados, por lo
 
 #### Coeficiente de Correlación poblacional: 
 
-$$\rho_{x,y}=\frac{cov(x,y)}{\sigma_x \sigma_y}$$
+$\rho_{x,y}=\frac{cov(x,y)}{\sigma_x \sigma_y}$
 
 Los valores del coeficiente de correlación van de -1 a 1. Cuanto más cerca esté de 1 (o -1), más estrechamente relacionadas estarán las dos variables. El signo positivo significa la dirección de la correlación, es decir, si una de las variables aumenta, se supone que la otra también aumentará.
 
@@ -59,6 +58,7 @@ Se trata de un dataframe de 32 observaciones (modelos de autos) y 11 variables n
 También se puede ver el contenido haciendo un `head()` de la tabla. Usando la librería `knitr`, la función `kable()` permite realizar mejores presentaciones de resultados de tablas en HTLM. Con `kable_styling()` se pueden modificar algunas de sus características.
 
 ```{r}
+options(knitr.table.format = "html") 
 mtcars %>% 
   head() %>% 
   kable() %>% 
@@ -164,14 +164,15 @@ En este caso, vamos a agrupar (colorear) por:
 
 -$am$: Tipo de transmisión: automática (am = 0) o manual (am = 1)
 
-```{r message=FALSE, warning=FALSE, fig.width=10, fig.height=10}
+```{r, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
 mtcars %>% 
   select(-carb,-vs) %>% # desestimamos algunas variables
   mutate(cyl = factor(cyl), 
-         am = factor(am)) %>% 
-  ggpairs(., 
-        title = "Matriz de correlaciones",
-        mapping = aes(colour = am))
+         am = factor(am)) %>%  
+  ggpairs(., mapping = aes(colour = am), title = "Matriz de correlaciones",
+          upper = list(continuous = wrap("cor", size = 3, hjust=0.5)), legend = 25) + 
+  theme_bw() +
+  theme(axis.text.x = element_text(angle=45, vjust=0.5), legend.position = "bottom")
 ```
 
 ### Librería [corrr](https://github.com/tidymodels/corrr) 
