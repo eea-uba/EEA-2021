@@ -340,642 +340,295 @@ div.main-container {
 <p>El operador <strong><code>&lt;-</code></strong> (<strong>Alt + Guión</strong>) sirve para definir un objeto. <strong>A la izquierda</strong> del <strong><code>&lt;-</code></strong> debe ubicarse el nombre que tomará el elemento a crear. <strong>Del lado derecho</strong> debe ir la definición del mismo.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuQSA8LSAxXG5gYGBcbmBgYCJ9 -->
-<pre class="r"><code>```r
-A &lt;- 1</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-Por ejemplo, podemos crear el elemento __A__, cuyo valor será 1. Para esto, debemos _correr_ el código presionando __Ctrl + Enter__, con el cursor ubicado en cualquier parte de la línea. Al definir un elemento, el mismo queda guardado en el ambiente del programa, y podrá ser utilizado posteriormente para observar su contenido o para realizar una operación con el mismo.
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuQSBcbmBgYFxuYGBgIn0= --&gt;
-
-```r
-```r
-A </code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDFcbiJ9 --&gt;
-</code></pre>
-<p>[1] 1</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuQSs2XG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-A+6</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDdcbiJ9 --&gt;
-</code></pre>
-<p>[1] 7</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-Al correr una linea con el nombre del objeto, la consola del programa nos muestra su contenido. Entre corchetes observamos el número de orden del elemento en cuestión. Si corremos una operación, la consola nos muestra el resultado de la misma.
-
-El operador __```=```__ es __equivalente__ a __```&lt;-```__.   
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuQiA9IDJcbkJcbmBgYFxuYGBgIn0= --&gt;
-
-```r
-```r
-B = 2
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuQSA8LSAxXG5gYGAifQ== -->
+<pre class="r"><code>A &lt;- 1</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Por ejemplo, podemos crear el elemento <strong>A</strong>, cuyo valor será 1. Para esto, debemos <em>correr</em> el código presionando <strong>Ctrl + Enter</strong>, con el cursor ubicado en cualquier parte de la línea. Al definir un elemento, el mismo queda guardado en el ambiente del programa, y podrá ser utilizado posteriormente para observar su contenido o para realizar una operación con el mismo.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuQSBcbmBgYCJ9 -->
+<pre class="r"><code>A </code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDFcbiJ9 -->
+<pre><code>[1] 1</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuQSs2XG5gYGAifQ== -->
+<pre class="r"><code>A+6</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDdcbiJ9 -->
+<pre><code>[1] 7</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Al correr una linea con el nombre del objeto, la consola del programa nos muestra su contenido. Entre corchetes observamos el número de orden del elemento en cuestión. Si corremos una operación, la consola nos muestra el resultado de la misma.</p>
+<p>El operador <strong><code>=</code></strong> es <strong>equivalente</strong> a <strong><code>&lt;-</code></strong>.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuQiA9IDJcbkJcbmBgYCJ9 -->
+<pre class="r"><code>B = 2
 B</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDJcbiJ9 --&gt;
-</code></pre>
-<p>[1] 2</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-__```&lt;-```__ es un operador __unidireccional__, es decir que:     
-```A &lt;- B``` implica que __A__ va tomar como valor el contenido del objeto __B__, y no al revés.
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuQSA8LSBCXG5BICAgICAgIyBBaG9yYSBBIHRvbWEgZWwgdmFsb3IgZGUgQiwgeSBCIGNvbnRpbsODwrphIGNvbnNlcnZhbmRvIGVsIG1pc21vIHZhbG9yXG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-A &lt;- B
-A      # Ahora A toma el valor de B, y B continÃºa conservando el mismo valor</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDJcbiJ9 --&gt;
-</code></pre>
-<p>[1] 2</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuQlxuYGBgXG5gYGAifQ== --&gt;
-
-```r
-```r
-B</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDJcbiJ9 --&gt;
-</code></pre>
-<p>[1] 2</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-
-### R base
-
-Con _R base_ nos referimos a los comandos básicos que vienen incorporados en el R, sin necesidad de cargar librerías. 
-
-#### Operadores lógicos: 
-
-- $&gt;$ (mayor a-)
-- $&gt;=$ (mayor o igual a-)
-- $&lt;$ (menor a-)
-- $&lt;=$ (menor o igual a-)
-- $==$ (igual a-)
-- $!=$ (distinto a-)
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyBSZWRlZmluaW1vcyBsb3MgdmFsb3JlcyBBIHkgQlxuQSA8LSAxMFxuQiA8LSAyMFxuXG4jIFJlYWxpemFtb3MgY29tcGFyYWNpb25lcyBsw4PCs2dpY2FzXG5BID4gIEJcbmBgYFxuYGBgIn0= --&gt;
-
-```r
-```r
-# Redefinimos los valores A y B
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDJcbiJ9 -->
+<pre><code>[1] 2</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><strong><code>&lt;-</code></strong> es un operador <strong>unidireccional</strong>, es decir que:<br />
+<code>A &lt;- B</code> implica que <strong>A</strong> va tomar como valor el contenido del objeto <strong>B</strong>, y no al revés.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuQSA8LSBCXG5BICAgICAgIyBBaG9yYSBBIHRvbWEgZWwgdmFsb3IgZGUgQiwgeSBCIGNvbnRpbsO6YSBjb25zZXJ2YW5kbyBlbCBtaXNtbyB2YWxvclxuYGBgIn0= -->
+<pre class="r"><code>A &lt;- B
+A      # Ahora A toma el valor de B, y B continúa conservando el mismo valor</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDJcbiJ9 -->
+<pre><code>[1] 2</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuQlxuYGBgIn0= -->
+<pre class="r"><code>B</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDJcbiJ9 -->
+<pre><code>[1] 2</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="r-base" class="section level3">
+<h3>R base</h3>
+<p>Con <em>R base</em> nos referimos a los comandos básicos que vienen incorporados en el R, sin necesidad de cargar librerías.</p>
+<div id="operadores-lógicos" class="section level4">
+<h4>Operadores lógicos:</h4>
+<ul>
+<li><span class="math inline">\(&gt;\)</span> (mayor a-)</li>
+<li><span class="math inline">\(&gt;=\)</span> (mayor o igual a-)</li>
+<li><span class="math inline">\(&lt;\)</span> (menor a-)</li>
+<li><span class="math inline">\(&lt;=\)</span> (menor o igual a-)</li>
+<li><span class="math inline">\(==\)</span> (igual a-)</li>
+<li><span class="math inline">\(!=\)</span> (distinto a-)</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBSZWRlZmluaW1vcyBsb3MgdmFsb3JlcyBBIHkgQlxuQSA8LSAxMFxuQiA8LSAyMFxuXG4jIFJlYWxpemFtb3MgY29tcGFyYWNpb25lcyBsw7NnaWNhc1xuQSA+ICBCXG5gYGAifQ== -->
+<pre class="r"><code># Redefinimos los valores A y B
 A &lt;- 10
 B &lt;- 20
 
-# Realizamos comparaciones lÃ³gicas
+# Realizamos comparaciones lógicas
 A &gt;  B</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIEZBTFNFXG4ifQ== --&gt;
-</code></pre>
-<p>[1] FALSE</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuQSA+PSBCXG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-A &gt;= B</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIEZBTFNFXG4ifQ== --&gt;
-</code></pre>
-<p>[1] FALSE</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuQSA8ICBCXG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-A &lt;  B</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIFRSVUVcbiJ9 --&gt;
-</code></pre>
-<p>[1] TRUE</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuQSA8PSBCXG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-A &lt;= B</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIFRSVUVcbiJ9 --&gt;
-</code></pre>
-<p>[1] TRUE</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuQSA9PSBCXG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-A == B</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIEZBTFNFXG4ifQ== --&gt;
-</code></pre>
-<p>[1] FALSE</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuQSAhPSBCXG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-A != B</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIFRSVUVcbiJ9 --&gt;
-</code></pre>
-<p>[1] TRUE</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuQyA8LSBBICE9IEJcbkNcbmBgYFxuYGBgIn0= --&gt;
-
-```r
-```r
-C &lt;- A != B
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIEZBTFNFXG4ifQ== -->
+<pre><code>[1] FALSE</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuQSA+PSBCXG5gYGAifQ== -->
+<pre class="r"><code>A &gt;= B</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIEZBTFNFXG4ifQ== -->
+<pre><code>[1] FALSE</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuQSA8ICBCXG5gYGAifQ== -->
+<pre class="r"><code>A &lt;  B</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFRSVUVcbiJ9 -->
+<pre><code>[1] TRUE</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuQSA8PSBCXG5gYGAifQ== -->
+<pre class="r"><code>A &lt;= B</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFRSVUVcbiJ9 -->
+<pre><code>[1] TRUE</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuQSA9PSBCXG5gYGAifQ== -->
+<pre class="r"><code>A == B</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIEZBTFNFXG4ifQ== -->
+<pre><code>[1] FALSE</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuQSAhPSBCXG5gYGAifQ== -->
+<pre class="r"><code>A != B</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFRSVUVcbiJ9 -->
+<pre><code>[1] TRUE</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuQyA8LSBBICE9IEJcbkNcbmBgYCJ9 -->
+<pre class="r"><code>C &lt;- A != B
 C</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIFRSVUVcbiJ9 --&gt;
-</code></pre>
-<p>[1] TRUE</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-Como muestra el último ejemplo, el resultado de una operación lógica puede almacenarse como el valor de un objeto.
-
-#### Operadores aritméticos:
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuI3N1bWFcbkEgPC0gNSs2XG5BXG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-#suma
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFRSVUVcbiJ9 -->
+<pre><code>[1] TRUE</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Como muestra el último ejemplo, el resultado de una operación lógica puede almacenarse como el valor de un objeto.</p>
+</div>
+<div id="operadores-aritméticos" class="section level4">
+<h4>Operadores aritméticos:</h4>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI3N1bWFcbkEgPC0gNSs2XG5BXG5gYGAifQ== -->
+<pre class="r"><code>#suma
 A &lt;- 5+6
 A</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDExXG4ifQ== --&gt;
-</code></pre>
-<p>[1] 11</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuI1Jlc3RhXG5CIDwtIDYtOFxuQlxuYGBgXG5gYGAifQ== --&gt;
-
-```r
-```r
-#Resta
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDExXG4ifQ== -->
+<pre><code>[1] 11</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI1Jlc3RhXG5CIDwtIDYtOFxuQlxuYGBgIn0= -->
+<pre class="r"><code>#Resta
 B &lt;- 6-8
 B</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIC0yXG4ifQ== --&gt;
-</code></pre>
-<p>[1] -2</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuI2NvY2llbnRlXG5DIDwtIDYvMi41XG5DXG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-#cociente
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIC0yXG4ifQ== -->
+<pre><code>[1] -2</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI2NvY2llbnRlXG5DIDwtIDYvMi41XG5DXG5gYGAifQ== -->
+<pre class="r"><code>#cociente
 C &lt;- 6/2.5
 C</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDIuNFxuIn0= --&gt;
-</code></pre>
-<p>[1] 2.4</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuI211bHRpcGxpY2FjaW9uXG5EIDwtIDYqMi41XG5EXG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-#multiplicacion
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDIuNFxuIn0= -->
+<pre><code>[1] 2.4</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI211bHRpcGxpY2FjaW9uXG5EIDwtIDYqMi41XG5EXG5gYGAifQ== -->
+<pre class="r"><code>#multiplicacion
 D &lt;- 6*2.5
 D</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDE1XG4ifQ== --&gt;
-</code></pre>
-<p>[1] 15</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-#### Funciones:
-
-Las funciones son series de procedimientos estandarizados, que toman como input determinados argumentos a fijar por el usuario, y devuelven un resultado acorde a la aplicación de dichos procedimientos. Su lógica de funcionamiento es:   
-```funcion(argumento1 = arg1, argumento2 = arg2)```      
-
-A lo largo del curso iremos viendo numerosas funciones, según lo requieran los distintos ejercicios. Sin embargo, veamos ahora algunos ejemplos para comprender su funcionamiento:    
-
-- paste() : concatena una serie de caracteres, pudiendo indicarse cómo separar a cada uno de ellos        
-- paste0(): concatena una serie de caracteres sin separar
-- sum(): suma de todos los elementos de un vector   
-- mean() promedio aritmético de todos los elementos de un vector   
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucGFzdGUoXFxQZWdhXFwsIFxcZXN0YXNcXCwgNCwgXFxwYWxhYnJhc1xcLCBzZXAgPSBcXCBcXClcbmBgYFxuYGBgIn0= --&gt;
-
-```r
-```r
-paste(\Pega\, \estas\, 4, \palabras\, sep = \ \)</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIFxcUGVnYSBlc3RhcyA0IHBhbGFicmFzXFxcbiJ9 --&gt;
-</code></pre>
-<p>[1] estas 4 palabras<br />
-</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyBQdWVkbyBjb25jYXRlbmFyIGNhcmFjdGVyZXMgYWxtYWNlbmFkb3MgZW4gb2JqZXRvc1xucGFzdGUoQSwgQiwgQywgc2VwID0gXFwqKlxcKVxuYGBgXG5gYGAifQ== --&gt;
-
-```r
-```r
-# Puedo concatenar caracteres almacenados en objetos
-paste(A, B, C, sep = \**\)</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIFxcMTEqKi0yKioyLjRcXFxuIn0= --&gt;
-</code></pre>
-<p>[1] \11<strong>-2</strong>2.4<br />
-</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyBQYXN0ZTAgcGVnYSBsb3MgY2FyYWN0ZXJlcyBzaW4gc2VwYXJhZG9yXG5wYXN0ZTAoQSwgQiwgQylcbmBgYFxuYGBgIn0= --&gt;
-
-```r
-```r
-# Paste0 pega los caracteres sin separador
-paste0(A, B, C)</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIFxcMTEtMjIuNFxcXG4ifQ== --&gt;
-</code></pre>
-<p>[1] \11-22.4<br />
-</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuMTo1XG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-1:5</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEgMiAzIDQgNVxuIn0= --&gt;
-</code></pre>
-<p>[1] 1 2 3 4 5</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc3VtKDE6NSlcbmBgYFxuYGBgIn0= --&gt;
-
-```r
-```r
-sum(1:5)</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDE1XG4ifQ== --&gt;
-</code></pre>
-<p>[1] 15</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubWVhbigxOjUsIG5hLnJtID0gVFJVRSlcbmBgYFxuYGBgIn0= --&gt;
-
-```r
-```r
-mean(1:5, na.rm = TRUE)</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDNcbiJ9 --&gt;
-</code></pre>
-<p>[1] 3</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-
-#### Caracteres especiales:
-
-- R es sensible a mayúsculas y minúsculas, tanto para los nombres de las variables, como para las funciones y parámetros.
-- Los __espacios en blanco__ y los __carriage return__ (_enter_) no son considerados por el lenguaje. Los podemos aprovechar para emprolijar el código y que la lectura sea más simple[^2].
-
-[^2]: veremos que existen ciertas excepciones con algunos paquetes más adelante. 
-
-- El __numeral__ ```#``` se utiliza para hacer comentarios. Todo lo que se escribe después del # no es interpretado por R. Se debe utilizar un # por cada línea de código que se desea anular
-
-- Los __corchetes__ ```[]``` se utilizan para acceder a un objeto:
-    - en un vector[n° orden]
-    - en una tabla[fila, columna]
-    - en una lista[n° elemento]   
-    
-- el signo __$__ también es un método de acceso. Particularmente, en los dataframes, nos permitira acceder a una determinada columna de una tabla
-
-- Los __paréntesis__```()``` se utilizan en las funciones para definir los parámetros.
-
-- Las __comas__ ```, ```  se utilizan para separar los parametros al interior de una función. 
-
-### Objetos    
-
-Existe una gran cantidad de objetos distintos en R, en lo que respecta al curso trabajaremos principalmente con 3 de ellos:
-
-1. Valores
-2. Vectores
-3. Data Frames
-4. Listas
-
-#### 1. Valores:
-
-Los valores y vectores pueden ser a su vez de distintas _clases_:   
-
-*Numeric*
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuQSA8LSAgMVxuY2xhc3MoQSlcbmBgYFxuYGBgIn0= --&gt;
-
-```r
-```r
-A &lt;-  1
-class(A)</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIFxcbnVtZXJpY1xcXG4ifQ== --&gt;
-</code></pre>
-<p>[1] <br />
-</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-_Character_
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuQSA8LSAgcGFzdGUoJ1NveScsICd1bmEnLCAnY29uY2F0ZW5hY2nDg8KzbicsICdkZScsICdjYXJhY3RlcmVzJywgc2VwID0gXFwgXFwpXG5BXG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-A &lt;-  paste(&#39;Soy&#39;, &#39;una&#39;, &#39;concatenaciÃ³n&#39;, &#39;de&#39;, &#39;caracteres&#39;, sep = \ \)
-A</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIFxcU295IHVuYSBjb25jYXRlbmFjacODwrNuIGRlIGNhcmFjdGVyZXNcXFxuIn0= --&gt;
-</code></pre>
-<p>[1] una concatenaciÃ³n de caracteres<br />
-</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuY2xhc3MoQSlcbmBgYFxuYGBgIn0= --&gt;
-
-```r
-```r
-class(A)</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIFxcY2hhcmFjdGVyXFxcbiJ9 --&gt;
-</code></pre>
-<p>[1] <br />
-</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-_Factor_
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuQSA8LSBmYWN0b3IoXFxTb3kgdW4gZmFjdG9yXG5gYGAifQ== --&gt;
-
-```r
-```r
-A &lt;- factor(\Soy un factor</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFxcZmFjdG9yXFxcbiJ9 -->
-<pre><code>[1] \factor\</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDE1XG4ifQ== -->
+<pre><code>[1] 15</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="funciones" class="section level4">
+<h4>Funciones:</h4>
+<p>Las funciones son series de procedimientos estandarizados, que toman como input determinados argumentos a fijar por el usuario, y devuelven un resultado acorde a la aplicación de dichos procedimientos. Su lógica de funcionamiento es:<br />
+<code>funcion(argumento1 = arg1, argumento2 = arg2)</code></p>
+<p>A lo largo del curso iremos viendo numerosas funciones, según lo requieran los distintos ejercicios. Sin embargo, veamos ahora algunos ejemplos para comprender su funcionamiento:</p>
+<ul>
+<li>paste() : concatena una serie de caracteres, pudiendo indicarse cómo separar a cada uno de ellos<br />
+</li>
+<li>paste0(): concatena una serie de caracteres sin separar</li>
+<li>sum(): suma de todos los elementos de un vector<br />
+</li>
+<li>mean() promedio aritmético de todos los elementos de un vector</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucGFzdGUoXCJQZWdhXCIsIFwiZXN0YXNcIiwgNCwgXCJwYWxhYnJhc1wiLCBzZXAgPSBcIiBcIilcbmBgYCJ9 -->
+<pre class="r"><code>paste(&quot;Pega&quot;, &quot;estas&quot;, 4, &quot;palabras&quot;, sep = &quot; &quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiUGVnYSBlc3RhcyA0IHBhbGFicmFzXCJcbiJ9 -->
+<pre><code>[1] &quot;Pega estas 4 palabras&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBQdWVkbyBjb25jYXRlbmFyIGNhcmFjdGVyZXMgYWxtYWNlbmFkb3MgZW4gb2JqZXRvc1xucGFzdGUoQSwgQiwgQywgc2VwID0gXCIqKlwiKVxuYGBgIn0= -->
+<pre class="r"><code># Puedo concatenar caracteres almacenados en objetos
+paste(A, B, C, sep = &quot;**&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiMTEqKi0yKioyLjRcIlxuIn0= -->
+<pre><code>[1] &quot;11**-2**2.4&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBQYXN0ZTAgcGVnYSBsb3MgY2FyYWN0ZXJlcyBzaW4gc2VwYXJhZG9yXG5wYXN0ZTAoQSwgQiwgQylcbmBgYCJ9 -->
+<pre class="r"><code># Paste0 pega los caracteres sin separador
+paste0(A, B, C)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiMTEtMjIuNFwiXG4ifQ== -->
+<pre><code>[1] &quot;11-22.4&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuMTo1XG5gYGAifQ== -->
+<pre class="r"><code>1:5</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEgMiAzIDQgNVxuIn0= -->
+<pre><code>[1] 1 2 3 4 5</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3VtKDE6NSlcbmBgYCJ9 -->
+<pre class="r"><code>sum(1:5)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDE1XG4ifQ== -->
+<pre><code>[1] 15</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWVhbigxOjUsIG5hLnJtID0gVFJVRSlcbmBgYCJ9 -->
+<pre class="r"><code>mean(1:5, na.rm = TRUE)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDNcbiJ9 -->
+<pre><code>[1] 3</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="caracteres-especiales" class="section level4">
+<h4>Caracteres especiales:</h4>
+<ul>
+<li>R es sensible a mayúsculas y minúsculas, tanto para los nombres de las variables, como para las funciones y parámetros.</li>
+<li>Los <strong>espacios en blanco</strong> y los <strong>carriage return</strong> (<em>enter</em>) no son considerados por el lenguaje. Los podemos aprovechar para emprolijar el código y que la lectura sea más simple<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>.</li>
+</ul>
+<ul>
+<li><p>El <strong>numeral</strong> <code>#</code> se utiliza para hacer comentarios. Todo lo que se escribe después del # no es interpretado por R. Se debe utilizar un # por cada línea de código que se desea anular</p></li>
+<li><p>Los <strong>corchetes</strong> <code>[]</code> se utilizan para acceder a un objeto:</p>
+<ul>
+<li>en un vector[n° orden]</li>
+<li>en una tabla[fila, columna]</li>
+<li>en una lista[n° elemento]</li>
+</ul></li>
+<li><p>el signo <strong>$</strong> también es un método de acceso. Particularmente, en los dataframes, nos permitira acceder a una determinada columna de una tabla</p></li>
+<li><p>Los <strong>paréntesis</strong><code>()</code> se utilizan en las funciones para definir los parámetros.</p></li>
+<li><p>Las <strong>comas</strong> <code>,</code> se utilizan para separar los parametros al interior de una función.</p></li>
+</ul>
+</div>
+</div>
+<div id="objetos" class="section level3">
+<h3>Objetos</h3>
+<p>Existe una gran cantidad de objetos distintos en R, en lo que respecta al curso trabajaremos principalmente con 3 de ellos:</p>
+<ol style="list-style-type: decimal">
+<li>Valores</li>
+<li>Vectores</li>
+<li>Data Frames</li>
+<li>Listas</li>
+</ol>
+<div id="valores" class="section level4">
+<h4>1. Valores:</h4>
+<p>Los valores y vectores pueden ser a su vez de distintas <em>clases</em>:</p>
+<p><em>Numeric</em></p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuQSA8LSAgMVxuY2xhc3MoQSlcbmBgYCJ9 -->
+<pre class="r"><code>A &lt;-  1
+class(A)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwibnVtZXJpY1wiXG4ifQ== -->
+<pre><code>[1] &quot;numeric&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><em>Character</em></p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuQSA8LSAgcGFzdGUoJ1NveScsICd1bmEnLCAnY29uY2F0ZW5hY2nDs24nLCAnZGUnLCAnY2FyYWN0ZXJlcycsIHNlcCA9IFwiIFwiKVxuQVxuYGBgIn0= -->
+<pre class="r"><code>A &lt;-  paste(&#39;Soy&#39;, &#39;una&#39;, &#39;concatenación&#39;, &#39;de&#39;, &#39;caracteres&#39;, sep = &quot; &quot;)
+A</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiU295IHVuYSBjb25jYXRlbmFjacOzbiBkZSBjYXJhY3RlcmVzXCJcbiJ9 -->
+<pre><code>[1] &quot;Soy una concatenación de caracteres&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2xhc3MoQSlcbmBgYCJ9 -->
+<pre class="r"><code>class(A)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiY2hhcmFjdGVyXCJcbiJ9 -->
+<pre><code>[1] &quot;character&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><em>Factor</em></p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuQSA8LSBmYWN0b3IoXCJTb3kgdW4gZmFjdG9yLCBjb24gbml2ZWxlcyBmaWpvc1wiKVxuY2xhc3MoQSlcbmBgYCJ9 -->
+<pre class="r"><code>A &lt;- factor(&quot;Soy un factor, con niveles fijos&quot;)
+class(A)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiZmFjdG9yXCJcbiJ9 -->
+<pre><code>[1] &quot;factor&quot;</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -986,664 +639,299 @@ A &lt;- factor(\Soy un factor</code></pre>
 <p>Para crear un <strong>vector</strong> utilizamos el comando <code>c()</code>, de combinar.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuQyA8LSBjKDEsIDMsIDQpXG5DXG5gYGBcbmBgYCJ9 -->
-<pre class="r"><code>```r
-C &lt;- c(1, 3, 4)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuQyA8LSBjKDEsIDMsIDQpXG5DXG5gYGAifQ== -->
+<pre class="r"><code>C &lt;- c(1, 3, 4)
 C</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEgMyA0XG4ifQ== --&gt;
-</code></pre>
-<p>[1] 1 3 4</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-Podemos sumarle 2 a cada elemento del __vector__ anterior
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuQyA8LSBDICsgMlxuQ1xuYGBgXG5gYGAifQ== --&gt;
-
-```r
-```r
-C &lt;- C + 2
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEgMyA0XG4ifQ== -->
+<pre><code>[1] 1 3 4</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Podemos sumarle 2 a cada elemento del <strong>vector</strong> anterior</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuQyA8LSBDICsgMlxuQ1xuYGBgIn0= -->
+<pre class="r"><code>C &lt;- C + 2
 C</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDMgNSA2XG4ifQ== --&gt;
-</code></pre>
-<p>[1] 3 5 6</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-O sumarle 1 al primer elemento, 2 al segundo, y 3 al tercer elemento del __vector__ anterior
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuRCA8LSBDICsgMTozICMgZXN0byBlcyBlcXVpdmFsZW50ZSBhIGhhY2VyIDMrMSwgNSsyLCA2KzkgXG5EXG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-D &lt;- C + 1:3 # esto es equivalente a hacer 3+1, 5+2, 6+9 
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDMgNSA2XG4ifQ== -->
+<pre><code>[1] 3 5 6</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>O sumarle 1 al primer elemento, 2 al segundo, y 3 al tercer elemento del <strong>vector</strong> anterior</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuRCA8LSBDICsgMTozICMgZXN0byBlcyBlcXVpdmFsZW50ZSBhIGhhY2VyIDMrMSwgNSsyLCA2KzkgXG5EXG5gYGAifQ== -->
+<pre class="r"><code>D &lt;- C + 1:3 # esto es equivalente a hacer 3+1, 5+2, 6+9 
 D</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDQgNyA5XG4ifQ== --&gt;
-</code></pre>
-<p>[1] 4 7 9</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-```1:3``` significa que queremos todos los números enteros desde 1 hasta 3. 
-
-Podemos crear un __vector__ que contenga las palabras: &quot;Carlos&quot;, &quot;Federico&quot;, &quot;Pedro&quot;
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuRSA8LSBjKFxcQ2FybG9zXFwsIFxcRmVkZXJpY29cXCwgXFxQZWRyb1xcKVxuRVxuYGBgXG5gYGAifQ== --&gt;
-
-```r
-```r
-E &lt;- c(\Carlos\, \Federico\, \Pedro\)
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDQgNyA5XG4ifQ== -->
+<pre><code>[1] 4 7 9</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><code>1:3</code> significa que queremos todos los números enteros desde 1 hasta 3.</p>
+<p>Podemos crear un <strong>vector</strong> que contenga las palabras: “Carlos”, “Federico”, “Pedro”</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuRSA8LSBjKFwiQ2FybG9zXCIsIFwiRmVkZXJpY29cIiwgXCJQZWRyb1wiKVxuRVxuYGBgIn0= -->
+<pre class="r"><code>E &lt;- c(&quot;Carlos&quot;, &quot;Federico&quot;, &quot;Pedro&quot;)
 E</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIFxcQ2FybG9zXFwgICBcXEZlZGVyaWNvXFwgXFxQZWRyb1xcICAgXG4ifQ== --&gt;
-</code></pre>
-<p>[1]     </p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-Para acceder a algún elemento del vector, podemos buscarlo por su número de orden, entre ```[ ]```
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuRVsyXVxuYGBgXG5gYGAifQ== --&gt;
-
-```r
-```r
-E[2]</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIFxcRmVkZXJpY29cXFxuIn0= --&gt;
-</code></pre>
-<p>[1] <br />
-</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-Si nos interesa almacenar dicho valor, al buscarlo lo asignamos a un nuevo objeto, dándole el nombre que deseemos
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZWxlbWVudG8yIDwtIEVbMl1cbmBgYFxuYGBgIn0= --&gt;
-
-```r
-```r
-elemento2 &lt;- E[2]</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZWxlbWVudG8yXG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-elemento2</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIFxcRmVkZXJpY29cXFxuIn0= --&gt;
-</code></pre>
-<p>[1] <br />
-</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-R implicitamente coerciona la longitud de los [vectores](https://es.r4ds.hadley.nz/vectores.html). Esto se denomina __reciclado de vectores__ (*vector recicling*), debido a que el vector de menor longitud se repite, o recicla, hasta igualar la longitud del vector más largo.
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyBzdW1hbW9zIGRvcyB2ZWN0b3JlcyBkZSBkaXN0aW50YSBsb25naXR1ZFxuRyA8LSAxOjEwICsgMToyIFxuRyBcbmBgYFxuYGBgIn0= --&gt;
-
-```r
-```r
-# sumamos dos vectores de distinta longitud
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiQ2FybG9zXCIgICBcIkZlZGVyaWNvXCIgXCJQZWRyb1wiICAgXG4ifQ== -->
+<pre><code>[1] &quot;Carlos&quot;   &quot;Federico&quot; &quot;Pedro&quot;   </code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Para acceder a algún elemento del vector, podemos buscarlo por su número de orden, entre <code>[ ]</code></p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuRVsyXVxuYGBgIn0= -->
+<pre class="r"><code>E[2]</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiRmVkZXJpY29cIlxuIn0= -->
+<pre><code>[1] &quot;Federico&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Si nos interesa almacenar dicho valor, al buscarlo lo asignamos a un nuevo objeto, dándole el nombre que deseemos</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZWxlbWVudG8yIDwtIEVbMl1cbmBgYCJ9 -->
+<pre class="r"><code>elemento2 &lt;- E[2]</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZWxlbWVudG8yXG5gYGAifQ== -->
+<pre class="r"><code>elemento2</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiRmVkZXJpY29cIlxuIn0= -->
+<pre><code>[1] &quot;Federico&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>R implicitamente coerciona la longitud de los <a href="https://es.r4ds.hadley.nz/vectores.html">vectores</a>. Esto se denomina <strong>reciclado de vectores</strong> (<em>vector recicling</em>), debido a que el vector de menor longitud se repite, o recicla, hasta igualar la longitud del vector más largo.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBzdW1hbW9zIGRvcyB2ZWN0b3JlcyBkZSBkaXN0aW50YSBsb25naXR1ZFxuRyA8LSAxOjEwICsgMToyIFxuRyBcbmBgYCJ9 -->
+<pre class="r"><code># sumamos dos vectores de distinta longitud
 G &lt;- 1:10 + 1:2 
 G </code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiIFsxXSAgMiAgNCAgNCAgNiAgNiAgOCAgOCAxMCAxMCAxMlxuIn0= --&gt;
-</code></pre>
-<p>[1] 2 4 4 6 6 8 8 10 10 12</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-Vemos que para efectuar la suma el vector menor (1 y 2) se repite para alcanzar la longitud del vector más largo (1 a 10) y le adiciona 1 y 2 a medida que recorre el vector más largo.  
-
-Para __borrar__ un objeto del ambiente de trabajo, utilizamos el comando _```rm()```_
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucm0oZWxlbWVudG8yKVxuZWxlbWVudG8yXG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-rm(elemento2)
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSAgMiAgNCAgNCAgNiAgNiAgOCAgOCAxMCAxMCAxMlxuIn0= -->
+<pre><code> [1]  2  4  4  6  6  8  8 10 10 12</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Vemos que para efectuar la suma el vector menor (1 y 2) se repite para alcanzar la longitud del vector más largo (1 a 10) y le adiciona 1 y 2 a medida que recorre el vector más largo.</p>
+<p>Para <strong>borrar</strong> un objeto del ambiente de trabajo, utilizamos el comando <em><code>rm()</code></em></p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucm0oZWxlbWVudG8yKVxuZWxlbWVudG8yXG5gYGAifQ== -->
+<pre class="r"><code>rm(elemento2)
 elemento2</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiRXJyb3I6IG9iamVjdCAnZWxlbWVudG8yJyBub3QgZm91bmRcbiJ9 --&gt;
-</code></pre>
-<p>Error: object ‘elemento2’ not found</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-También podemos cambiar el texto del segundo elemento de E, por el texto &quot;Pablo&quot;
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuRVsyXSA8LSBcXFBhYmxvXFxcbkVcbmBgYFxuYGBgIn0= --&gt;
-
-```r
-```r
-E[2] &lt;- \Pablo\
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3I6IG9iamVjdCAnZWxlbWVudG8yJyBub3QgZm91bmRcbiJ9 -->
+<pre><code>Error: object &#39;elemento2&#39; not found</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>También podemos cambiar el texto del segundo elemento de E, por el texto “Pablo”</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuRVsyXSA8LSBcIlBhYmxvXCJcbkVcbmBgYCJ9 -->
+<pre class="r"><code>E[2] &lt;- &quot;Pablo&quot;
 E</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIFxcQ2FybG9zXFwgXFxQYWJsb1xcICBcXFBlZHJvXFwgXG4ifQ== --&gt;
-</code></pre>
-<p>[1]     </p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-#### 3. Data Frames:
-
-Un Data Frame es una tabla de datos, donde cada columna representa una variable, y cada fila una observación.
-
-Este objeto suele ser central en el proceso de trabajo, y suele ser la forma en que se cargan datos externos para trabajar en el ambiente de R, y en que se exportan los resultados de nuestros trabajo.  
-
-También se puede crear como la combinación de N vectores de igual tamaño. Por ejemplo, tomamos algunos valores del [Indice de salarios](https://www.indec.gob.ar/indec/web/Nivel4-Tema-4-31-61) del INDEC.
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuSU5ESUNFICA8LSBjKCAyODYuNCxcdDI2Mi4xLFx0MjQ4LjUsXG4gICAgICAgICAgICAgIDI4NS43LFx0MjYzLjUsXHQyNTAuMixcbiAgICAgICAgICAgICAgMjg1LjEsXHQyNjQuOSxcdDI0OS4wIClcblxuXG5GRUNIQSAgPC0gIGMoXFxNYXItMjBcXCwgXFxNYXItMjBcXCwgXFxNYXItMjBcXCxcbiAgICAgICAgICAgICBcXEFici0yMFxcLCBcXEFici0yMFxcLCBcXEFici0yMFxcLFxuICAgICAgICAgICAgIFxcTWF5LTIwXFwsIFxcTWF5LTIwXFwsIFxcTWF5LTIwXFwpXG5cbkdSVVBPICA8LSAgYyhcXFByaXZhZG9fUmVnaXN0cmFkb1xcLFxcUMODwrpibGljb1xcLFxcUHJpdmFkb19Ob19SZWdpc3RyYWRvXFwsXG4gICAgICAgICAgICAgXFxQcml2YWRvX1JlZ2lzdHJhZG9cXCxcXFDDg8K6YmxpY29cXCxcXFByaXZhZG9fTm9fUmVnaXN0cmFkb1xcLFxuICAgICAgICAgICAgIFxcUHJpdmFkb19SZWdpc3RyYWRvXFwsXFxQw4PCumJsaWNvXFwsXFxQcml2YWRvX05vX1JlZ2lzdHJhZG9cXClcblxuRGF0b3MgPC0gZGF0YS5mcmFtZShJTkRJQ0UsIEZFQ0hBLCBHUlVQTylcbkRhdG9zXG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-INDICE  &lt;- c( 286.4,    262.1,  248.5,
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiQ2FybG9zXCIgXCJQYWJsb1wiICBcIlBlZHJvXCIgXG4ifQ== -->
+<pre><code>[1] &quot;Carlos&quot; &quot;Pablo&quot;  &quot;Pedro&quot; </code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="data-frames" class="section level4">
+<h4>3. Data Frames:</h4>
+<p>Un Data Frame es una tabla de datos, donde cada columna representa una variable, y cada fila una observación.</p>
+<p>Este objeto suele ser central en el proceso de trabajo, y suele ser la forma en que se cargan datos externos para trabajar en el ambiente de R, y en que se exportan los resultados de nuestros trabajo.</p>
+<p>También se puede crear como la combinación de N vectores de igual tamaño. Por ejemplo, tomamos algunos valores del <a href="https://www.indec.gob.ar/indec/web/Nivel4-Tema-4-31-61">Indice de salarios</a> del INDEC.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuSU5ESUNFICA8LSBjKCAyODYuNCxcdDI2Mi4xLFx0MjQ4LjUsXG4gICAgICAgICAgICAgIDI4NS43LFx0MjYzLjUsXHQyNTAuMixcbiAgICAgICAgICAgICAgMjg1LjEsXHQyNjQuOSxcdDI0OS4wIClcblxuXG5GRUNIQSAgPC0gIGMoXCJNYXItMjBcIiwgXCJNYXItMjBcIiwgXCJNYXItMjBcIixcbiAgICAgICAgICAgICBcIkFici0yMFwiLCBcIkFici0yMFwiLCBcIkFici0yMFwiLFxuICAgICAgICAgICAgIFwiTWF5LTIwXCIsIFwiTWF5LTIwXCIsIFwiTWF5LTIwXCIpXG5cbkdSVVBPICA8LSAgYyhcIlByaXZhZG9fUmVnaXN0cmFkb1wiLFwiUMO6YmxpY29cIixcIlByaXZhZG9fTm9fUmVnaXN0cmFkb1wiLFxuICAgICAgICAgICAgIFwiUHJpdmFkb19SZWdpc3RyYWRvXCIsXCJQw7pibGljb1wiLFwiUHJpdmFkb19Ob19SZWdpc3RyYWRvXCIsXG4gICAgICAgICAgICAgXCJQcml2YWRvX1JlZ2lzdHJhZG9cIixcIlDDumJsaWNvXCIsXCJQcml2YWRvX05vX1JlZ2lzdHJhZG9cIilcblxuRGF0b3MgPC0gZGF0YS5mcmFtZShJTkRJQ0UsIEZFQ0hBLCBHUlVQTylcbkRhdG9zXG5gYGAifQ== -->
+<pre class="r"><code>INDICE  &lt;- c( 286.4,    262.1,  248.5,
               285.7,    263.5,  250.2,
               285.1,    264.9,  249.0 )
 
 
-FECHA  &lt;-  c(\Mar-20\, \Mar-20\, \Mar-20\,
-             \Abr-20\, \Abr-20\, \Abr-20\,
-             \May-20\, \May-20\, \May-20\)
+FECHA  &lt;-  c(&quot;Mar-20&quot;, &quot;Mar-20&quot;, &quot;Mar-20&quot;,
+             &quot;Abr-20&quot;, &quot;Abr-20&quot;, &quot;Abr-20&quot;,
+             &quot;May-20&quot;, &quot;May-20&quot;, &quot;May-20&quot;)
 
-GRUPO  &lt;-  c(\Privado_Registrado\,\PÃºblico\,\Privado_No_Registrado\,
-             \Privado_Registrado\,\PÃºblico\,\Privado_No_Registrado\,
-             \Privado_Registrado\,\PÃºblico\,\Privado_No_Registrado\)
+GRUPO  &lt;-  c(&quot;Privado_Registrado&quot;,&quot;Público&quot;,&quot;Privado_No_Registrado&quot;,
+             &quot;Privado_Registrado&quot;,&quot;Público&quot;,&quot;Privado_No_Registrado&quot;,
+             &quot;Privado_Registrado&quot;,&quot;Público&quot;,&quot;Privado_No_Registrado&quot;)
 
 Datos &lt;- data.frame(INDICE, FECHA, GRUPO)
 Datos</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjoiZGF0YS5mcmFtZSIsIm5jb2wiOjMsIm5yb3ciOjl9LCJyZGYiOiJINHNJQUFBQUFBQUFBMzFTM1U3Q01CVHUxcUZ1aVlSb3ZQY0ZXQlJmWUlRZjVVSmNTRXk0STJVTVhLenQ2QWJpSFUvZ3ZUNkt0ejZCMTk3N0dHQzd0c0ttZUpLem5lK2MwNi9mYWR0cjltdE8zd0VBbUFCYUZqQWhEeTJUZnd4Z0FWdjhGd0RBWXg2SVNwbTc3VTIveHNLOEdMMXdlL1ZvQlFqenBwOFh3cng0SVRGdHk3N3BoK3lMbnlXbXAwQWFQQlI4MmVZYk43WWNianduYWcrSDh4QW5QS3BrVlpXdEQxbTFkcWJSTmNxako0SHlQS1VBbzBUVC9KQ1BVWkJTeHFOVlFTSlVzbmJFZ3RwY0YwU2QrQ3lhb3hFZGRPbWdGMDZpSkdVY3FlS1JMbTVWd0ZKVUR2ejN0eUdPQWlwcDRmby9rZm1aQ0hvSWZ4MU5wOXZzTkZxNnBkMXFYTlUxdU96ZCtqY0ZFcHZSUjFjVGlTTXdsL0xLN0IxNm5CRktrVHRtZk1rZm12WnBuRWFVY0RKVFBLVlNZYkhCQ29uS2pJak5SOVhnYmtidXE3VnpzWU02Y0tBVUdlcGlkS3plaUtXVmxmVG9JWmxFSk5UVFlqUU1zUUpsUG1VMnBCdXppS1I2Rko1TjNKU21TUGM1QWNVNmt3MEhWdDhSMG50Z09RTUFBQT09In0= --&gt;
-
-&lt;div data-pagedtable=&quot;false&quot;&gt;
-  &lt;script data-pagedtable-source type=&quot;application/json&quot;&gt;
-{&quot;columns&quot;:[{&quot;label&quot;:[&quot;INDICE&quot;],&quot;name&quot;:[1],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;FECHA&quot;],&quot;name&quot;:[2],&quot;type&quot;:[&quot;fctr&quot;],&quot;align&quot;:[&quot;left&quot;]},{&quot;label&quot;:[&quot;GRUPO&quot;],&quot;name&quot;:[3],&quot;type&quot;:[&quot;fctr&quot;],&quot;align&quot;:[&quot;left&quot;]}],&quot;data&quot;:[{&quot;1&quot;:&quot;286.4&quot;,&quot;2&quot;:&quot;Mar-20&quot;,&quot;3&quot;:&quot;Privado_Registrado&quot;},{&quot;1&quot;:&quot;262.1&quot;,&quot;2&quot;:&quot;Mar-20&quot;,&quot;3&quot;:&quot;Público&quot;},{&quot;1&quot;:&quot;248.5&quot;,&quot;2&quot;:&quot;Mar-20&quot;,&quot;3&quot;:&quot;Privado_No_Registrado&quot;},{&quot;1&quot;:&quot;285.7&quot;,&quot;2&quot;:&quot;Abr-20&quot;,&quot;3&quot;:&quot;Privado_Registrado&quot;},{&quot;1&quot;:&quot;263.5&quot;,&quot;2&quot;:&quot;Abr-20&quot;,&quot;3&quot;:&quot;Público&quot;},{&quot;1&quot;:&quot;250.2&quot;,&quot;2&quot;:&quot;Abr-20&quot;,&quot;3&quot;:&quot;Privado_No_Registrado&quot;},{&quot;1&quot;:&quot;285.1&quot;,&quot;2&quot;:&quot;May-20&quot;,&quot;3&quot;:&quot;Privado_Registrado&quot;},{&quot;1&quot;:&quot;264.9&quot;,&quot;2&quot;:&quot;May-20&quot;,&quot;3&quot;:&quot;Público&quot;},{&quot;1&quot;:&quot;249.0&quot;,&quot;2&quot;:&quot;May-20&quot;,&quot;3&quot;:&quot;Privado_No_Registrado&quot;}],&quot;options&quot;:{&quot;columns&quot;:{&quot;min&quot;:{},&quot;max&quot;:[10],&quot;total&quot;:[3]},&quot;rows&quot;:{&quot;min&quot;:[10],&quot;max&quot;:[10],&quot;total&quot;:[9]},&quot;pages&quot;:{}}}
-  &lt;/script&gt;
-&lt;/div&gt;
-
-&lt;!-- rnb-frame-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-Tal como en un __vector__ se ubica a los elementos mediante ```[ ]```, en un __dataframe__ se obtienen sus elementos de la forma __```[fila, columna]```__.
-
-Otra opción es especificar la columna, mediante el operador __```$```__, y luego seleccionar dentro de esa columna el registro deseado mediante el número de orden.
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuRGF0b3MkRkVDSEFcbmBgYFxuYGBgIn0= --&gt;
-
-```r
-```r
-Datos$FECHA</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIE1hci0yMCBNYXItMjAgTWFyLTIwIEFici0yMCBBYnItMjAgQWJyLTIwIE1heS0yMCBNYXktMjAgTWF5LTIwXG5MZXZlbHM6IEFici0yMCBNYXItMjAgTWF5LTIwXG4ifQ== --&gt;
-</code></pre>
-<p>[1] Mar-20 Mar-20 Mar-20 Abr-20 Abr-20 Abr-20 May-20 May-20 May-20 Levels: Abr-20 Mar-20 May-20</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuRGF0b3NbMywyXVxuYGBgXG5gYGAifQ== --&gt;
-
-```r
-```r
-Datos[3,2]</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIE1hci0yMFxuTGV2ZWxzOiBBYnItMjAgTWFyLTIwIE1heS0yMFxuIn0= --&gt;
-</code></pre>
-<p>[1] Mar-20 Levels: Abr-20 Mar-20 May-20</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuRGF0b3MkRkVDSEFbM11cbmBgYFxuYGBgIn0= --&gt;
-
-```r
-```r
-Datos$FECHA[3]</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIE1hci0yMFxuTGV2ZWxzOiBBYnItMjAgTWFyLTIwIE1heS0yMFxuIn0= --&gt;
-</code></pre>
-<p>[1] Mar-20 Levels: Abr-20 Mar-20 May-20</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-¿que pasa si hacemos ```Datos$FECHA[3,2]``` ?
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuRGF0b3MkRkVDSEFbMywyXVxuYGBgXG5gYGAifQ== --&gt;
-
-```r
-```r
-Datos$FECHA[3,2]</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gYFsuZGVmYXVsdGAoRGF0b3MkRkVDSEEsIDMsIDIpIDogaW5jb3JyZWN0IG51bWJlciBvZiBkaW1lbnNpb25zXG4ifQ== --&gt;
-</code></pre>
-<p>Error in <code>[.default</code>(Datos$FECHA, 3, 2) : incorrect number of dimensions</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-Nótese que el último comando tiene un número incorrecto de dimensiones, porque estamos refiriendonos 2 veces a la columna FECHA.    
-
-Acorde a lo visto anteriormente, el acceso a los __dataframes__ mediante  ```[ ]``` puede utilizarse para realizar filtros sobre la base, especificando una condición para las filas. Por ejemplo, puedo utilizar los  ```[ ]``` para conservar del __dataframe__ ```Datos ```  unicamente los registros con fecha de Diciembre 2016:
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuRGF0b3NbRGF0b3MkRkVDSEEgPT0gXFxNYXktMjBcXCxdXG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-Datos[Datos$FECHA == \May-20\,]</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjoiZGF0YS5mcmFtZSIsIm5jb2wiOjMsIm5yb3ciOjN9LCJyZGYiOiJINHNJQUFBQUFBQUFBMzFSM1U3Q01CUXUyd1JaQWlFYTczMkJMWWI0QUNPQXlvVklscGh3UjdwUmNMRzIyQlhVTzUvQWUzMFViMzBDWHdoc3R4Nnp6WjhtM1RsZnY5T3YzemtMQjlPdU8zVVJRaGF5SFFkWnRrb2RTMzFxeUVGTkhSOFJzZzlWb3BtMmpzSDk1NnRhYjhIcVphRlh3STlSdnV5V3FTdnNrbGlka2cyaHFjbzZHV3RPZTVId3VpZUFMbkVaUFdsVTF0bUxLVTVCNWx0OGdXUEpoY3EyQlN1V2liVmN3dHBWSGorYWlHU0Q1M3cyNXJPUUxKTlVDb1VNZVFCa2dVSFBtdG1mZkx4SE5JbDVMbXZ2L2pOVDlzN3dIZmt4Z3RGNE1Pb1BvZVJzMkwvb0FUZ1ByeWRYRlpHbTRBOCtDRUdyRGUxTGszOTRjdWRZWW44aDFMVmZmRFg0U2lhY0tVRkwvKzU2NVhKTjkrTG1nOHgya2V5c21UWXo5K0tiTmJ2MXVxZVYycGFKZGpuWDd6dmdzZzZqSUd5Wk1BTGRFeUhVR0EyZ09DTFVnTFlhUVRZQmZ5VVNKcUZIZFpyNmtrc01kVzdNS1p4a1hhUHRGMzVxOFJUMkFnQUEifQ== --&gt;
-
-&lt;div data-pagedtable=&quot;false&quot;&gt;
-  &lt;script data-pagedtable-source type=&quot;application/json&quot;&gt;
-{&quot;columns&quot;:[{&quot;label&quot;:[&quot;&quot;],&quot;name&quot;:[&quot;_rn_&quot;],&quot;type&quot;:[&quot;&quot;],&quot;align&quot;:[&quot;left&quot;]},{&quot;label&quot;:[&quot;INDICE&quot;],&quot;name&quot;:[1],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;FECHA&quot;],&quot;name&quot;:[2],&quot;type&quot;:[&quot;fctr&quot;],&quot;align&quot;:[&quot;left&quot;]},{&quot;label&quot;:[&quot;GRUPO&quot;],&quot;name&quot;:[3],&quot;type&quot;:[&quot;fctr&quot;],&quot;align&quot;:[&quot;left&quot;]}],&quot;data&quot;:[{&quot;1&quot;:&quot;285.1&quot;,&quot;2&quot;:&quot;May-20&quot;,&quot;3&quot;:&quot;Privado_Registrado&quot;,&quot;_rn_&quot;:&quot;7&quot;},{&quot;1&quot;:&quot;264.9&quot;,&quot;2&quot;:&quot;May-20&quot;,&quot;3&quot;:&quot;Público&quot;,&quot;_rn_&quot;:&quot;8&quot;},{&quot;1&quot;:&quot;249.0&quot;,&quot;2&quot;:&quot;May-20&quot;,&quot;3&quot;:&quot;Privado_No_Registrado&quot;,&quot;_rn_&quot;:&quot;9&quot;}],&quot;options&quot;:{&quot;columns&quot;:{&quot;min&quot;:{},&quot;max&quot;:[10],&quot;total&quot;:[3]},&quot;rows&quot;:{&quot;min&quot;:[10],&quot;max&quot;:[10],&quot;total&quot;:[3]},&quot;pages&quot;:{}}}
-  &lt;/script&gt;
-&lt;/div&gt;
-
-&lt;!-- rnb-frame-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-La lógica del paso anterior sería: Accedo al dataframe ```Datos```, pidiendo únicamente conservar las filas (por eso la condición se ubica a la _izquierda_ de la  ```, ```) que cumplan el requisito de pertenecer a la categoría __&quot;May-20&quot;__ de la variable __FECHA__.    
-
-Aún más, podría aplicar el filtro y al mismo tiempo identificar una variable de interés para luego realizar un cálculo sobre aquella. Por ejemplo, podría calcular la media de los indices en el mes de Diciembre. 
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyBQb3Igc2VwYXJhZG9cbkluZGljZXNfTWF5IDwtIERhdG9zJElORElDRVtEYXRvcyRGRUNIQSA9PSBcXE1heS0yMFxcXVxuSW5kaWNlc19NYXlcbmBgYFxuYGBgIn0= --&gt;
-
-```r
-```r
-# Por separado
-Indices_May &lt;- Datos$INDICE[Datos$FECHA == \May-20\]
+<!-- rnb-source-end -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImRhdGEuZnJhbWUiXSwibnJvdyI6OSwibmNvbCI6Mywic3VtbWFyeSI6eyJEZXNjcmlwdGlvbiI6WyJkZiBbOSB4IDNdIl19fSwicmRmIjoiSDRzSUFBQUFBQUFBQnMxU3pVN0NRQkFlQ29XMENZUm92UHNDTkZMaXZZUWY1UUEySkNiY3pGSUtOdGJkc2kyS041L0F1NzZWWis4K2hBZDB0cnViU0M5eWRKSnQ1NXY5dnZuWjNXbC8xckZuTmdDVW9WTENyNGt1Vkh0KzJ6MTNBU29Hb2hKVXdCTC9MZTRmNTFTQUJpN0xXMzh1aFhrSmVVVjc4MWhUeU1GYmYzU0VlY2xXWWphVXZQVzc1Q1V2RXJOVFVDYUVsaXBVSFJQZWNzOE9RZDM1b1doTW52NUMrMTBjK1R4NklBdDJNdzFYVVpweGRIRVNzVlB6ditaeEZEQkZQTkhFeVI3M1AyWFp2MGlUa3Zzd1ZlT1c5U0dNSnYxUmI2QXB3MEh2c3F2QnhmVGF2eW9rc1RoN2RIU2lPaTdqV2Q2a1Zhd1d4Q1RWMVhUUVhwQ01PRXVPZWtTN2dxVEdraXhpRkVXR2VHOW1RVnppaFVCelEwVW5pMVp3dTZGM0xiY3RLdVQ3MHVyS3QzNzVaVm5UK0ZhNVRIME9JVjFGTk5UTngyUWV4Z28wY09SOFlpZmhFYzMwS0JoTm5ZeGxSUFBzZ01VNmtnOEh1eCs2OUFmMmFBTUFBQT09In0= -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["INDICE"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["FECHA"],"name":[2],"type":["chr"],"align":["left"]},{"label":["GRUPO"],"name":[3],"type":["chr"],"align":["left"]}],"data":[{"1":"286.4","2":"Mar-20","3":"Privado_Registrado"},{"1":"262.1","2":"Mar-20","3":"Público"},{"1":"248.5","2":"Mar-20","3":"Privado_No_Registrado"},{"1":"285.7","2":"Abr-20","3":"Privado_Registrado"},{"1":"263.5","2":"Abr-20","3":"Público"},{"1":"250.2","2":"Abr-20","3":"Privado_No_Registrado"},{"1":"285.1","2":"May-20","3":"Privado_Registrado"},{"1":"264.9","2":"May-20","3":"Público"},{"1":"249.0","2":"May-20","3":"Privado_No_Registrado"}],"options":{"columns":{"min":{},"max":[10],"total":[3]},"rows":{"min":[10],"max":[10],"total":[9]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Tal como en un <strong>vector</strong> se ubica a los elementos mediante <code>[ ]</code>, en un <strong>dataframe</strong> se obtienen sus elementos de la forma <strong><code>[fila, columna]</code></strong>.</p>
+<p>Otra opción es especificar la columna, mediante el operador <strong><code>$</code></strong>, y luego seleccionar dentro de esa columna el registro deseado mediante el número de orden.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuRGF0b3MkRkVDSEFcbmBgYCJ9 -->
+<pre class="r"><code>Datos$FECHA</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiTWFyLTIwXCIgXCJNYXItMjBcIiBcIk1hci0yMFwiIFwiQWJyLTIwXCIgXCJBYnItMjBcIiBcIkFici0yMFwiIFwiTWF5LTIwXCIgXCJNYXktMjBcIiBcIk1heS0yMFwiXG4ifQ== -->
+<pre><code>[1] &quot;Mar-20&quot; &quot;Mar-20&quot; &quot;Mar-20&quot; &quot;Abr-20&quot; &quot;Abr-20&quot; &quot;Abr-20&quot; &quot;May-20&quot; &quot;May-20&quot; &quot;May-20&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuRGF0b3NbMywyXVxuYGBgIn0= -->
+<pre class="r"><code>Datos[3,2]</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiTWFyLTIwXCJcbiJ9 -->
+<pre><code>[1] &quot;Mar-20&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuRGF0b3MkRkVDSEFbM11cbmBgYCJ9 -->
+<pre class="r"><code>Datos$FECHA[3]</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiTWFyLTIwXCJcbiJ9 -->
+<pre><code>[1] &quot;Mar-20&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>¿que pasa si hacemos <code>Datos$FECHA[3,2]</code> ?</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuRGF0b3MkRkVDSEFbMywyXVxuYGBgIn0= -->
+<pre class="r"><code>Datos$FECHA[3,2]</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gRGF0b3MkRkVDSEFbMywgMl0gOiBpbmNvcnJlY3QgbnVtYmVyIG9mIGRpbWVuc2lvbnNcbiJ9 -->
+<pre><code>Error in Datos$FECHA[3, 2] : incorrect number of dimensions</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Nótese que el último comando tiene un número incorrecto de dimensiones, porque estamos refiriendonos 2 veces a la columna FECHA.</p>
+<p>Acorde a lo visto anteriormente, el acceso a los <strong>dataframes</strong> mediante <code>[ ]</code> puede utilizarse para realizar filtros sobre la base, especificando una condición para las filas. Por ejemplo, puedo utilizar los <code>[ ]</code> para conservar del <strong>dataframe</strong> <code>Datos</code> unicamente los registros con fecha de Diciembre 2016:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuRGF0b3NbRGF0b3MkRkVDSEEgPT0gXCJNYXktMjBcIixdXG5gYGAifQ== -->
+<pre class="r"><code>Datos[Datos$FECHA == &quot;May-20&quot;,]</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImRhdGEuZnJhbWUiXSwibnJvdyI6MywibmNvbCI6Mywic3VtbWFyeSI6eyJEZXNjcmlwdGlvbiI6WyJkZiBbMyB4IDNdIl19fSwicmRmIjoiSDRzSUFBQUFBQUFBQm4xUVMwN0RNQkNkcG1sQ0k3V3FRT3k1UUNJSXNBOUtDM1JCaVNJaGRZZmNKQzBXd1E2T1crQVM3T0ZXWElkRndVNXRpWGpCU1BiTW0zbnpUY2Z6VTIvdUFVQVg3STc0ZThJRUowNU93dk1Rd0xZRTZvQU5mYWxmUmZ5Z29RSU1wWTZldno2RWZFYlYrMUpLUkk5QXlXaFhza2wwYnRDYkh4Ny9pOW9aK3duREc1VFQrN1JZNFpvellRSkVNdUltMzRzU1oxUVJEelZ4MXVhMkJ1OFI5RlRVNWxEVDJYZ2FUelRsY2hKZlgyaHdsZDRsdDBhUlBxTXZnUzQwVUZkd3hkdVRRYk5qVnFKYWQ5Uk9MMGNjQlVzbWFnaTBOVkpjV25GTWlVaXk1STBkSTduRFpJWEdzWHQvZzZNMWtaUGxmdmF3Sm85K2VHWndCMHAzMjdic2IvMm9XbzYrUzBGV21CUjZrWUl4eWpRbzBhSW9GUmlLZXpUbkNDcUdDZGM3Q204ZGNNcVI1bmtaTGJXbjJScTJ2dy9JbTFaMUFnQUEifQ== -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["INDICE"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["FECHA"],"name":[2],"type":["chr"],"align":["left"]},{"label":["GRUPO"],"name":[3],"type":["chr"],"align":["left"]}],"data":[{"1":"285.1","2":"May-20","3":"Privado_Registrado","_rn_":"7"},{"1":"264.9","2":"May-20","3":"Público","_rn_":"8"},{"1":"249.0","2":"May-20","3":"Privado_No_Registrado","_rn_":"9"}],"options":{"columns":{"min":{},"max":[10],"total":[3]},"rows":{"min":[10],"max":[10],"total":[3]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>La lógica del paso anterior sería: Accedo al dataframe <code>Datos</code>, pidiendo únicamente conservar las filas (por eso la condición se ubica a la <em>izquierda</em> de la <code>,</code>) que cumplan el requisito de pertenecer a la categoría <strong>“May-20”</strong> de la variable <strong>FECHA</strong>.</p>
+<p>Aún más, podría aplicar el filtro y al mismo tiempo identificar una variable de interés para luego realizar un cálculo sobre aquella. Por ejemplo, podría calcular la media de los indices en el mes de Diciembre.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBQb3Igc2VwYXJhZG9cbkluZGljZXNfTWF5IDwtIERhdG9zJElORElDRVtEYXRvcyRGRUNIQSA9PSBcIk1heS0yMFwiXVxuSW5kaWNlc19NYXlcbmBgYCJ9 -->
+<pre class="r"><code># Por separado
+Indices_May &lt;- Datos$INDICE[Datos$FECHA == &quot;May-20&quot;]
 Indices_May</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDI4NS4xIDI2NC45IDI0OS4wXG4ifQ== --&gt;
-</code></pre>
-<p>[1] 285.1 264.9 249.0</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubWVhbihJbmRpY2VzX01heSlcbmBgYFxuYGBgIn0= --&gt;
-
-```r
-```r
-mean(Indices_May)</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDI2Ni4zMzMzXG4ifQ== --&gt;
-</code></pre>
-<p>[1] 266.3333</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyBUb2RvIGp1bnRvXG5tZWFuKERhdG9zJElORElDRVtEYXRvcyRGRUNIQSA9PSBcXE1heS0yMFxcXSlcbmBgYFxuYGBgIn0= --&gt;
-
-```r
-```r
-# Todo junto
-mean(Datos$INDICE[Datos$FECHA == \May-20\])</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDI2Ni4zMzMzXG4ifQ== --&gt;
-</code></pre>
-<p>[1] 266.3333</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-La lógica de esta sintaxis sería: &quot;Me quedo con la variable __INDICE__, cuando la variable FECHA sea igual a __&quot;May-20&quot;__, luego calculo la media de dichos valores&quot;.
-
-#### 4. Listas
-
-Contienen una concatenación de objetos de cualquier tipo. Así como un vector contiene valores, un dataframe contiene vectores, una lista puede contener dataframes, pero también vectores, o valores, y _todo ello a la vez_.
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc3VwZXJsaXN0YSA8LSBsaXN0KEEsQixDLEQsRSxGRUNIQSwgREYgPSBEYXRvcywgSU5ESUNFLCBHUlVQTylcbnN1cGVybGlzdGFcbmBgYFxuYGBgIn0= --&gt;
-
-```r
-```r
-superlista &lt;- list(A,B,C,D,E,FECHA, DF = Datos, INDICE, GRUPO)
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDI4NS4xIDI2NC45IDI0OS4wXG4ifQ== -->
+<pre><code>[1] 285.1 264.9 249.0</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWVhbihJbmRpY2VzX01heSlcbmBgYCJ9 -->
+<pre class="r"><code>mean(Indices_May)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDI2Ni4zMzMzXG4ifQ== -->
+<pre><code>[1] 266.3333</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBUb2RvIGp1bnRvXG5tZWFuKERhdG9zJElORElDRVtEYXRvcyRGRUNIQSA9PSBcIk1heS0yMFwiXSlcbmBgYCJ9 -->
+<pre class="r"><code># Todo junto
+mean(Datos$INDICE[Datos$FECHA == &quot;May-20&quot;])</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDI2Ni4zMzMzXG4ifQ== -->
+<pre><code>[1] 266.3333</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>La lógica de esta sintaxis sería: “Me quedo con la variable <strong>INDICE</strong>, cuando la variable FECHA sea igual a <strong>&quot;May-20&quot;</strong>, luego calculo la media de dichos valores”.</p>
+</div>
+<div id="listas" class="section level4">
+<h4>4. Listas</h4>
+<p>Contienen una concatenación de objetos de cualquier tipo. Así como un vector contiene valores, un dataframe contiene vectores, una lista puede contener dataframes, pero también vectores, o valores, y <em>todo ello a la vez</em>.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3VwZXJsaXN0YSA8LSBsaXN0KEEsQixDLEQsRSxGRUNIQSwgREYgPSBEYXRvcywgSU5ESUNFLCBHUlVQTylcbnN1cGVybGlzdGFcbmBgYCJ9 -->
+<pre class="r"><code>superlista &lt;- list(A,B,C,D,E,FECHA, DF = Datos, INDICE, GRUPO)
 superlista</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiW1sxXV1cblsxXSBTb3kgdW4gZmFjdG9yLCBjb24gbml2ZWxlcyBmaWpvc1xuTGV2ZWxzOiBTb3kgdW4gZmFjdG9yLCBjb24gbml2ZWxlcyBmaWpvc1xuXG5bWzJdXVxuWzFdIC0yXG5cbltbM11dXG5bMV0gMyA1IDZcblxuW1s0XV1cblsxXSA0IDcgOVxuXG5bWzVdXVxuWzFdIFwiQ2FybG9zXCIgXCJQYWJsb1wiICBcIlBlZHJvXCIgXG5cbltbNl1dXG5bMV0gXCJNYXItMjBcIiBcIk1hci0yMFwiIFwiTWFyLTIwXCIgXCJBYnItMjBcIiBcIkFici0yMFwiIFwiQWJyLTIwXCIgXCJNYXktMjBcIiBcIk1heS0yMFwiIFwiTWF5LTIwXCJcblxuJERGXG4ifQ== -->
+<pre><code>[[1]]
+[1] Soy un factor, con niveles fijos
+Levels: Soy un factor, con niveles fijos
+
+[[2]]
+[1] -2
+
+[[3]]
+[1] 3 5 6
+
+[[4]]
+[1] 4 7 9
+
+[[5]]
+[1] &quot;Carlos&quot; &quot;Pablo&quot;  &quot;Pedro&quot; 
+
+[[6]]
+[1] &quot;Mar-20&quot; &quot;Mar-20&quot; &quot;Mar-20&quot; &quot;Abr-20&quot; &quot;Abr-20&quot; &quot;Abr-20&quot; &quot;May-20&quot; &quot;May-20&quot; &quot;May-20&quot;
+
+$DF</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImRhdGEuZnJhbWUiXSwibnJvdyI6OSwibmNvbCI6Mywic3VtbWFyeSI6eyJEZXNjcmlwdGlvbiI6WyJkZiBbOSB4IDNdIl19fSwicmRmIjoiSDRzSUFBQUFBQUFBQnMxU3pVN0NRQkFlQ29XMENZUm92UHNDTkZwaTRyR0VIK1VBTmlRbTNNeFNDamJXM2JJdGlqZWZ3THUrbFdmdlBvUUhkTGE3bTBndmNuU1NiZWViL2I3NTJkMUpiOXEycHpZQWxLRlN3cStKTGxTNy9xbDc1Z0pVREVRbHFJQWwvaHZjUDh5cEFBMWNscmY2WEFqekV2S0s5dWF4cHBDRHQvcG9DL09TamNSc0lIbXJkOGxMWGlSbXg2Qk1DQzFWcURvaXZPV2U3SU02czMzUmlEejloWGE3T1BCNTlFRG03R1lTTHFNMDQramlKR0tuNW4vTjRpaGdpbmlraWVNZDduL0tzbnVSSmlYM1lhckdMZXRER0k1N3cyNWZVd2I5N21WSGc0dkp0WDlWU0dKeDl1am9SSFZjeHJPOFNhdFlMWWhKcXF2cG9EMG5HWEVXSFBXSXRnVkpqU1ZaeENpS0RQSGV6SUs0eEF1QjVwcUtUdWF0NEhaTjcxcnV1YWlRNzB1cks5LzY1WmRsVGVOYjVUTDFPWVIwR2RGUU54K1RXUmdyME1DUjg0bWRoRWMwMDZOZ05IVXlsaEhOc3dNVzYwZytIR3gvQUFyTFNqbG9Bd0FBIn0= -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["INDICE"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["FECHA"],"name":[2],"type":["chr"],"align":["left"]},{"label":["GRUPO"],"name":[3],"type":["chr"],"align":["left"]}],"data":[{"1":"286.4","2":"Mar-20","3":"Privado_Registrado"},{"1":"262.1","2":"Mar-20","3":"Público"},{"1":"248.5","2":"Mar-20","3":"Privado_No_Registrado"},{"1":"285.7","2":"Abr-20","3":"Privado_Registrado"},{"1":"263.5","2":"Abr-20","3":"Público"},{"1":"250.2","2":"Abr-20","3":"Privado_No_Registrado"},{"1":"285.1","2":"May-20","3":"Privado_Registrado"},{"1":"264.9","2":"May-20","3":"Público"},{"1":"249.0","2":"May-20","3":"Privado_No_Registrado"}],"options":{"columns":{"min":{},"max":[10],"total":[3]},"rows":{"min":[10],"max":[10],"total":[9]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG5bWzhdXVxuWzFdIDI4Ni40IDI2Mi4xIDI0OC41IDI4NS43IDI2My41IDI1MC4yIDI4NS4xIDI2NC45IDI0OS4wXG5cbltbOV1dXG5bMV0gXCJQcml2YWRvX1JlZ2lzdHJhZG9cIiAgICBcIlDDumJsaWNvXCIgICAgICAgICAgICAgICBcIlByaXZhZG9fTm9fUmVnaXN0cmFkb1wiXG5bNF0gXCJQcml2YWRvX1JlZ2lzdHJhZG9cIiAgICBcIlDDumJsaWNvXCIgICAgICAgICAgICAgICBcIlByaXZhZG9fTm9fUmVnaXN0cmFkb1wiXG5bN10gXCJQcml2YWRvX1JlZ2lzdHJhZG9cIiAgICBcIlDDumJsaWNvXCIgICAgICAgICAgICAgICBcIlByaXZhZG9fTm9fUmVnaXN0cmFkb1wiXG4ifQ== -->
 <pre><code>
-&lt;!-- rnb-source-end --&gt;
+[[8]]
+[1] 286.4 262.1 248.5 285.7 263.5 250.2 285.1 264.9 249.0
 
-&lt;!-- rnb-output-begin eyJkYXRhIjoiW1sxXV1cblsxXSBTb3kgdW4gZmFjdG9yLCBjb24gbml2ZWxlcyBmaWpvc1xuTGV2ZWxzOiBTb3kgdW4gZmFjdG9yLCBjb24gbml2ZWxlcyBmaWpvc1xuXG5bWzJdXVxuWzFdIC0yXG5cbltbM11dXG5bMV0gMyA1IDZcblxuW1s0XV1cblsxXSA0IDcgOVxuXG5bWzVdXVxuWzFdIFxcQ2FybG9zXFwgXFxQYWJsb1xcICBcXFBlZHJvXFwgXG5cbltbNl1dXG5bMV0gXFxNYXItMjBcXCBcXE1hci0yMFxcIFxcTWFyLTIwXFwgXFxBYnItMjBcXCBcXEFici0yMFxcIFxcQWJyLTIwXFwgXFxNYXktMjBcXCBcXE1heS0yMFxcIFxcTWF5LTIwXFxcblxuJERGXG5cbltbOF1dXG5bMV0gMjg2LjQgMjYyLjEgMjQ4LjUgMjg1LjcgMjYzLjUgMjUwLjIgMjg1LjEgMjY0LjkgMjQ5LjBcblxuW1s5XV1cblsxXSBcXFByaXZhZG9fUmVnaXN0cmFkb1xcICAgIFxcUMODwrpibGljb1xcICAgICAgICAgICAgICAgXFxQcml2YWRvX05vX1JlZ2lzdHJhZG9cXCBcXFByaXZhZG9fUmVnaXN0cmFkb1xcICAgIFxcUMODwrpibGljb1xcICAgICAgICAgICAgICBcbls2XSBcXFByaXZhZG9fTm9fUmVnaXN0cmFkb1xcIFxcUHJpdmFkb19SZWdpc3RyYWRvXFwgICAgXFxQw4PCumJsaWNvXFwgICAgICAgICAgICAgICBcXFByaXZhZG9fTm9fUmVnaXN0cmFkb1xcXG4ifQ== --&gt;
-</code></pre>
-<p>[[1]] [1] Soy un factor, con niveles fijos Levels: Soy un factor, con niveles fijos</p>
-<p>[[2]] [1] -2</p>
-<p>[[3]] [1] 3 5 6</p>
-<p>[[4]] [1] 4 7 9</p>
-<p>[[5]] [1]     </p>
-<p>[[6]] [1]         <br />
-</p>
-<p>$DF</p>
-<p>[[8]] [1] 286.4 262.1 248.5 285.7 263.5 250.2 285.1 264.9 249.0</p>
-<p>[[9]] [1] _Registrado    _No_Registrado _Registrado   <br />
-[6] _No_Registrado _Registrado    _No_Registrado<br />
-</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjoiZGF0YS5mcmFtZSIsIm5jb2wiOjMsIm5yb3ciOjl9LCJyZGYiOiJINHNJQUFBQUFBQUFBMzFTelU3Q1FCQ2Vkb3ZhSmhLaThlNEwwQmk4ZUN6aFJ6bUlEWWtKTjdLVUJSdHJ0MndMNG8wbjhLNlA0dFVuOE96ZHh3QjMyMTJoVlp4azJ2bG1aci85Wm5kN3pYN042bHNBb0FNeUROQVJEdzJkZnpRd3dCVC9CUUE2NW9Hb2xMbWJ6dlJyTE15SjhBdTNWNGRXUUpnei9Ud1g1a1NMRE5OMjFqZjl5UHFpNXd6VFU4Z01IUXErZFBPTmExdU9OcDRUdFJlUU9RbGlIbFhTcXN6V2g2eGFPMVBvR3VmUmswQjVucElYNEZqUi9KQ1BzWmRReHFOVlFTS1NzbmJFZ2xwZkYwU2R1TXlmNHhFZGRPbWdSeVorbkRDT1pQRklGYmNxc0JTVkEvZjliUmo0SHMxbzBmby9rZm1aUXZ4QWZoMU5wOXZzTkZxcXBkMXFYTlVWdU96ZHVqY0ZFcFBSUjFzUmlTUFFsOW1WbVR2MFdDT2NZSHZNK0pJL05PM1RLUEZweU1sMDhaUktoY1VhS3lRcXMxQnNQcXA2ZDdQd3ZscTdFRHZJQXdlcFNKTVhvMkw1Umd5bHJLUkdKK0hFRDRtYU5zQkRFa2hRNWxPbVE5b1I4OE5FamNLenNaM1FCS3MreTZPQnlxVER3ZW9ib2UwMnJ6a0RBQUE9In0= --&gt;
-
-&lt;div data-pagedtable=&quot;false&quot;&gt;
-  &lt;script data-pagedtable-source type=&quot;application/json&quot;&gt;
-{&quot;columns&quot;:[{&quot;label&quot;:[&quot;INDICE&quot;],&quot;name&quot;:[1],&quot;type&quot;:[&quot;dbl&quot;],&quot;align&quot;:[&quot;right&quot;]},{&quot;label&quot;:[&quot;FECHA&quot;],&quot;name&quot;:[2],&quot;type&quot;:[&quot;fctr&quot;],&quot;align&quot;:[&quot;left&quot;]},{&quot;label&quot;:[&quot;GRUPO&quot;],&quot;name&quot;:[3],&quot;type&quot;:[&quot;fctr&quot;],&quot;align&quot;:[&quot;left&quot;]}],&quot;data&quot;:[{&quot;1&quot;:&quot;286.4&quot;,&quot;2&quot;:&quot;Mar-20&quot;,&quot;3&quot;:&quot;Privado_Registrado&quot;},{&quot;1&quot;:&quot;262.1&quot;,&quot;2&quot;:&quot;Mar-20&quot;,&quot;3&quot;:&quot;Público&quot;},{&quot;1&quot;:&quot;248.5&quot;,&quot;2&quot;:&quot;Mar-20&quot;,&quot;3&quot;:&quot;Privado_No_Registrado&quot;},{&quot;1&quot;:&quot;285.7&quot;,&quot;2&quot;:&quot;Abr-20&quot;,&quot;3&quot;:&quot;Privado_Registrado&quot;},{&quot;1&quot;:&quot;263.5&quot;,&quot;2&quot;:&quot;Abr-20&quot;,&quot;3&quot;:&quot;Público&quot;},{&quot;1&quot;:&quot;250.2&quot;,&quot;2&quot;:&quot;Abr-20&quot;,&quot;3&quot;:&quot;Privado_No_Registrado&quot;},{&quot;1&quot;:&quot;285.1&quot;,&quot;2&quot;:&quot;May-20&quot;,&quot;3&quot;:&quot;Privado_Registrado&quot;},{&quot;1&quot;:&quot;264.9&quot;,&quot;2&quot;:&quot;May-20&quot;,&quot;3&quot;:&quot;Público&quot;},{&quot;1&quot;:&quot;249.0&quot;,&quot;2&quot;:&quot;May-20&quot;,&quot;3&quot;:&quot;Privado_No_Registrado&quot;}],&quot;options&quot;:{&quot;columns&quot;:{&quot;min&quot;:{},&quot;max&quot;:[10],&quot;total&quot;:[3]},&quot;rows&quot;:{&quot;min&quot;:[10],&quot;max&quot;:[10],&quot;total&quot;:[9]},&quot;pages&quot;:{}}}
-  &lt;/script&gt;
-&lt;/div&gt;
-
-&lt;!-- rnb-frame-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-Para acceder un elemento de una lista, podemos utilizar el operador __```$```__, que se puede usar a su vez de forma iterativa. 
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc3VwZXJsaXN0YSRERiRGRUNIQVsyXVxuYGBgXG5gYGAifQ== --&gt;
-
-```r
-```r
-superlista$DF$FECHA[2]</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIE1hci0yMFxuTGV2ZWxzOiBBYnItMjAgTWFyLTIwIE1heS0yMFxuIn0= --&gt;
-</code></pre>
-<p>[1] Mar-20 Levels: Abr-20 Mar-20 May-20 ```</p>
+[[9]]
+[1] &quot;Privado_Registrado&quot;    &quot;Público&quot;               &quot;Privado_No_Registrado&quot;
+[4] &quot;Privado_Registrado&quot;    &quot;Público&quot;               &quot;Privado_No_Registrado&quot;
+[7] &quot;Privado_Registrado&quot;    &quot;Público&quot;               &quot;Privado_No_Registrado&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Para acceder un elemento de una lista, podemos utilizar el operador <strong><code>$</code></strong>, que se puede usar a su vez de forma iterativa.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3VwZXJsaXN0YSRERiRGRUNIQVsyXVxuYGBgIn0= -->
+<pre class="r"><code>superlista$DF$FECHA[2]</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiTWFyLTIwXCJcbiJ9 -->
+<pre><code>[1] &quot;Mar-20&quot;</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1704,6 +992,7 @@ superlista$DF$FECHA[2]</code></pre>
 <ol>
 <li id="fn1"><p>Basado en la <a href="https://diegokoz.github.io/EEA2019/clase%201/Clase%201-%20Introduccion.nb.html">clase</a> de Juan Barriola y Diego Kozlowski<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 <li id="fn2"><p>Más allá de los comandos elementales, comandos más sofisticados tienen muchas versiones, y algunas quedan en desuso en el tiempo.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>veremos que existen ciertas excepciones con algunos paquetes más adelante.<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 
