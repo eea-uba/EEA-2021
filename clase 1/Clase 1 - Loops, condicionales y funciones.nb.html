@@ -306,126 +306,84 @@ div.main-container {
 <p>Un <strong>loop</strong> es una estructura de código que nos permite aplicar iterativamente un mismo conjunto de comandos, variando el valor de una variable. Por ejemplo:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZm9yKGkgaW4gMToxMCl7XG4gICBwcmludChpXjIpXG59XG5gYGBcbmBgYCJ9 -->
-<pre class="r"><code>```r
-for(i in 1:10){
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZm9yKGkgaW4gMToxMCl7XG4gICBwcmludChpXjIpXG59XG5gYGAifQ== -->
+<pre class="r"><code>for(i in 1:10){
    print(i^2)
 }</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDFcblsxXSA0XG5bMV0gOVxuWzFdIDE2XG5bMV0gMjVcblsxXSAzNlxuWzFdIDQ5XG5bMV0gNjRcblsxXSA4MVxuWzFdIDEwMFxuIn0= --&gt;
-</code></pre>
-<p>[1] 1 [1] 4 [1] 9 [1] 16 [1] 25 [1] 36 [1] 49 [1] 64 [1] 81 [1] 100</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-Esto se lee como: &quot;Recorre cada uno de los valores (i) del vector numérico 1 a 10, y para cada uno de ellos imprimí el cuadrado (i^2)&quot;. 
-
-Se puede especificar la palabra que se desee que tome cada uno de los valores que debe tomar. En el ejemplo anterior fue **i**, pero bien podría ser &quot;**Valores**&quot;.
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZm9yKFZhbG9yZXMgaW4gMToxMCl7XG4gICBwcmludChWYWxvcmVzXjIpXG4gIFxufVxuYGBgXG5gYGAifQ== --&gt;
-
-```r
-```r
-for(Valores in 1:10){
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDFcblsxXSA0XG5bMV0gOVxuWzFdIDE2XG5bMV0gMjVcblsxXSAzNlxuWzFdIDQ5XG5bMV0gNjRcblsxXSA4MVxuWzFdIDEwMFxuIn0= -->
+<pre><code>[1] 1
+[1] 4
+[1] 9
+[1] 16
+[1] 25
+[1] 36
+[1] 49
+[1] 64
+[1] 81
+[1] 100</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Esto se lee como: “Recorre cada uno de los valores (i) del vector numérico 1 a 10, y para cada uno de ellos imprimí el cuadrado (i^2)”.</p>
+<p>Se puede especificar la palabra que se desee que tome cada uno de los valores que debe tomar. En el ejemplo anterior fue <strong>i</strong>, pero bien podría ser “<strong>Valores</strong>”.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZm9yKFZhbG9yZXMgaW4gMToxMCl7XG4gICBwcmludChWYWxvcmVzXjIpXG4gIFxufVxuYGBgIn0= -->
+<pre class="r"><code>for(Valores in 1:10){
    print(Valores^2)
   
 }</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDFcblsxXSA0XG5bMV0gOVxuWzFdIDE2XG5bMV0gMjVcblsxXSAzNlxuWzFdIDQ5XG5bMV0gNjRcblsxXSA4MVxuWzFdIDEwMFxuIn0= --&gt;
-</code></pre>
-<p>[1] 1 [1] 4 [1] 9 [1] 16 [1] 25 [1] 36 [1] 49 [1] 64 [1] 81 [1] 100</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-Un loop puede iterar sobre cualquier tipo de vector, independientemente de lo que contenga.
-
-&gt; Los loops son una estructura básica que existe en cualquier lenguaje de programación. En R no recomendamos abusar de ellos porque hacen que el código sea más lento.
-
-
-# Estructuras Condicionales
-
-Las __estructuras condiconales__ nos permiten ejecutar una porción de código en caso de que cumplan una condición lógica.
-
-## if
-
-Su funcionamiento es el siguiente:     
-```if(condición){código a ejecutar si se cumple la condición}```
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuaWYoIDIrMiA9PSA0KXtcbiAgcHJpbnQoXFxNZW5vcyBNYWxcXClcbn1cbmBgYFxuYGBgIn0= --&gt;
-
-```r
-```r
-if( 2+2 == 4){
-  print(\Menos Mal\)
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDFcblsxXSA0XG5bMV0gOVxuWzFdIDE2XG5bMV0gMjVcblsxXSAzNlxuWzFdIDQ5XG5bMV0gNjRcblsxXSA4MVxuWzFdIDEwMFxuIn0= -->
+<pre><code>[1] 1
+[1] 4
+[1] 9
+[1] 16
+[1] 25
+[1] 36
+[1] 49
+[1] 64
+[1] 81
+[1] 100</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Un loop puede iterar sobre cualquier tipo de vector, independientemente de lo que contenga.</p>
+<blockquote>
+<p>Los loops son una estructura básica que existe en cualquier lenguaje de programación. En R no recomendamos abusar de ellos porque hacen que el código sea más lento.</p>
+</blockquote>
+</div>
+<div id="estructuras-condicionales" class="section level1">
+<h1>Estructuras Condicionales</h1>
+<p>Las <strong>estructuras condiconales</strong> nos permiten ejecutar una porción de código en caso de que cumplan una condición lógica.</p>
+<div id="if" class="section level2">
+<h2>if</h2>
+<p>Su funcionamiento es el siguiente:<br />
+<code>if(condición){código a ejecutar si se cumple la condición}</code></p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaWYoIDIrMiA9PSA0KXtcbiAgcHJpbnQoXCJNZW5vcyBNYWxcIilcbn1cbmBgYCJ9 -->
+<pre class="r"><code>if( 2+2 == 4){
+  print(&quot;Menos Mal&quot;)
 }</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIFxcTWVub3MgTWFsXFxcbiJ9 --&gt;
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiTWVub3MgTWFsXCJcbiJ9 -->
+<pre><code>[1] &quot;Menos Mal&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaWYoIDIrMiA9PSAxNDguMjQpe1xuICBwcmludChcIlIsIHRlbmVtb3MgdW4gcHJvYmxlbWFcIilcbn1cblxuYGBgIn0= -->
+<pre class="r"><code>if( 2+2 == 148.24){
+  print(&quot;R, tenemos un problema&quot;)
+}
 </code></pre>
-<p>[1] Mal<br />
-</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuaWYoIDIrMiA9PSAxNDguMjQpe1xuICBwcmludChcXFJcbmBgYCJ9 --&gt;
-
-```r
-```r
-if( 2+2 == 148.24){
-  print(\R</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+</div>
 <div id="ifelse" class="section level2">
 <h2>ifelse</h2>
 <p>La función <code>if_else()</code> sirve para crear o modificar dicotómicamente un objeto/variable/vector a partir del cumplimiento de una o más condiciones lógicas.</p>
@@ -433,191 +391,105 @@ if( 2+2 == 148.24){
 <code>if_else(condición, función a aplicar si se cumple la condición, función a aplicar si no se cumple la condición)</code></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubGlicmFyeShkcGx5cilcbmlmX2Vsc2UoMisyID09IDQsICMgY29uZGljaW9uXG4gICAgICAgIHRydWUgPSBcXEpveWFcXCwgIyBzaSBzZSBjdW1wbGUgbGEgY29uZGljacODwrNuXG4gICAgICAgIGZhbHNlID0gXFxFcnJvclxcKSAjIHNpIG5vIHNlIGN1bXBsZVxuYGBgXG5gYGAifQ== -->
-<pre class="r"><code>```r
-library(dplyr)
-if_else(2+2 == 4, # condicion
-        true = \Joya\, # si se cumple la condiciÃ³n
-        false = \Error\) # si no se cumple</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShkcGx5cilcbmBgYCJ9 -->
+<pre class="r"><code>library(dplyr)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG5BdHRhY2hpbmcgcGFja2FnZTog4oCYZHBseXLigJlcblxuVGhlIGZvbGxvd2luZyBvYmplY3RzIGFyZSBtYXNrZWQgZnJvbSDigJhwYWNrYWdlOnN0YXRz4oCZOlxuXG4gICAgZmlsdGVyLCBsYWdcblxuVGhlIGZvbGxvd2luZyBvYmplY3RzIGFyZSBtYXNrZWQgZnJvbSDigJhwYWNrYWdlOmJhc2XigJk6XG5cbiAgICBpbnRlcnNlY3QsIHNldGRpZmYsIHNldGVxdWFsLCB1bmlvblxuIn0= -->
 <pre><code>
-&lt;!-- rnb-source-end --&gt;
+Attaching package: ‘dplyr’
 
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIFxcSm95YVxcXG4ifQ== --&gt;
-</code></pre>
-<p>[1] <br />
-</p>
-<pre><code>
+The following objects are masked from ‘package:stats’:
 
+    filter, lag
 
-&lt;!-- rnb-output-end --&gt;
+The following objects are masked from ‘package:base’:
 
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-# Funciones
-
-La creación de __funciones__ propias nos permite automatizar todas aquellas partes del código que se repiten mucho. Una vez diseñadas, funcionan igual que cualquier comando. 
-
-Por ejemplo, podemos definir la suma de dos elementos como
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc3VtYSA8LSBmdW5jdGlvbih2YWxvcjEsIHZhbG9yMikge1xuICB2YWxvcjErdmFsb3IyXG59XG5cbnN1bWEoNSw2KVxuYGBgXG5gYGAifQ== --&gt;
-
-```r
-```r
-suma &lt;- function(valor1, valor2) {
+    intersect, setdiff, setequal, union</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaWZfZWxzZSgyKzIgPT0gNCwgIyBjb25kaWNpb25cbiAgICAgICAgdHJ1ZSA9IFwiSm95YVwiLCAjIHNpIHNlIGN1bXBsZSBsYSBjb25kaWNpw7NuXG4gICAgICAgIGZhbHNlID0gXCJFcnJvclwiKSAjIHNpIG5vIHNlIGN1bXBsZVxuYGBgIn0= -->
+<pre class="r"><code>if_else(2+2 == 4, # condicion
+        true = &quot;Joya&quot;, # si se cumple la condición
+        false = &quot;Error&quot;) # si no se cumple</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiSm95YVwiXG4ifQ== -->
+<pre><code>[1] &quot;Joya&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="funciones" class="section level1">
+<h1>Funciones</h1>
+<p>La creación de <strong>funciones</strong> propias nos permite automatizar todas aquellas partes del código que se repiten mucho. Una vez diseñadas, funcionan igual que cualquier comando.</p>
+<p>Por ejemplo, podemos definir la suma de dos elementos como</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3VtYSA8LSBmdW5jdGlvbih2YWxvcjEsIHZhbG9yMikge1xuICB2YWxvcjErdmFsb3IyXG59XG5cbnN1bWEoNSw2KVxuYGBgIn0= -->
+<pre class="r"><code>suma &lt;- function(valor1, valor2) {
   valor1+valor2
 }
 
 suma(5,6)</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDExXG4ifQ== --&gt;
-</code></pre>
-<p>[1] 11</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-Obviamente las funciones no son sólo para variables numéricas. Por ejemplo, podemos pegar dos strings con una flecha en el medio
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZnVuY2lvbl9wcnVlYmEgPC0gZnVuY3Rpb24ocGFyYW1ldHJvMSxwYXJhbWV0cm8yKSB7XG4gIHBhc3RlKHBhcmFtZXRybzEsIHBhcmFtZXRybzIsIHNlcCA9IFxcIDwtLT4gXFwpXG59XG5cbmZ1bmNpb25fcHJ1ZWJhKHBhcmFtZXRybzEgPSBcXEEgdmVyXFwsIHBhcmFtZXRybzIgPSBcXFF1w4PCqSBwYXNhXFwpXG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-funcion_prueba &lt;- function(parametro1,parametro2) {
-  paste(parametro1, parametro2, sep = \ &lt;--&gt; \)
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDExXG4ifQ== -->
+<pre><code>[1] 11</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Obviamente las funciones no son sólo para variables numéricas. Por ejemplo, podemos pegar dos strings con una flecha en el medio</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZnVuY2lvbl9wcnVlYmEgPC0gZnVuY3Rpb24ocGFyYW1ldHJvMSxwYXJhbWV0cm8yKSB7XG4gIHBhc3RlKHBhcmFtZXRybzEsIHBhcmFtZXRybzIsIHNlcCA9IFwiIDwtLT4gXCIpXG59XG5cbmZ1bmNpb25fcHJ1ZWJhKHBhcmFtZXRybzEgPSBcIkEgdmVyXCIsIHBhcmFtZXRybzIgPSBcIlF1w6kgcGFzYVwiKVxuYGBgIn0= -->
+<pre class="r"><code>funcion_prueba &lt;- function(parametro1,parametro2) {
+  paste(parametro1, parametro2, sep = &quot; &lt;--&gt; &quot;)
 }
 
-funcion_prueba(parametro1 = \A ver\, parametro2 = \QuÃ© pasa\)</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIFxcQSB2ZXIgPC0tPiBRdcODwqkgcGFzYVxcXG4ifQ== --&gt;
-</code></pre>
-<p>[1] ver &lt;–&gt; QuÃ© pasa<br />
-</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-También podemos asignar un valor por default para los parametros en caso de que el usuario no defina su valor al utilizar la función.
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuT3RyYV9mdW5jaW9uX3BydWViYSA8LSBmdW5jdGlvbihwYXJhbWV0cm8xLCBwYXJhbWV0cm8yID0gXFxTdHJpbmcgZGVmYXVsdFxcKSB7XG4gIHBhc3RlKHBhcmFtZXRybzEsIHBhcmFtZXRybzIsIHNlcCA9IFxcIDwtLT4gXFwpXG4gIFxufVxuT3RyYV9mdW5jaW9uX3BydWViYShwYXJhbWV0cm8xID0gXFxWYWxvciAxXFwpXG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-Otra_funcion_prueba &lt;- function(parametro1, parametro2 = \String default\) {
-  paste(parametro1, parametro2, sep = \ &lt;--&gt; \)
+funcion_prueba(parametro1 = &quot;A ver&quot;, parametro2 = &quot;Qué pasa&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiQSB2ZXIgPC0tPiBRdcOpIHBhc2FcIlxuIn0= -->
+<pre><code>[1] &quot;A ver &lt;--&gt; Qué pasa&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>También podemos asignar un valor por default para los parametros en caso de que el usuario no defina su valor al utilizar la función.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuT3RyYV9mdW5jaW9uX3BydWViYSA8LSBmdW5jdGlvbihwYXJhbWV0cm8xLCBwYXJhbWV0cm8yID0gXCJTdHJpbmcgZGVmYXVsdFwiKSB7XG4gIHBhc3RlKHBhcmFtZXRybzEsIHBhcmFtZXRybzIsIHNlcCA9IFwiIDwtLT4gXCIpXG4gIFxufVxuT3RyYV9mdW5jaW9uX3BydWViYShwYXJhbWV0cm8xID0gXCJWYWxvciAxXCIpXG5gYGAifQ== -->
+<pre class="r"><code>Otra_funcion_prueba &lt;- function(parametro1, parametro2 = &quot;String default&quot;) {
+  paste(parametro1, parametro2, sep = &quot; &lt;--&gt; &quot;)
   
 }
-Otra_funcion_prueba(parametro1 = \Valor 1\)</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIFxcVmFsb3IgMSA8LS0+IFN0cmluZyBkZWZhdWx0XFxcbiJ9 --&gt;
-</code></pre>
-<p>[1]  &lt;–&gt; String default<br />
-</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuT3RyYV9mdW5jaW9uX3BydWViYShwYXJhbWV0cm8xID0gXFxWYWxvciAxXFwsIHBhcmFtZXRybzIgPSBcXFZhbG9yIDJcXCApXG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-Otra_funcion_prueba(parametro1 = \Valor 1\, parametro2 = \Valor 2\ )</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIFxcVmFsb3IgMSA8LS0+IFZhbG9yIDJcXFxuIn0= --&gt;
-</code></pre>
-<p>[1]  &lt;–&gt; Valor 2<br />
-</p>
-<pre><code>
-
-
-&lt;!-- rnb-output-end --&gt;
-
-&lt;!-- rnb-chunk-end --&gt;
-
-
-&lt;!-- rnb-text-begin --&gt;
-
-
-Las funciones que creamos nosotros permanecen en el ambiente de R temporariamente. Cuando removemos los objetos del ambiente, la función deja de existir. Por ende, debemos incorporarla en cada uno de los scripts en la cual la necesitemos. Una buena práctica, es incorporar nuestras funciones útiles al comienzo de cada script junto a la carga de las librerías.                         
-
-&gt; Vale mencionar que __lo que ocurre en una función, queda en la función__ excepto que explícitamente pidamos que devuelva el resultado, con el comando `print()`. 
-
-Las funciones siempre devuelven el último objeto que se crea en ellas, o si explicitamente se utiliza el comando `return()`
-
-**Funciones anónimas**
-
-Son funciones a las cuales no les asignamos un nombre. Esto suele ser útil para hacer funciones pequeñas dentro de otras funciones o estructuras más complejas.
-
-
-&lt;!-- rnb-text-end --&gt;
-
-
-&lt;!-- rnb-chunk-begin --&gt;
-
-
-&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuKGZ1bmN0aW9uKHgpIHgqMikoMTApXG5gYGBcbmBgYCJ9 --&gt;
-
-```r
-```r
-(function(x) x*2)(10)</code></pre>
-<pre><code>
-&lt;!-- rnb-source-end --&gt;
-
-&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDIwXG4ifQ== --&gt;
-</code></pre>
-<p>[1] 20 ```</p>
+Otra_funcion_prueba(parametro1 = &quot;Valor 1&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiVmFsb3IgMSA8LS0+IFN0cmluZyBkZWZhdWx0XCJcbiJ9 -->
+<pre><code>[1] &quot;Valor 1 &lt;--&gt; String default&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuT3RyYV9mdW5jaW9uX3BydWViYShwYXJhbWV0cm8xID0gXCJWYWxvciAxXCIsIHBhcmFtZXRybzIgPSBcIlZhbG9yIDJcIiApXG5gYGAifQ== -->
+<pre class="r"><code>Otra_funcion_prueba(parametro1 = &quot;Valor 1&quot;, parametro2 = &quot;Valor 2&quot; )</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiVmFsb3IgMSA8LS0+IFZhbG9yIDJcIlxuIn0= -->
+<pre><code>[1] &quot;Valor 1 &lt;--&gt; Valor 2&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Las funciones que creamos nosotros permanecen en el ambiente de R temporariamente. Cuando removemos los objetos del ambiente, la función deja de existir. Por ende, debemos incorporarla en cada uno de los scripts en la cual la necesitemos. Una buena práctica, es incorporar nuestras funciones útiles al comienzo de cada script junto a la carga de las librerías.</p>
+<blockquote>
+<p>Vale mencionar que <strong>lo que ocurre en una función, queda en la función</strong> excepto que explícitamente pidamos que devuelva el resultado, con el comando <code>print()</code>.</p>
+</blockquote>
+<p>Las funciones siempre devuelven el último objeto que se crea en ellas, o si explicitamente se utiliza el comando <code>return()</code></p>
+<p><strong>Funciones anónimas</strong></p>
+<p>Son funciones a las cuales no les asignamos un nombre. Esto suele ser útil para hacer funciones pequeñas dentro de otras funciones o estructuras más complejas.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuKGZ1bmN0aW9uKHgpIHgqMikoMTApXG5gYGAifQ== -->
+<pre class="r"><code>(function(x) x*2)(10)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDIwXG4ifQ== -->
+<pre><code>[1] 20</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
-</div>
 </div>
 
 <div id="rmd-source-code">LS0tDQp0aXRsZTogIkxvb3BzLCBlc3RydWN0dXJhcyBjb25kaWNpb25hbGVzIHkgZnVuY2lvbmVzIg0KYXV0aG9yOiAiSnVhbiBCYXJyaW9sYSB5IFNvZsOtYSBQZXJpbmkiDQpkYXRlOiAiMjggZGUgYWdvc3RvIGRlIDIwMjEiDQpvdXRwdXQ6DQogIGh0bWxfbm90ZWJvb2s6DQogICAgdG9jOiB5ZXMNCiAgICB0b2NfZmxvYXQ6IHllcw0KLS0tDQoNCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQpkaXYubWFpbi1jb250YWluZXIgew0KICBtYXgtd2lkdGg6IDE2MDBweDsNCiAgbWFyZ2luLWxlZnQ6IGF1dG87DQogIG1hcmdpbi1yaWdodDogYXV0bzsNCn0NCjwvc3R5bGU+DQoNCiMgTG9vcHMNCg0KVW4gX19sb29wX18gZXMgdW5hIGVzdHJ1Y3R1cmEgZGUgY8OzZGlnbyBxdWUgbm9zIHBlcm1pdGUgYXBsaWNhciBpdGVyYXRpdmFtZW50ZSB1biBtaXNtbyBjb25qdW50byBkZSBjb21hbmRvcywgdmFyaWFuZG8gZWwgdmFsb3IgZGUgdW5hIHZhcmlhYmxlLiBQb3IgZWplbXBsbzoNCg0KYGBge3Isd2FybmluZz1GQUxTRX0NCmZvcihpIGluIDE6MTApew0KICAgcHJpbnQoaV4yKQ0KfQ0KYGBgDQoNCkVzdG8gc2UgbGVlIGNvbW86ICJSZWNvcnJlIGNhZGEgdW5vIGRlIGxvcyB2YWxvcmVzIChpKSBkZWwgdmVjdG9yIG51bcOpcmljbyAxIGEgMTAsIHkgcGFyYSBjYWRhIHVubyBkZSBlbGxvcyBpbXByaW3DrSBlbCBjdWFkcmFkbyAoaV4yKSIuIA0KDQpTZSBwdWVkZSBlc3BlY2lmaWNhciBsYSBwYWxhYnJhIHF1ZSBzZSBkZXNlZSBxdWUgdG9tZSBjYWRhIHVubyBkZSBsb3MgdmFsb3JlcyBxdWUgZGViZSB0b21hci4gRW4gZWwgZWplbXBsbyBhbnRlcmlvciBmdWUgKippKiosIHBlcm8gYmllbiBwb2Ryw61hIHNlciAiKipWYWxvcmVzKioiLg0KDQpgYGB7cn0NCmZvcihWYWxvcmVzIGluIDE6MTApew0KICAgcHJpbnQoVmFsb3Jlc14yKQ0KICANCn0NCmBgYA0KDQpVbiBsb29wIHB1ZWRlIGl0ZXJhciBzb2JyZSBjdWFscXVpZXIgdGlwbyBkZSB2ZWN0b3IsIGluZGVwZW5kaWVudGVtZW50ZSBkZSBsbyBxdWUgY29udGVuZ2EuDQoNCj4gTG9zIGxvb3BzIHNvbiB1bmEgZXN0cnVjdHVyYSBiw6FzaWNhIHF1ZSBleGlzdGUgZW4gY3VhbHF1aWVyIGxlbmd1YWplIGRlIHByb2dyYW1hY2nDs24uIEVuIFIgbm8gcmVjb21lbmRhbW9zIGFidXNhciBkZSBlbGxvcyBwb3JxdWUgaGFjZW4gcXVlIGVsIGPDs2RpZ28gc2VhIG3DoXMgbGVudG8uDQoNCg0KIyBFc3RydWN0dXJhcyBDb25kaWNpb25hbGVzDQoNCkxhcyBfX2VzdHJ1Y3R1cmFzIGNvbmRpY29uYWxlc19fIG5vcyBwZXJtaXRlbiBlamVjdXRhciB1bmEgcG9yY2nDs24gZGUgY8OzZGlnbyBlbiBjYXNvIGRlIHF1ZSBjdW1wbGFuIHVuYSBjb25kaWNpw7NuIGzDs2dpY2EuDQoNCiMjIGlmDQoNClN1IGZ1bmNpb25hbWllbnRvIGVzIGVsIHNpZ3VpZW50ZTogICAgIA0KYGBgaWYoY29uZGljacOzbil7Y8OzZGlnbyBhIGVqZWN1dGFyIHNpIHNlIGN1bXBsZSBsYSBjb25kaWNpw7NufWBgYA0KDQpgYGB7cix3YXJuaW5nPUZBTFNFfQ0KaWYoIDIrMiA9PSA0KXsNCiAgcHJpbnQoIk1lbm9zIE1hbCIpDQp9DQoNCmBgYA0KDQpgYGB7cix3YXJuaW5nPUZBTFNFfQ0KaWYoIDIrMiA9PSAxNDguMjQpew0KICBwcmludCgiUiwgdGVuZW1vcyB1biBwcm9ibGVtYSIpDQp9DQoNCmBgYA0KDQoNCiMjIGlmZWxzZQ0KDQpMYSBmdW5jacOzbiBgYGBpZl9lbHNlKClgYGAgc2lydmUgcGFyYSBjcmVhciBvIG1vZGlmaWNhciBkaWNvdMOzbWljYW1lbnRlIHVuIG9iamV0by92YXJpYWJsZS92ZWN0b3IgYSBwYXJ0aXIgZGVsIGN1bXBsaW1pZW50byBkZSB1bmEgbyBtw6FzIGNvbmRpY2lvbmVzIGzDs2dpY2FzLiAgDQoNClN1IGZ1bmNpb25hbWllbnRvIGVzIGVsIHNpZ3VpZW50ZTogICAgICANCmBgYGlmX2Vsc2UoY29uZGljacOzbiwgZnVuY2nDs24gYSBhcGxpY2FyIHNpIHNlIGN1bXBsZSBsYSBjb25kaWNpw7NuLCBmdW5jacOzbiBhIGFwbGljYXIgc2kgbm8gc2UgY3VtcGxlIGxhIGNvbmRpY2nDs24pYGBgDQoNCmBgYHtyfQ0KbGlicmFyeShkcGx5cikNCmlmX2Vsc2UoMisyID09IDQsICMgY29uZGljaW9uDQogICAgICAgIHRydWUgPSAiSm95YSIsICMgc2kgc2UgY3VtcGxlIGxhIGNvbmRpY2nDs24NCiAgICAgICAgZmFsc2UgPSAiRXJyb3IiKSAjIHNpIG5vIHNlIGN1bXBsZQ0KYGBgDQoNCiMgRnVuY2lvbmVzDQoNCkxhIGNyZWFjacOzbiBkZSBfX2Z1bmNpb25lc19fIHByb3BpYXMgbm9zIHBlcm1pdGUgYXV0b21hdGl6YXIgdG9kYXMgYXF1ZWxsYXMgcGFydGVzIGRlbCBjw7NkaWdvIHF1ZSBzZSByZXBpdGVuIG11Y2hvLiBVbmEgdmV6IGRpc2XDsWFkYXMsIGZ1bmNpb25hbiBpZ3VhbCBxdWUgY3VhbHF1aWVyIGNvbWFuZG8uIA0KDQpQb3IgZWplbXBsbywgcG9kZW1vcyBkZWZpbmlyIGxhIHN1bWEgZGUgZG9zIGVsZW1lbnRvcyBjb21vDQoNCmBgYHtyfQ0Kc3VtYSA8LSBmdW5jdGlvbih2YWxvcjEsIHZhbG9yMikgew0KICB2YWxvcjErdmFsb3IyDQp9DQoNCnN1bWEoNSw2KQ0KYGBgDQoNCk9idmlhbWVudGUgbGFzIGZ1bmNpb25lcyBubyBzb24gc8OzbG8gcGFyYSB2YXJpYWJsZXMgbnVtw6lyaWNhcy4gUG9yIGVqZW1wbG8sIHBvZGVtb3MgcGVnYXIgZG9zIHN0cmluZ3MgY29uIHVuYSBmbGVjaGEgZW4gZWwgbWVkaW8NCg0KYGBge3J9DQpmdW5jaW9uX3BydWViYSA8LSBmdW5jdGlvbihwYXJhbWV0cm8xLHBhcmFtZXRybzIpIHsNCiAgcGFzdGUocGFyYW1ldHJvMSwgcGFyYW1ldHJvMiwgc2VwID0gIiA8LS0+ICIpDQp9DQoNCmZ1bmNpb25fcHJ1ZWJhKHBhcmFtZXRybzEgPSAiQSB2ZXIiLCBwYXJhbWV0cm8yID0gIlF1w6kgcGFzYSIpDQoNCmBgYA0KDQpUYW1iacOpbiBwb2RlbW9zIGFzaWduYXIgdW4gdmFsb3IgcG9yIGRlZmF1bHQgcGFyYSBsb3MgcGFyYW1ldHJvcyBlbiBjYXNvIGRlIHF1ZSBlbCB1c3VhcmlvIG5vIGRlZmluYSBzdSB2YWxvciBhbCB1dGlsaXphciBsYSBmdW5jacOzbi4NCg0KYGBge3J9DQpPdHJhX2Z1bmNpb25fcHJ1ZWJhIDwtIGZ1bmN0aW9uKHBhcmFtZXRybzEsIHBhcmFtZXRybzIgPSAiU3RyaW5nIGRlZmF1bHQiKSB7DQogIHBhc3RlKHBhcmFtZXRybzEsIHBhcmFtZXRybzIsIHNlcCA9ICIgPC0tPiAiKQ0KICANCn0NCk90cmFfZnVuY2lvbl9wcnVlYmEocGFyYW1ldHJvMSA9ICJWYWxvciAxIikNCk90cmFfZnVuY2lvbl9wcnVlYmEocGFyYW1ldHJvMSA9ICJWYWxvciAxIiwgcGFyYW1ldHJvMiA9ICJWYWxvciAyIiApDQpgYGANCg0KTGFzIGZ1bmNpb25lcyBxdWUgY3JlYW1vcyBub3NvdHJvcyBwZXJtYW5lY2VuIGVuIGVsIGFtYmllbnRlIGRlIFIgdGVtcG9yYXJpYW1lbnRlLiBDdWFuZG8gcmVtb3ZlbW9zIGxvcyBvYmpldG9zIGRlbCBhbWJpZW50ZSwgbGEgZnVuY2nDs24gZGVqYSBkZSBleGlzdGlyLiBQb3IgZW5kZSwgZGViZW1vcyBpbmNvcnBvcmFybGEgZW4gY2FkYSB1bm8gZGUgbG9zIHNjcmlwdHMgZW4gbGEgY3VhbCBsYSBuZWNlc2l0ZW1vcy4gVW5hIGJ1ZW5hIHByw6FjdGljYSwgZXMgaW5jb3Jwb3JhciBudWVzdHJhcyBmdW5jaW9uZXMgw7p0aWxlcyBhbCBjb21pZW56byBkZSBjYWRhIHNjcmlwdCBqdW50byBhIGxhIGNhcmdhIGRlIGxhcyBsaWJyZXLDrWFzLiAgICAgICAgICAgICAgICAgICAgICAgICANCg0KPiBWYWxlIG1lbmNpb25hciBxdWUgX19sbyBxdWUgb2N1cnJlIGVuIHVuYSBmdW5jacOzbiwgcXVlZGEgZW4gbGEgZnVuY2nDs25fXyBleGNlcHRvIHF1ZSBleHBsw61jaXRhbWVudGUgcGlkYW1vcyBxdWUgZGV2dWVsdmEgZWwgcmVzdWx0YWRvLCBjb24gZWwgY29tYW5kbyBgcHJpbnQoKWAuIA0KDQpMYXMgZnVuY2lvbmVzIHNpZW1wcmUgZGV2dWVsdmVuIGVsIMO6bHRpbW8gb2JqZXRvIHF1ZSBzZSBjcmVhIGVuIGVsbGFzLCBvIHNpIGV4cGxpY2l0YW1lbnRlIHNlIHV0aWxpemEgZWwgY29tYW5kbyBgcmV0dXJuKClgDQoNCioqRnVuY2lvbmVzIGFuw7NuaW1hcyoqDQoNClNvbiBmdW5jaW9uZXMgYSBsYXMgY3VhbGVzIG5vIGxlcyBhc2lnbmFtb3MgdW4gbm9tYnJlLiBFc3RvIHN1ZWxlIHNlciDDunRpbCBwYXJhIGhhY2VyIGZ1bmNpb25lcyBwZXF1ZcOxYXMgZGVudHJvIGRlIG90cmFzIGZ1bmNpb25lcyBvIGVzdHJ1Y3R1cmFzIG3DoXMgY29tcGxlamFzLg0KDQpgYGB7cn0NCihmdW5jdGlvbih4KSB4KjIpKDEwKQ0KYGBgDQoNCg==</div>
