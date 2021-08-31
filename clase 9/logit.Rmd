@@ -1,7 +1,7 @@
 ---
 title: "Regresión Logística"
 author: "Juan Barriola y Sofía Perini"
-date: "7 de Noviembre de 2020"
+date: "23 de Octubre de 2021"
 output:
   html_notebook:
     theme: spacelab
@@ -23,56 +23,89 @@ div.main-container {
 library(tidyverse)
 library(tidymodels)
 library(modelr)
-library(ISLR)
 library(GGally)
 library(pROC)
 library(cowplot)
 library(OneR)
 library(rlang)
 library(caret)
-set.seed(1992)
+set.seed(2021)
 ```
 
-La **regresión logística** es útil para problemas de predicción de clases. En este caso vamos a tratar de resolver el problema de predecir si una persona va defaultear su deuda de tarjeta de crédito en base a ciertos predictores.
+La **regresión logística** es útil para problemas de predicción de clases. En este caso vamos a tratar de resolver el problema de predecir si una persona que viajaba a bordo del Titanic sobrevivió o no. 
 
 ## Levantamos el conjunto de datos
 
-Este conjunto de datos proviene de la librería [ISLR](http://www-bcf.usc.edu/%7Egareth/ISL/)  (Introduction to Statistical Learning Using R) de James, Witten, Hastie y Tibshirani.
+Este conjunto de datos proviene de [Kaggle - Titanic: Machine Learning from Disaster](https://www.kaggle.com/c/titanic/overview).
 
 ```{r}
-# cargamos los datos y observamos su estructura
-default <- Default
-glimpse(default)
+# cargamos los datasets de train y test 
+dftitanic_train <- read_csv("../Fuentes/titanic_complete_train.csv")
+dftitanic_test <- read_csv("../Fuentes/titanic_complete_test.csv")
+# observamos su estructura
+glimpse(dftitanic_train)
+glimpse(dftitanic_test)
+```
+El dataset de training tiene 12 variables y 891 observaciones, mientras que el de testing tiene 418.
+
+Las variables del set incluyen id, nombre, edad, sexo del pasajero, como también:
+
+* **Survived**: La clase que queremos predecir: Sobrevivió (0 = No, 1 = Yes).
+* **Pclass**: La clase a la que pertenece el pasajero (1 = 1st, 2 = 2nd, 3 = 3rd). Es un proxy del estatus socio-económico (1st = Upper, 2nd = Middle, 3rd = Lower). 
+* **Sibsp**: número de hermanos / cónyuges a bordo del Titanic.
+* **Parch**: número de padres / hijos a bordo del Titanic.	
+* **Ticket**: número de	Ticket
+* **Fare**: tarifa. 
+* **Cabin**: número de cabina
+* **Embarked**: Puerto de embarque (C = Cherbourg, Q = Queenstown, S = Southampton). 
+
+Se transforman las variables **Survived**,  **Pclass** y **Embarked** a factor.
+
+```{r}
+dftitanic_train <- dftitanic_train %>%
+  mutate(Survived = factor(Survived), Pclass = factor(Pclass), Embarked = factor(Embarked))
+dftitanic_test <- dftitanic_test %>%
+  mutate(Survived = factor(Survived), Pclass = factor(Pclass), Embarked = factor(Embarked))
 ```
 
-Tiene 4 variables: 
 
-* **default**: La clase que queremos predecir.
-
-* **student**: Binaria que indica si la persona es estudiante.
-
-* **balance**: Balance promedio que le queda a la persona luego de sus pagos mensuales.
-
-* **income**: Ingreso de la persona.
 
 ## Exploratorias
 
 Analicemos la distribución de la clase.
 
 ```{r}
-default %>% 
-  group_by(default) %>% 
-  summarise(numero_casos=n())
+# calculamos la distribución de clase en cada dataset
+train <- dftitanic_train %>% 
+  group_by(Survived) %>% 
+  summarise(numero_casos=n()) %>%
+  mutate(prop = round(prop.table(numero_casos)*100,2))
+test <- dftitanic_test %>% 
+  group_by(Survived) %>% 
+  summarise(numero_casos=n()) %>%
+  mutate(prop = round(prop.table(numero_casos)*100,2))
+# armamos tabla conjunta para graficar
+distrib = cbind(rbind(train, test), dataset = c("train", "train", "test", "test"))
+distrib
+# grafico las distribuciones
+ggplot(distrib, aes(x = Survived, y = prop, fill = Survived, label = prop)) + 
+         geom_bar(stat="identity", position = "dodge") + facet_wrap(~ dataset) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(x = "Sobrevivientes", y = "Proporción en %", title = "Proporción de sobrevivientes por dataset") + 
+  theme_bw() +
+  scale_fill_brewer(palette="Set1")
 ```
 
-Vemos que estamos trabajando con un problema de clasificación con un claro desbalance de clase.
+Vemos que estamos trabajando con un problema de clasificación con cierto desbalance de clase, pero que la proporción se mantiene en ambos conjuntos de datos. 
 
-Realizamos un gráfico exploratorio completo para ver el comportamiento y las relaciones entre las variables. El color rojo designa a quienes no defaultean y el azul a los que sí.
+Realizamos un gráfico exploratorio completo para ver el comportamiento y las relaciones entre las variables. El color rojo designa a quienes no sobrevivieron y el azul a los que sí.
 
 ```{r, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
 # graficamos con ggpairs coloreando por variable a predecir
-g <- ggpairs(default, 1:4,  title = "Correlograma de variables",
-        mapping = aes(colour= default)) + 
+g <- ggpairs(dftitanic_train %>% 
+               select(where(is.numeric)) %>% select(-c(PassengerId)),  
+             title = "Correlograma de variables",
+             mapping = aes(colour= factor(Survived))) + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
   theme_bw()
 # hacemos un loop para cambiar los colores del gráfico
