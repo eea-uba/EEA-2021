@@ -254,6 +254,18 @@ Respecto de nuestra variable a predecir, el **salario bruto**, observamos:
   * Sin embargo, los años de experiencia en la empresa actual y los años de experiencia en el puesto actual presentan un correlación positiva moderada para el grupo de *BI Analyst/Data Analyst*.
   
   * Siguen existiendo outliers severos.
+  
+Para profundizar un poco más en este análisis podemos observar los valores de la correlación de Spearman (robusta a outliers) y compararlos con los obtenidos en la matriz anterior.
+  
+```{r, message=FALSE}
+encuesta_ds_filtrada %>% 
+  select_if(is.numeric) %>% # selecciona las variables numericas 
+  correlate(method = 'spearman') %>% # convierte la matriz de corr en dataframe
+  shave() %>% # solo muestra información debajo de la diagonal principal
+  fashion(decimals = 3) # acomoda los datos en forma tidy (por ej. redondeo de decimales)
+```
+
+Existen varios pares de variables que presentan cambios entre la correlación de Pearson y la de Spearman, por ejemplo la correlación entre el salario bruto y la edad.
 
 ### Outliers Univariados
 
@@ -366,10 +378,22 @@ Ahora, respecto de nuestra variable a predecir, el **salario bruto**, observamos
   * Existe una correlación positiva baja con los años en la empresa y los años en el puesto. Respecto a esta última variable existe una  diferencia en la correlación entre los dos perfiles. 
   
   * Ya no se observan outliers.
+  
+Al igual que antes podemos observar como luce la correlación de Spearman para el dataset final
+  
+```{r, message=FALSE}
+encuesta_ds_final %>% 
+  select_if(is.numeric) %>% # selecciona las variables numericas 
+  correlate(method = 'spearman') %>% # convierte la matriz de corr en dataframe
+  shave() %>% # solo muestra información debajo de la diagonal principal
+  fashion(decimals = 3) # acomoda los datos en forma tidy (por ej. redondeo de decimales)
+```
+
+Si bien siguen existiendo algunas diferencias, no son tan marcadas debido a la eliminación de los outliers univariados.
 
 ## Correlación
 
-Habiendo realizado la limpieza previa construimos la matriz de correlación de nuestras variables. Vamos a utilizar el método de Pearson y Spearman. 
+Habiendo realizado la limpieza previa construimos la matriz de correlación de nuestras variables. Vamos a utilizar el método de Pearson. 
 
 ```{r, message=FALSE}
 # calculo matriz de correlacion para los registros completos (omitiendo faltantes) para variables numéricas con ambos métodos 
@@ -380,11 +404,6 @@ matriz.correl.pe <- encuesta_ds_final %>%
   shave() %>% 
   fashion()
 matriz.correl.pe
-# spearman
-matriz.correl.sp <- encuesta_ds_final %>%
-  select_if(is.numeric) %>% # Seleccionamos las variables numéricas
- correlate(use = "complete.obs", method = "spearman") 
-matriz.correl.sp
 ```
 Como ya vimos en la sección inmediatamente anterior, nuestra variable de interés (el **salario_bruto**) tiene una correlación positiva (método de Pearson) MODERADA con las variables de **edad**: 0.39 y **años de experiencia**: 0.46 y BAJA con los **años en la empresa actual**: 0.20 y los **años en el puesto actual**: 0.23.
 
