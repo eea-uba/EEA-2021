@@ -40,6 +40,7 @@ Introducción al paquete Tidyverse: trabajo con datasets (`dplyr` y `tidyr`), fe
 #### Material opcional
 
 - [Gráficos de kernels y tendencias](Clase 2 - Kernels y Tendencias (OPCIONAL).nb.html)
+- [Distintos tipos de Join](Clase 2. Distintos tipos de Join (OPCIONAL).nb.html)
 
 ### Clase 4: 11-09
 
