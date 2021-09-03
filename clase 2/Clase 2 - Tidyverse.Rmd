@@ -36,7 +36,7 @@ library(tidyverse)
 library(lubridate) # para trabajar con fechas
 ```
 
-![library(tidyverse)](tidyverse.png){width=500}
+[library(tidyverse)](tidyverse.png){width=600}
 Para mostrar el funcionamiento básico de tidyverse retomaremos el ejemplo de la Clase 1, con lo cual volvemos a crear el set de datos del [Indice de salarios](https://www.indec.gob.ar/indec/web/Nivel4-Tema-4-31-61) del INDEC.
 
 ``` {r, warning=FALSE}
