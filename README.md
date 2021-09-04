@@ -46,15 +46,15 @@ Introducción al paquete Tidyverse: trabajo con datasets (`dplyr` y `tidyr`), fe
 
 Estimación y test de correlación entre 2 variables. Matrices de correlación: librerías `corrr` y `GGally` 
 
-- [Correlación]()
+- [Correlación](clase 3/Clase-3---Correlacion.html)
 
 Análisis exploratorios, limpieza de datos, análisis de outliers e interpretación de los coeficientes de un modelo lineal simple
 
-- [Regresión Lineal Simple: Modelo e interpretación]()
+- [Regresión Lineal Simple: Modelo e interpretación](clase 3/Clase-3---Regresion-Lineal-Simple.html)
 
 #### Dataset Notebook Modelo Lineal
 
-- [Dataset Encuesta Sueldos IT]()
+- [Dataset Encuesta Sueldos IT](Fuentes/encuesta_sueldos_sysarmy_2s2020.csv)
 
 ### Clase 5: 18-09
 
