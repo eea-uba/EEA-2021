@@ -1,12 +1,16 @@
 ---
 title: "Kernels y Tendencia (OPCIONAL)"
-author: "Juan Barriola y Sofía Perini^[Basado en la [clase](https://diegokoz.github.io/EEA2019/clase%202/Clase%202-%20Tidyverse.nb.html) de Juan Barriola y Diego Kozlowski]"
+author: Juan Barriola y Sofía Perini^[Basado en la [clase](https://diegokoz.github.io/EEA2019/clase%202/Clase%202-%20Tidyverse.nb.html)
+  de Juan Barriola y Diego Kozlowski]
 date: "04 de septiembre de 2021"
-output: 
-  html_notebook: 
-    toc: true
-    toc_float: true
+output:
+  html_notebook:
     depth: 2
+    toc: yes
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
 ---
 
 <style type="text/css">
@@ -149,8 +153,7 @@ ggplot(ggdata, aes(CH06, P21, colour = Sexo, shape = Sexo, alpha = P21))+
     title = 'Ingreso por ocupación principal',
     subtitle = 'Según edad, nivel educativo y sexo') +
   theme_minimal()+
-  scale_y_continuous(labels = comma)+
-  scale_alpha(guide = FALSE)+
+  scale_alpha(guide = "none")+
   facet_grid(.~NIVEL_ED)
 ```
 
