@@ -36,7 +36,7 @@ library(tidyverse)
 library(lubridate) # para trabajar con fechas
 ```
 
-[library(tidyverse)](tidyverse.PNG){width=300}
+![](tidyverse.png){width=800}
 
 Para mostrar el funcionamiento básico de tidyverse retomaremos el ejemplo de la Clase 1, con lo cual volvemos a crear el set de datos del [Indice de salarios](https://www.indec.gob.ar/indec/web/Nivel4-Tema-4-31-61) del INDEC.
 
@@ -80,7 +80,10 @@ Permite ver la estructura de la tabla. Nos muestra:
 ```{r}
 glimpse(Datos)
 ```
-
+```{r}
+Datos %>% 
+  glimpse()
+```
 
 ### filter
 
@@ -88,14 +91,14 @@ Permite filtrar la tabla acorde al cumplimiento de condiciones lógicas
  
 ```{r}
 Datos %>% 
-  filter(INDICE > 250 , GRUPO == "Privado_Registrado")
+  filter(INDICE > 400 , GRUPO == "Privado_Registrado")
 ```
 
 Nótese que en este caso al separar con una (coma) `,` las condiciones se exige el cumplimiento de ambas. En caso de desear que se cumpla una sola condición debe utilizarse el caracter `|` (una condición "o" la otra).
 
 ```{r}
 Datos %>% 
-  filter(INDICE > 250 | GRUPO == "Privado_Registrado")
+  filter(INDICE > 400 | GRUPO == "Privado_Registrado")
 ```
 
 ### rename
@@ -159,7 +162,6 @@ Datos2
 # o lo que es igual
 Datos <- Datos %>% 
   select(-c(Doble, Caso_cuando))
-Datos
 ```
 
 ### arrange
@@ -172,11 +174,14 @@ Por default ordena en forma ascendente, si queremos que alguna variable quede or
 Datos <- Datos %>% 
   arrange(GRUPO, INDICE)
 Datos
+```
+
+
+```{r}
 # o en forma descendente
 Datos <- Datos %>% 
   arrange(GRUPO, desc(INDICE))
 Datos
-
 ```
 
 ### summarise
@@ -216,6 +221,11 @@ Para ello crearemos previamente un Dataframe que contenga un Ponderador para cad
 ```{r}
 # creamos un dataframe de ponderadores con la columna GRUPO igual al dataset original
 Ponderadores <- data.frame(GRUPO = c("Privado_Registrado", "Público", "Privado_No_Registrado"), PONDERADOR = c(50.16,29.91,19.93))
+Ponderadores
+```
+
+
+```{r}
 # hacemos el join con el dataframe Datos 
 Datos_join <- Datos %>% 
 # especificamos la variable que será utilizada para unir ambas tablas con "by"
@@ -232,7 +242,7 @@ Para más detalle sobre joins, ver notebook opcional de distintos tipos de [join
 
 ## Tidyr
 
-El paquete tidyr esta pensado para "emprolijar los datos". Tiene un conjunto de funciones para implementar las nociones de Tidy Data desarrolladas por Hadley Wickham en su [paper](http://www.jstatsoft.org/v59/i10/paper).
+El paquete tidyr esta pensado para "emprolijar los datos". Tiene un conjunto de funciones para implementar las nociones de Tidy Data desarrolladas por Hadley Wickham en su [paper](https://www.researchgate.net/publication/215990669_Tidy_data).
 
 En el enfoque de *tidy data*:
 
