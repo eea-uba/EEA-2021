@@ -46,6 +46,7 @@ dftitanic_test <- read_csv("../Fuentes/titanic_complete_test.csv")
 glimpse(dftitanic_train)
 glimpse(dftitanic_test)
 ```
+
 El dataset de training tiene 12 variables y 891 observaciones, mientras que el de testing tiene 418.
 
 Las variables del set incluyen id, nombre, edad, sexo del pasajero, como también:
@@ -59,20 +60,18 @@ Las variables del set incluyen id, nombre, edad, sexo del pasajero, como tambié
 * **Cabin**: número de cabina
 * **Embarked**: Puerto de embarque (C = Cherbourg, Q = Queenstown, S = Southampton). 
 
-Se transforman las variables **Survived**,  **Pclass** y **Embarked** a factor.
+Se transforman las variables **Pclass** y **Embarked** a factor.
 
 ```{r}
 dftitanic_train <- dftitanic_train %>%
-  mutate(Survived = factor(Survived), Pclass = factor(Pclass), Embarked = factor(Embarked))
+  mutate(Pclass = factor(Pclass), Embarked = factor(Embarked))
 dftitanic_test <- dftitanic_test %>%
-  mutate(Survived = factor(Survived), Pclass = factor(Pclass), Embarked = factor(Embarked))
+  mutate(Pclass = factor(Pclass), Embarked = factor(Embarked))
 ```
-
-
 
 ## Exploratorias
 
-Analicemos la distribución de la clase.
+Analicemos la distribución de la clase en cada dataset. 
 
 ```{r}
 # calculamos la distribución de clase en cada dataset
@@ -88,7 +87,7 @@ test <- dftitanic_test %>%
 distrib = cbind(rbind(train, test), dataset = c("train", "train", "test", "test"))
 distrib
 # grafico las distribuciones
-ggplot(distrib, aes(x = Survived, y = prop, fill = Survived, label = prop)) + 
+ggplot(distrib, aes(x = Survived, y = prop, fill = factor(Survived), label = prop)) + 
          geom_bar(stat="identity", position = "dodge") + facet_wrap(~ dataset) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   labs(x = "Sobrevivientes", y = "Proporción en %", title = "Proporción de sobrevivientes por dataset") + 
@@ -103,7 +102,7 @@ Realizamos un gráfico exploratorio completo para ver el comportamiento y las re
 ```{r, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
 # graficamos con ggpairs coloreando por variable a predecir
 g <- ggpairs(dftitanic_train %>% 
-               select(where(is.numeric)) %>% select(-c(PassengerId)),  
+               select("Survived","Pclass", "Sex", "Age", "Fare", "SibSp", "Parch"),
              title = "Correlograma de variables",
              mapping = aes(colour= factor(Survived))) + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
@@ -119,28 +118,15 @@ for(i in 1:g$nrow) {
 g
 ```
 
-¿Qué pueden decir de la relación entre balance y default?
+¿Qué pueden decir de la relación entre clase (Pclass) y supervivencia (Survived)?
 
-¿Y entre income y balance?
+¿Y entre edad (Age) y supervivencia?
 
-¿Cuáles parecen ser buenas variables para discriminar entre quienes defaultean y quienes no?
-
-
-### Limpieza
-
-Para modelizar va a ser necesario tener la variable default como numérica. 
-Definimos la variable como {0,1} para los valores {"No","Yes"}
-
-```{r}
-default <- default %>% 
-  mutate(default = case_when(default == "No" ~ 0,
-                             default == "Yes" ~ 1))
-default
-```
+¿Cuáles parecen ser buenas variables para discriminar entre quienes sobrevivieron y quienes no?
 
 ## Planteo del Problema
 
-Queremos estimar $P(Default=Yes|X)=P(X)$ para cada individuo y a partir de ello poder definir un punto de corte para predecir quiénes son los que van a entrar en default.
+Queremos estimar $P(Survived=1|X)=P(X)$ para cada individuo y a partir de ello poder definir un punto de corte para predecir quiénes son los que van a sobrevivir y los que no.
 
 ### Regresión lineal
 
@@ -148,23 +134,23 @@ En este caso estamos modelando la probabilidad de la siguiente manera:
 
 $P(X)= \beta_0 + \sum\limits_{j=1}^p \beta_j X$
 
-Veamos que tan bueno es el modelo lineal para esto, usando balance como predictor.
+Veamos que tan bueno es el modelo lineal para esto, usando la edad como predictor.
 
 ```{r}
-test_mco <- default %>% 
-              lm(formula = default ~ balance, data = .) 
-tdy = test_mco %>% tidy() 
+mrl <- dftitanic_train %>% 
+              lm(formula = Survived ~ Age) 
+tdy = mrl %>% tidy() 
 tdy
-test_mco %>% glance()
+mrl %>% glance()
 ```
 
-Ambos estimadores son significativos y el test de significatividad global del modelo también es significativo.
+Los estimadores son significativos y el test de significatividad global del modelo también es significativo.
 
 Veamos un gráfico de nuestro modelo.
 
 ```{r, echo=FALSE}
-ggplot(default, aes(balance, default)) + 
-  geom_point(aes(color=factor(default))) +
+ggplot(dftitanic_train, aes(Age, Survived)) + 
+  geom_point(aes(color=factor(Survived))) +
   scale_color_brewer(palette = "Set1") + 
   geom_abline(intercept = tdy$estimate[1], slope = tdy$estimate[2], color='forestgreen', size=2) + 
   labs(title="Modelo Lineal Simple", color='Clase') +
@@ -172,7 +158,7 @@ ggplot(default, aes(balance, default)) +
   theme_bw()
 ```
 
-Parece tener bastantes problemas para estimar la probabilidad de default de los individuos. Por ejemplo, vemos que hay varios individuos a los cuales les asigna una probabilidad negativa.
+Parece tener bastantes problemas para estimar la probabilidad de supervivencia de los individuos. 
 
 ### Regresión Logística
 
@@ -190,55 +176,7 @@ $\log {\frac{P(x)}{1-P(x)}}= \beta_0 + \sum\limits_{j=1}^p \beta_j X$
 
 El lado izquierdo es el logaritmo de los **odds** y se llama **logit**.
 
-### Partición del dataset en train y test
-
-Realizamos una partición una partición entre dataset de entrenamiento (70%) y testeo (30%) usando la función `initial_split` del paquete [rsample](https://rsample.tidymodels.org/) de tidymodels.
-
-```{r}
-# fijamos semilla
-set.seed(44)
-# Partición Train y Test, indicando proporción
-train_test <- initial_split(default, prop = 0.7)
-# armamos dataframe de testeo y entrenamiento
-default <- training(train_test)
-test <- testing(train_test)
-# vemos el contenido
-default %>%
-  dim_desc() # 7000 filas
-test %>%
-  dim_desc() # 3000 filas
-```
-
-## Creación de fórmulas
-
-Para aplicar la regresión logística primero usamos la función `formulas` del paquete **modelr** para crear un objeto que contiene todas las fórmulas que vamos a utilizar. En `.response` especificamos la variable respuesta de nuestras fórmulas y luego nombramos las fórmulas que queramos armar.
-
-Así, armaremos distintos modelos combinando distintas variables. 
-
-```{r}
-logit_formulas <- formulas(.response = ~ default, # único lado derecho de las formulas.
-                         bal = ~ balance, 
-                         stud = ~ student,  
-                         inc = ~ income,  
-                         bal_stud = ~ balance + student, 
-                         bal_inc = ~ balance + income, 
-                         stud_inc = ~ student + income,  
-                         full = ~ balance + income + student  
-                         )
-logit_formulas # observamos el objeto formulas
-```
-
-## Creación de modelos
-
-Procedemos a crear los modelos a partir de estas fórmulas.
-
-```{r, warning=FALSE}
-models <- data_frame(logit_formulas) %>% # dataframe a partir del objeto formulas
-  mutate(models = names(logit_formulas), # columna con los nombres de las formulas
-         expression = paste(logit_formulas), # columna con las expresiones de las formulas
-         mod = map(logit_formulas, ~glm(., family = 'binomial', data = default))) # Que estamos haciendo acá? Que vamos a encontrar en la columna?
-models
-```
+### Modelo 
 
 La funcíón `glm()` nos permite crear un modelo lineal generalizado (Generalized Linear Model). Al igual que la función `lm()` toma como argumentos una **formula** y los **datos** pero también se debe especificar el argumento **family**: indicamos la distribución del error y la función link que vamos a utilizar en el modelo. 
 
@@ -252,13 +190,57 @@ Algunas familias son:
 
 Como estamos trabajando con un fenómeno que suponemos tiene una distribución binomial, así lo especificamos en el parámetro **family**.
 
+Realizamos un modelo de regresión logística para predecir la supervivencia en función de **Pclass**, **Sex** y **Age**.
+
+```{r}
+# modelo de regresión logística 
+glm1 <- glm(data = dftitanic_train, Survived ~ Pclass + Sex + Age, family = 'binomial')
+# veo los resultados
+tidy(glm1)
+glance(glm1)
+```
+
+## Creación de fórmulas
+
+Para crear varios modoelos de regresión logística podemos utilizar la función `formulas` del paquete **modelr** para crear un objeto que contiene todas las fórmulas que vamos a utilizar. 
+
+En `.response` especificamos la variable respuesta de nuestras fórmulas y luego nombramos las fórmulas que queramos armar.
+
+Así, armaremos distintos modelos combinando distintas variables. Se generan 7 modelos distintos para predecir la supervivencia en función de distintas combinaciones de las variables pclass, sex, age y fare. 
+
+```{r}
+# Creación de fórmulas
+logit_formulas <- formulas(.response = ~ Survived,
+                           class = ~ Pclass, 
+                           sex = ~ Sex, 
+                           age = ~ Age,  
+                           PcS = ~ Pclass + Sex, # modelo con las variables que más parecen dividir el target
+                           PcSA = ~ Pclass + Sex + Age, # modelo glm1
+                           PcSF = ~ Pclass + Sex + Fare,  # modelo previo sin Age
+                           PcSAF = ~ Pclass + Sex + Age + Fare # modelo glm1 con Fare  
+                           )
+logit_formulas # observamos el objeto formulas
+```
+
+## Creación de modelos
+
+Procedemos a crear los modelos a partir de estas fórmulas.
+
+```{r, warning=FALSE}
+models <- data_frame(logit_formulas) %>% # dataframe a partir del objeto formulas
+  mutate(models = names(logit_formulas), # columna con los nombres de las formulas
+         expression = paste(logit_formulas), # columna con las expresiones de las formulas
+         mod = map(logit_formulas, ~glm(., family = 'binomial', data = dftitanic_train))) # Que estamos haciendo acá? Que vamos a encontrar en la columna?
+models
+```
+
 ### Modelos simples
 
 Probamos los primeros tres modelos, aquellos que tienen un único predictor. Usamos la función _tidy_ para obtener los parámetros estimados para estos tres modelos.
 
 ```{r, warning=FALSE}
 models %>% 
-  filter(models %in% c('bal','stud','inc')) %>%
+  filter(models %in% c('class','sex','age')) %>%
   mutate(tidy = map(mod, tidy))  # Qué realizamos en este paso? Que va a tener esta columna?
 ```
 
@@ -266,14 +248,19 @@ Para acceder a los elementos de la nueva columna _tidy_ debemos desanidarla.
 
 ```{r, warning=FALSE}
 models %>% 
-  filter(models %in% c('bal','stud','inc')) %>%
+  filter(models %in% c('class','sex','age')) %>%
   mutate(tidy = map(mod, tidy)) %>%  # Qué realizamos en este paso? Que va a tener esta columna?
   unnest(tidy) %>% 
   mutate(estimate=round(estimate,5), # redondeamos valores para facilitar lectura
          p.value=round(p.value,4))
 ```
+```{r}
+(models %>% 
+  filter(models %in% c('class')) %>% mutate(tidy = map(mod, tidy)) %>%  unnest(tidy) %>% 
+  filter(term == 'Pclass2') %>% select(estimate))$estimate
+```
 
-Observamos que todos los modelos tienen coeficientes significativos excepto el coeficiente asociado al **Ingreso** (income), el cual tiene un p-valor de 0.17.
+Observamos que todos los modelos tienen coeficientes significativos aunque el de Age se encuentra muy cercano a nuestro valor de rechazo.
 
 #### Interpretación de los coeficientes
 
@@ -281,13 +268,30 @@ Recordando la ecuación para modelar la probabilidad:
 
 $P(Y=1|X)= \frac{e^{\beta_0 + \sum\limits_{j=1}^p \beta_j X}}{1+e^{\beta_0 + \sum\limits_{j=1}^p \beta_j X}}$
 
-Se observa que ahora las variables ya no tienen una relación lineal con la probabilidad. En este modelo un coeficiente positivo indica que frente a aumentos de dicha variable la probabilidad aumenta, mientras que un coeficiente negativo nos indica lo contrario. Para nuestro caso:
+Se observa que ahora las variables ya no tienen una relación lineal con la probabilidad. En este modelo un coeficiente positivo indica que frente a aumentos de dicha variable la probabilidad aumenta, mientras que un coeficiente negativo nos indica lo contrario. Para nuestros modelos:
 
-* El coeficiente de 0.0056 de la variable **balance** indica que cuando el balance aumenta la **probabilidad de default aumenta**.
+**Modelo class**
 
-* El coeficiente de 0.40886 de la variable **studentYes** indica que cuando una persona es estudiante su **probabilidad de default aumenta** respecto a una persona que no lo es.
+* β0 =  corresponde a personas que viajaron en primera clase.
 
-* El coeficiente de -0.00001 de la variable **income** indica que cuando el ingreso aumenta **la probabilidad de default disminuye**.
+* β1 y β2 corresponden a personas que viajaron en la segunda y tercera clase, respectivamente. El coeficiente estimado en ambos casos fue negativo, indicando que la probabilidad de supervivencia disminuye en comparación con la primera clase.  Al ser más negativo el coeficiente estimado de Pclass3, se espera que la probabilidad de Supervivencia sea menor aún para esta clase que para un pasajero en clase 2.
+
+**Modelo sex**
+
+* β0 corresponde a mujeres que viajaron a bordo del titanic.
+
+* β1 representa a los hombres que viajaron en el titanic e indica que **la probabilidad de supervivencia se reduce** en comparación a las mujeres.
+
+**Modelo age**
+
+* β1 indica que la probabilidad de supervivencia disminuye por cada año más de edad de la persona.
+
+
+Para la variable Pclass, observamos los coeficientes de Pclass2 y Pclass3. En ambos casos los valores resultan negativos, indicando que si el pasajero pertenece a la Clase 2 o Clase 3, su probabilidad de Superviviencia (Survived) esperada disminuye respecto de una persona que no pertenece a estas clases, controlando por las otras variables del modelo (Sex y Age). En particular,
+
+Para la variable Sex observamos el coeficiente de SexMale negativo; esto indica que cuando una persona es de Sexo Masculino, su probabilidad de Supervivencia esperada disminuye respecto de una persona de sexo femenino, controlando por las otras variables del modelo.
+
+Para la Age el coeficiente estimado resulta negativo, indicando que ante un aumento en la edad del Pasajero, su probabilidad de supervivencia esperada disminuye, controlando por las otras variables del modelo.
 
 Recomendamos leer el [capítulo de regresión logística](https://christophm.github.io/interpretable-ml-book/logistic.html) de *Interpretable Machine Learning: A Guide for Making Black Box Models Explainable* de Molnar Cristoph para una discusión más profunda de la interpretación de un modelo de regresión logística.
 
