@@ -139,7 +139,6 @@ Datos <- Datos %>%
                                  GRUPO == "Público"            ~ INDICE * 3))
 Datos
 ```
-
 Una forma de manejar la asignación de valores faltantes es crear una "condición" que sea igual a TRUE. Esto funciona como la parte de **else** de una estructura condicional y la sintaxis es ```case_when(condicion lógica1 ~ valor asignado1, TRUE ~ valor asignado en caso de no cumplirse la/s condicion/es previas)```.
 
 ```{r}
@@ -147,6 +146,16 @@ Datos %>%
   mutate(Caso_cuando = case_when(GRUPO == "Privado_Registrado" ~ INDICE * 2,
                                  GRUPO == "Público"            ~ INDICE * 3,
                                  TRUE ~ 1000)) 
+```
+Como la función `case_when` va recorriendo las condiciones en forma secuencial, si repetimos una condición asingando un nuevo valor, el valor que prevalece será el de la primera. Veamos cómo sería el caso:  
+
+```{r}
+Datos %>% 
+  mutate(Caso_cuando = case_when(GRUPO == "Privado_Registrado" ~ INDICE,
+                                 GRUPO == "Público"            ~ INDICE * 3,
+                                 # repetimos la condición 1 pero asignando otro valor
+                                 GRUPO == "Privado_Registrado" ~ INDICE * 2,
+                                 TRUE ~ 1000))
 ```
 
 ### select
@@ -524,7 +533,9 @@ str_detect(pattern = "ñ", string = string7)
     - Escalas de los ejes ```scale_y_continuous```,```scale_x_discrete``` 
     - División en subconjuntos ```facet_wrap()```,```facet_grid()```
 
-`ggplot` tiene __muchos__ comandos, y no tiene sentido saberlos de memoria, es siempre útil reutilizar gráficos viejos y tener a mano el [machete](https://www.rstudio.com/wp-content/uploads/2016/11/ggplot2-cheatsheet-2.1.pdf).
+`ggplot` tiene __muchos__ comandos, y no tiene sentido saberlos de memoria, es siempre útil reutilizar gráficos viejos y tener a mano el [machete](data-visualization.pdf).
+
+También hay otros machetes útiles que ofrece RStudio. Pueden descargarlos en el siguiente [link](https://www.rstudio.com/resources/cheatsheets/). 
 
 ```{r}
 # usando el dataset iris anterior
