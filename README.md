@@ -54,7 +54,7 @@ Análisis exploratorios, limpieza de datos, análisis de outliers e interpretaci
 
 #### Dataset Notebook Modelo Lineal
 
-- [Dataset Encuesta Sueldos IT](Fuentes/encuesta_sueldos_sysarmy_2s2020.csv)
+- [Dataset Encuesta Sueldos IT](Fuentes/regresion_simple/encuesta_sueldos_sysarmy_2s2020.csv)
 
 ### Clase 5: 18-09
 
