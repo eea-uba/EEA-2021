@@ -95,13 +95,9 @@ Evaluación y diagnóstico del modelo. Explicación vs predicción
 
 ### Clase 9: 16-10
 
-- [Tidy models]()
+A definir 
 
 ### Clase 10: 23-10
-
-Parcial
-
-### Clase 11: 30-10
 
 Regresión Logística: modelo de clasificación. Interpretación de coeficientes, métricas y gráficos de evaluación del modelo y evaluación de performance. 
 
@@ -109,17 +105,21 @@ Problema del desbalanceo de clases: comportamiento del modelo, estrategia de ove
 
 - [Regresion Logistica]()
 
-### Clase 12: 06-11
+### Clase 11: 30-10
 
 Regularización: modelos Ridge, Lasso y Elastic Net y trade off sesgo-varianza
 
 - [Regularizacion: Ridge, Lasso y Elastic Net]()
 
-### Clase 13: 13-11
+### Clase 12: 06-11
 
 Smoothing, GAM y Prophet. 
 
 - [Prophet: implementacion de GAM para series de tiempo]()
+
+### Clase 13: 13-11
+
+Repaso pre-parcial.
 
 ### Clase 14: 20-11
 
