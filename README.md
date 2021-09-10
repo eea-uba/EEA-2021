@@ -62,9 +62,9 @@ Inferencia sobre los parámetros, test de significatividad global y R-cuadrado
 
 - [Regresión Lineal Simple: Evaluación y diagnóstico]()
 
-Modelo lineal desde el enfoque de Machine Learning: random search y grid search de parámetros, función objetivo y métodos de optimización para hallar los valores de los parámetros
+Introducción a programación funcional con Tidyverse `PURRR`
 
-- [Regresión Lineal Simple: Enfoque de Machine Learning]()
+- [Tidyverse:PURRR]()
 
 ### Clase 6: 25-09
 
@@ -72,9 +72,9 @@ Diagnóstico de modelo lineal simple
 
 - [Regresión Lineal Simple: Evaluación y diagnóstico]()
 
-Introducción a programación funcional con Tidyverse `PURRR`
+Modelo lineal desde el enfoque de Machine Learning: random search y grid search de parámetros, función objetivo y métodos de optimización para hallar los valores de los parámetros
 
-- [Tidyverse:PURRR]()
+- [Regresión Lineal Simple: Enfoque de Machine Learning]()
 
 ### Clase 7: 02-10
 
