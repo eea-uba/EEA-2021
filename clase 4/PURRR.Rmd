@@ -1,7 +1,7 @@
 ---
 title: "Tidyverse: PURRR"
 author: "Juan Barriola y Sofía Perini"
-date: "03 de Octubre de 2020"
+date: "18 de Septiembre de 2021"
 output:
   html_notebook:
     theme: spacelab
@@ -210,7 +210,7 @@ Recordemos que esta función devuelve un vector numérico no una lista como en e
 
 #### Creación de modelos
 
-Podemos usar la función map para calcular distintos modelos modelos. Por ejemplo, calculemos un modelo distinto según el perfil (DA y DS). En este caso pasamos como función un modelo lineal simple:
+Podemos usar la función map para calcular distintos modelos. Por ejemplo, calculemos un modelo distinto según el perfil (DA y DS). En este caso pasamos como función un modelo lineal simple:
 
 ```{r}
 modelos_por_perfil = encuesta_sueldos_limpia %>% 
@@ -243,20 +243,19 @@ modelos_por_perfil %>%
   map_dbl("r.squared")
 ```
 
-Mientras el modelo de edad para los perfiles BI/DA logra explicar el 15.6% de la variabilidad del fenómeno, el modelo de edad para los DS/DE logra captar un porcentaje menor de la variabilidad (12,9%). 
+Mientras el modelo de edad para los perfiles BI/DA logra explicar el `r round((modelos_por_perfil %>% map(summary) %>% map_dbl("r.squared"))[1]*100,2)`% de la variabilidad del fenómeno, el modelo de edad para los DS/DE logra captar un porcentaje menor de la variabilidad (`r round((modelos_por_perfil %>% map(summary) %>% map_dbl("r.squared"))[2]*100,2)`%). 
 
 #### Acceso a la información: Broom
 
 Podemos aplicar las funciones de broom para poder obtener la información de los modelos en un dataframe. 
 
 Analicemos los elementos de cada uno utilizando la función `tidy()` de la librería broom. 
-
 ```{r}
 modelos_por_perfil %>% 
   map(broom::tidy)
 ```
 
-Si bien la salida es bastante útil, la información sobre cuál modelo estamos observamos forma parte de la salida. Con la función `map_dfr` podemos concatenar los dataframes de salida y con el argumento **.id** crear una columna para indicar el modelo:
+Si bien la salida es bastante útil, la información sobre cuál modelo estamos observando forma parte de la salida. Con la función `map_dfr` podemos concatenar los dataframes de salida y con el argumento **.id** crear una columna para indicar el modelo:
 
 ```{r}
 modelos_por_perfil %>% 
