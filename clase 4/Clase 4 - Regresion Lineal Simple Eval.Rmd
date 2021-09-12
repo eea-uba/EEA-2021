@@ -132,18 +132,18 @@ tidy(modelo_edad)
 Tiene dos parámetros muy útiles:
 
   * `conf.int`: valor lógico para incluir los intervalos de confianza o no
-  * `conf.level`: nivel de confianza para calcular los intervalos. Este es valor es $1 - \alpha$ 
+  * `conf.level`: nivel de confianza para calcular los intervalos. Este valor es $1 - \alpha$ 
   
 ```{r}
 # Incluimos intervalos de confianza
-tidy(modelo_edad,conf.int = TRUE)
+tidy(modelo_edad, conf.int = TRUE)
 ```
 
 Al contar con los datos de los límites de los intervalos de confianza podemos chequear si los mismos contienen o no el cero
 
 ```{r}
 # Aumentamos el nivel de confianza sobre los intervalos
-tidy(modelo_edad,conf.int = TRUE, conf.level = 0.99)
+tidy(modelo_edad, conf.int = TRUE, conf.level = 0.99)
 ```
 
 Al aumentar el nivel de confianza los intervalos se volvieron más anchos. De todas formas,  el correspondiente a la edad sigue sin contener al cero.
@@ -153,7 +153,7 @@ Veamos los resultados para los otros dos modelos
 **Modelo Años de experiencia**
 
 ```{r}
-tidy(modelo_experiencia,conf.int = TRUE) 
+tidy(modelo_experiencia, conf.int = TRUE) 
 ```
 
 Al igual que en el modelo anterior el p-valor es muy pequeño y el intervalo no contiene al cero
@@ -161,7 +161,7 @@ Al igual que en el modelo anterior el p-valor es muy pequeño y el intervalo no 
 **Modelo Años en la Empresa Actual**
 
 ```{r}
-tidy(modelo_empresa,conf.int = TRUE)
+tidy(modelo_empresa, conf.int = TRUE)
 ```
 
 En este modelo, el p-valor asociado al test sobre $\beta_1$ es igual el mayor que hemos obtenido pero sigue siendo posible rechazar la hipótesis nula.
@@ -217,7 +217,7 @@ Observamos que el modelo que utiliza los años de experiencia como variable expl
 
 ## Diagnóstico del modelo
 
-El diagnóstico del modelo consiste en utilizar técnicas para validar el cumplimiento o no de los supuestos del modelo lineal. Recordemos que estos supuestos se puede resumir en:
+El diagnóstico del modelo consiste en utilizar técnicas para validar el cumplimiento o no de los supuestos del modelo lineal. Recordemos que estos supuestos se pueden resumir en:
 
 $\varepsilon_i \sim N(0, \sigma^2)$ independientes entre sí.
 

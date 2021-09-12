@@ -368,10 +368,10 @@ resumen_modelo_edad</code></pre>
 <p>Tiene dos parámetros muy útiles:</p>
 <ul>
 <li><code>conf.int</code>: valor lógico para incluir los intervalos de confianza o no</li>
-<li><code>conf.level</code>: nivel de confianza para calcular los intervalos. Este es valor es <span class="math inline">\(1 - \alpha\)</span></li>
+<li><code>conf.level</code>: nivel de confianza para calcular los intervalos. Este valor es <span class="math inline">\(1 - \alpha\)</span></li>
 </ul>
 <pre class="r"><code># Incluimos intervalos de confianza
-tidy(modelo_edad,conf.int = TRUE)</code></pre>
+tidy(modelo_edad, conf.int = TRUE)</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":["term"],"name":[1],"type":["chr"],"align":["left"]},{"label":["estimate"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["std.error"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["statistic"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["p.value"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["conf.low"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["conf.high"],"name":[7],"type":["dbl"],"align":["right"]}],"data":[{"1":"(Intercept)","2":"13505.509","3":"14923.0444","4":"0.9050103","5":"3.664921e-01","6":"-15911.850","7":"42922.868"},{"1":"edad","2":"2826.663","3":"465.5061","4":"6.0722357","5":"5.792466e-09","6":"1909.024","7":"3744.301"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -379,7 +379,7 @@ tidy(modelo_edad,conf.int = TRUE)</code></pre>
 </div>
 <p>Al contar con los datos de los límites de los intervalos de confianza podemos chequear si los mismos contienen o no el cero</p>
 <pre class="r"><code># Aumentamos el nivel de confianza sobre los intervalos
-tidy(modelo_edad,conf.int = TRUE, conf.level = 0.99)</code></pre>
+tidy(modelo_edad, conf.int = TRUE, conf.level = 0.99)</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":["term"],"name":[1],"type":["chr"],"align":["left"]},{"label":["estimate"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["std.error"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["statistic"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["p.value"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["conf.low"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["conf.high"],"name":[7],"type":["dbl"],"align":["right"]}],"data":[{"1":"(Intercept)","2":"13505.509","3":"14923.0444","4":"0.9050103","5":"3.664921e-01","6":"-25284.411","7":"52295.429"},{"1":"edad","2":"2826.663","3":"465.5061","4":"6.0722357","5":"5.792466e-09","6":"1616.659","7":"4036.667"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -388,7 +388,7 @@ tidy(modelo_edad,conf.int = TRUE, conf.level = 0.99)</code></pre>
 <p>Al aumentar el nivel de confianza los intervalos se volvieron más anchos. De todas formas, el correspondiente a la edad sigue sin contener al cero.</p>
 <p>Veamos los resultados para los otros dos modelos</p>
 <p><strong>Modelo Años de experiencia</strong></p>
-<pre class="r"><code>tidy(modelo_experiencia,conf.int = TRUE) </code></pre>
+<pre class="r"><code>tidy(modelo_experiencia, conf.int = TRUE) </code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":["term"],"name":[1],"type":["chr"],"align":["left"]},{"label":["estimate"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["std.error"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["statistic"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["p.value"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["conf.low"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["conf.high"],"name":[7],"type":["dbl"],"align":["right"]}],"data":[{"1":"(Intercept)","2":"79503.828","3":"4125.1521","4":"19.272945","5":"2.056402e-48","6":"71372.037","7":"87635.620"},{"1":"anos_de_experiencia","2":"3370.479","3":"450.2546","4":"7.485717","5":"1.903960e-12","6":"2482.905","7":"4258.052"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -396,7 +396,7 @@ tidy(modelo_edad,conf.int = TRUE, conf.level = 0.99)</code></pre>
 </div>
 <p>Al igual que en el modelo anterior el p-valor es muy pequeño y el intervalo no contiene al cero</p>
 <p><strong>Modelo Años en la Empresa Actual</strong></p>
-<pre class="r"><code>tidy(modelo_empresa,conf.int = TRUE)</code></pre>
+<pre class="r"><code>tidy(modelo_empresa, conf.int = TRUE)</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":["term"],"name":[1],"type":["chr"],"align":["left"]},{"label":["estimate"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["std.error"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["statistic"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["p.value"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["conf.low"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["conf.high"],"name":[7],"type":["dbl"],"align":["right"]}],"data":[{"1":"(Intercept)","2":"97064.908","3":"3535.8060","4":"27.451989","5":"1.428646e-71","6":"90094.8774","7":"104034.938"},{"1":"anos_en_la_empresa_actual","2":"1896.042","3":"634.9533","4":"2.986113","5":"3.159483e-03","6":"644.3776","7":"3147.707"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -470,7 +470,7 @@ tidy(modelo_edad,conf.int = TRUE, conf.level = 0.99)</code></pre>
 </div>
 <div id="diagnóstico-del-modelo" class="section level2">
 <h2>Diagnóstico del modelo</h2>
-<p>El diagnóstico del modelo consiste en utilizar técnicas para validar el cumplimiento o no de los supuestos del modelo lineal. Recordemos que estos supuestos se puede resumir en:</p>
+<p>El diagnóstico del modelo consiste en utilizar técnicas para validar el cumplimiento o no de los supuestos del modelo lineal. Recordemos que estos supuestos se pueden resumir en:</p>
 <p><span class="math inline">\(\varepsilon_i \sim N(0, \sigma^2)\)</span> independientes entre sí.</p>
 <p>Los <strong>errores</strong> tienen distribución normal con media cero y varianza constante y son independientes entre sí. Los errores son inobservables, por lo tanto tendremos que trabajar con su correlato empírico: los <strong>residuos</strong> en las técnicas de diagnóstico.</p>
 <p>Con el comando <code>plot()</code> sobre un modelo lineal obtenemos 4 gráficos muy útiles para realizar el diagnóstico de nuestro modelo:</p>
