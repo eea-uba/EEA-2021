@@ -167,7 +167,7 @@ De esta manera vamos a estar aplicando la función sobre todas las columnas del 
 
 ```{r}
 # cargamos el dataset
-encuesta_sueldos_limpia = read_csv("../Fuentes/encuesta_sueldos_it_limpia.csv")
+encuesta_sueldos_limpia = read_csv("../Fuentes/regresion_simple/encuesta_ds_limpia.csv")
 encuesta_sueldos_limpia <- encuesta_sueldos_limpia %>%
   # creamos variable perfil BI/DA vs DS/DI
   mutate(perfil = case_when(perfil == "BI Analyst / Data Analyst" ~ "BI/DA", TRUE ~ "DS/DE"))
@@ -217,7 +217,7 @@ modelos_por_perfil = encuesta_sueldos_limpia %>%
                         # separamos el dataset según perfil
                         split(.$perfil) %>% 
                         # creamos un modelo para cada perfil  
-                        map(~lm(salario_neto ~ edad, data = .))
+                        map(~lm(salario_bruto ~ edad, data = .))
 ```
 
 El resultado de esto es una lista con los dos modelos:
