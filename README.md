@@ -64,7 +64,7 @@ Inferencia sobre los parámetros, test de significatividad global y R-cuadrado
 
 Introducción a programación funcional con Tidyverse `PURRR`
 
-- [Tidyverse:PURRR](clase 4/PURRR.nb)
+- [Tidyverse:PURRR](clase 4/PURRR.nb.html)
 
 ### Clase 6: 25-09
 
