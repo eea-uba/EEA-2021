@@ -60,11 +60,11 @@ Análisis exploratorios, limpieza de datos, análisis de outliers e interpretaci
 
 Inferencia sobre los parámetros, test de significatividad global y R-cuadrado
 
-- [Regresión Lineal Simple: Evaluación y diagnóstico]()
+- [Regresión Lineal Simple: Evaluación y diagnóstico](clase 4/Clase-4---Regresion-Lineal-Simple-Eval.html)
 
 Introducción a programación funcional con Tidyverse `PURRR`
 
-- [Tidyverse:PURRR]()
+- [Tidyverse:PURRR](clase 4/PURRR.nb)
 
 ### Clase 6: 25-09
 
