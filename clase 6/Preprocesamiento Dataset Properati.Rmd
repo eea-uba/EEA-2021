@@ -4,7 +4,6 @@ author: "Juan Barriola y Sofía Perini"
 date: "25 de Septiembre de 2021"
 output:
   html_notebook:
-    theme: spacelab
     toc: yes
     toc_float: yes
     df_print: paged
@@ -27,6 +26,11 @@ library(knitr)
 library(kableExtra)
 ```
 
+## Planteo del problema
+
+Nuestro objetivo es crear un modelo lineal múltiple para explicar el precio de venta en dólares de las propiedades en Capital Federal reportadas por la empresa [Properati Argentina](https://www.properati.com.ar/). 
+
+Vamos a utilizar datos del 2019 para no incorporar comportamientos atípicos ocasionados por la pandemia del COVID-19.
 
 ### Lectura del dataset y su estructura
 
@@ -34,7 +38,7 @@ La estructura del dataset consiste en 24 variables (columnas) y 388.891 observac
 
 ```{r}
 # leo el archivo ar_properties 
-datos <- read_csv("ar_properties.csv")
+datos <- read_csv("../Fuentes/ar_properties.csv")
 glimpse(datos)
 ```
 
@@ -153,8 +157,9 @@ datos_limpios <- datos_selec %>%
 # chequeo que la haya eliminado
 head(datos_limpios) 
 ```
-
 ### Eliminación de registros con valores faltantes
+
+Para evitar trabajar con imputación de datos, se decide eliminar los registros que presentan algún valor faltante. Esto representa alrededor del 15% del dataset
 
 ```{r}
 # elimino los registros faltantes
@@ -217,7 +222,7 @@ Se calcularon las principales estadísticas descriptivas de la variable precio p
 
 * Asimimso, los **desvíos** muestran que existe mayor variabilidad de precios en el caso de las casas, seguida por departamentos.
 
-* Los **mínimos** parecen bajos, en el caso del departamento figura uno de 6 mil dolares, pero habría que ver la relación precio por metro cuadrado para ver si se trata de un valor atípico, un error o simplemente de un terreno pequeño. En contraste, las propiedades más caras se presentan en barrios de precios más caros.  
+* Los **mínimos** parecen bajos, en el caso del departamento figura uno de 6 mil dolares, pero habría que ver la relación precio por metro cuadrado para ver si se trata de un valor atípico, un error o simplemente de un terreno pequeño.   
 
 ```{r}
 # calculo estadisticas descriptivas pero agrupando por tipo de propiedad
@@ -263,12 +268,14 @@ ggplot(datos_limpios, aes(y = precio_en_miles, group = property_type, fill = pro
 
 ### Gráfico ggpairs 
 
-```{r, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
+```{r, message=FALSE, warning=FALSE, progress=FALSE, fig.width=8, fig.height=6}
 library(GGally)
-datos_limpios %>%
-  # descartando variables no numéricas y el precio para no duplicar la información que ya tenemos en precio_en_miles
-  select(-c("id", "l3", "price")) %>%
-  ggpairs(., aes(color = property_type), upper = list(continuous = wrap("cor", size = 3, hjust=0.7)), legend = 25) + 
+# graficamos con ggpairs coloreando por property type
+# descartando variables no numéricas y el precio para no duplicar la información que ya tenemos en precio_en_miles
+ggpairs(datos_limpios %>% select(-c("id", "l3", "price")), 
+        aes(color = property_type), 
+        upper = list(continuous = wrap("cor", size = 3, hjust=0.7)),
+        legend = 25) + 
   theme_bw() +
   theme(axis.text.x = element_text(angle=45, vjust=0.5), legend.position = "bottom")
 ```
@@ -280,6 +287,8 @@ Respecto de nuestra variable a predecir, el precio en miles, observamos:
 * Existe una correlación positiva moderada con el número de habitaciones y baños. 
 
 ## Detección de Outliers
+
+Se van a hacer los análisis para outliers univariados teniendo en cuenta que según los gráficos anteriores parecen existir valores atipicos para la superficie y la cantidad de cuartos. También reconsideraría ese filtro manual de las primeras observaciones ya que debería estar capturado/filtrado por el siguiente criterio
 
 **Scatterplot de la variable precio_en_miles y superficie_total**
 
@@ -303,7 +312,7 @@ ggplot(datos_limpios, aes(x = rooms, y = precio_en_miles, color = property_type)
   labs(y = "Precios por metro cuadrado", x = "Número de habitaciones") +
   ggtitle("Scatterplot: precios en función del número de habitaciones") 
 ```
-En particular, se detectó la presencia de un regitro atípico correspondiente a un PH de 126000 metros de superficie por 215 mil dolares y de un registro de un numero de ambientes de 32, también correspondiente a un PH en San Telmo. Se decidió eliminar dichos registros por considerarse outliers.
+En particular, se detectó la presencia de un regitro atípico correspondiente a un PH de 126000 metros de superficie por 215 mil dolares y de un registro de un numero de ambientes de 32, también correspondiente a un PH en San Telmo. 
 
 Se analizaron asimismo otros datos atípicos, efectuando filtros a dichas variables. En algunos casos se detectaron errores que podrían deberse a errores de carga o de escala de medición. Estos casos se tratarán luego con los métodos de tratamiento de outliers que se describen a continuación. Respecto de las habitaciones/ambientes, no parece haber otro valor atípico que llame precisamente la atención.
 
@@ -311,40 +320,17 @@ Se analizaron asimismo otros datos atípicos, efectuando filtros a dichas variab
 # chequeo algunos registros que parecen atípicos
 max(datos_limpios$surface_total)
 max(datos_limpios$rooms)
-datos_limpios %>% 
-  filter(surface_total == 126062 | rooms == 32)
-# descarto 2 registros con valores atípicos
-datos_sin_outliers <- datos_limpios %>% 
-  filter(surface_total != 126062, rooms != 32)
 ```
 
-
-```{r}
-# grafico nuevamente sin ese registro que como se corroboró era un valor atípico producto de un error de carga o algun otro problema 
-ggplot(datos_sin_outliers, aes(x = surface_total, y = precio_en_miles, color = property_type)) + 
-  geom_point(alpha = 0.75) +
-  scale_color_brewer(palette = "Set1") +  
-  theme(legend.position = "none") +
-  theme_minimal() +
-  labs(y = "Precios en miles", x = "Superficie total") +
-  ggtitle("Scatterplot: precios en función de superficie total") 
-ggplot(datos_sin_outliers, aes(x = rooms, y = precio_en_miles, color = property_type)) + 
-  geom_point(alpha = 0.75) +
-  scale_color_brewer(palette = "Set1") +  
-  theme(legend.position = "none") + 
-  theme_minimal() + 
-  labs(y = "Precios en miles", x = "Número de habitaciones") +
-  ggtitle("Scatterplot: precios en función del número de habitaciones") 
-```
 ### Tratamiento de outliers 
 
-Para detectar presencia de outliers, además de analizar los scatterplot y eliminar registros específicos, se definió crear una variable de precio por metro cuadrado ya que, de proceder sólo empleando los precios, se correría el riesgo de eliminar propiedades de precios altos que en realidad corresponden a superficies más amplias y no serían valores atípicos. Por lo que, detectar outliers en base a esta nueva variable es una forma de evitar incurrir en errores de ese estilo.  
+Para detectar presencia de outliers, además de analizar los scatterplot, se definió crear una variable de precio por metro cuadrado ya que, de proceder sólo empleando los precios, se correría el riesgo de eliminar propiedades de precios altos que en realidad corresponden a superficies más amplias y no serían valores atípicos. Por lo que, detectar outliers en base a esta nueva variable es una forma de evitar incurrir en errores de ese estilo.  
 
 En efecto, de un primer análisis de esta nueva variable surge que el valor máximo asciende a cerca de 125 mil dólares, lo que excede ampliamente el precio por metro en cualquier barrio porteño, incluso los más caros. En los boxplots paralelos se observa claramente presencia de outliers en los tres tipos de propiedades, que no permiten sacar conclusiones acerca de los distintos tipos de propiedades.  
 
 ```{r}
 # armo una nueva variable que sea precios por metro (superficie)
-datos_sin_outliers <- datos_sin_outliers %>% 
+datos_sin_outliers <- datos_limpios %>% 
   mutate(pxmt = round(price/surface_total,0))
 summary(datos_sin_outliers$pxmt)
 # Armo histograma de precios x metro cuadrado
@@ -356,9 +342,9 @@ ggplot(data = datos_sin_outliers, aes(x = pxmt)) +
 
 ### Usando 3 desvíos del rango intercuartil para las variables y valor de corte
 
-* Se optó por adicionar un criterio de valor de corte porque la técnica de desvíos del RI resulta insufiente para detectar outliers a izquierda en una distribución asimétrica a derecha. 
+El filtro de outliers utilizado es una "adaptación" del criterio de Tukey que usualmente usa 1.5 veces la distancia intercuartil. Se optó por adicionar un criterio de valor de corte porque la técnica de desvíos del RI resulta insufiente para detectar outliers a izquierda en una distribución asimétrica a derecha. 
 
-* Se tomó como valor de corte 750 dólares por metro cuadrado ya que de acuerdo a un relevamento de Evolución histórica del valor del metro cuadrado en CABA - Deptos. 2, 3 ambientes en USD ajustados por inflación, el valor mínimo fue de 783 dolares el metro cuadrado. [Link al blog properati](https://blog.properati.com.ar/el-valor-del-metro-cuadrado-esta-realmente-en-su-pico-historico/)
+Se tomó como valor de corte 750 dólares por metro cuadrado ya que de acuerdo a un relevamento de Evolución histórica del valor del metro cuadrado en CABA - Deptos. 2, 3 ambientes en USD ajustados por inflación, el valor mínimo fue de 783 dolares el metro cuadrado. [Link al blog properati](https://blog.properati.com.ar/el-valor-del-metro-cuadrado-esta-realmente-en-su-pico-historico/)
 
 ```{r}
 pxmt_sup = IQR(datos_sin_outliers$pxmt) * 3 + quantile(datos_sin_outliers$pxmt, 0.75)
@@ -451,7 +437,7 @@ ggplot(data = datos_sin_outliers, aes(x = pxmt)) +
 ```
 Graficando nuevamente ggpairs, se puede observar que mejoran sustancialmente las visualizaciones, que antes  
 
-```{r, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
+```{r, message=FALSE,  progress=FALSE, warning=FALSE, fig.width=8, fig.height=6}
 datos_sin_outliers %>%
   # descartando variables no numéricas y el precio para no duplicar la información que ya tenemos en precio_en_miles
   select(-c("id", "l3", "price", "pxmt")) %>%
