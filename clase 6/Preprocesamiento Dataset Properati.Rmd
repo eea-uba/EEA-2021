@@ -209,7 +209,8 @@ estad.descrip.precios
 ggplot(data = datos_limpios, aes(x = precio_en_miles)) + 
   geom_histogram(col = "white", aes( fill = ..count..), alpha = 0.75) +
   labs(title = "Histograma de precios de propiedades") +
-  labs(x = "Precio en miles de USD")
+  labs(x = "Precio en miles de USD") +
+  theme_bw()
 ```
 
 ### Estadisticas descriptivas para la variable precio_en_miles por tipo de propiedad
@@ -253,7 +254,8 @@ ggplot(datos_limpios, aes(y = precio_en_miles, group = property_type, fill = pro
   scale_fill_brewer(palette = "PRGn") +
   labs(y = "Precio en miles de USD") +
   labs(x = "Tipo de propiedad") +
-  facet_wrap(~ property_type)
+  facet_wrap(~ property_type) +
+  theme_bw()
 # Acotando la escala del grafico para visualizar mejor el 50% centra de datos
 ggplot(datos_limpios, aes(y = precio_en_miles, group = property_type, fill = property_type )) +
   geom_boxplot() +
@@ -263,7 +265,8 @@ ggplot(datos_limpios, aes(y = precio_en_miles, group = property_type, fill = pro
   scale_y_continuous(limits = c(0, 1000)) +
   labs(y = "Precio en miles de USD") +
   labs(x = "Tipo de propiedad") +
-  facet_wrap(~ property_type)
+  facet_wrap(~ property_type) +
+  theme_bw()
 ```
 
 ### Gráfico ggpairs 
@@ -273,7 +276,8 @@ library(GGally)
 # graficamos con ggpairs coloreando por property type
 # descartando variables no numéricas y el precio para no duplicar la información que ya tenemos en precio_en_miles
 ggpairs(datos_limpios %>% select(-c("id", "l3", "price")), 
-        aes(color = property_type), 
+        aes(color = property_type),
+        progress = FALSE,
         upper = list(continuous = wrap("cor", size = 3, hjust=0.7)),
         legend = 25) + 
   theme_bw() +
@@ -288,7 +292,7 @@ Respecto de nuestra variable a predecir, el precio en miles, observamos:
 
 ## Detección de Outliers
 
-Se van a hacer los análisis para outliers univariados teniendo en cuenta que según los gráficos anteriores parecen existir valores atipicos para la superficie y la cantidad de cuartos. También reconsideraría ese filtro manual de las primeras observaciones ya que debería estar capturado/filtrado por el siguiente criterio
+Se van a hacer los análisis para outliers univariados teniendo en cuenta que según los gráficos anteriores parecen existir valores atipicos para la superficie y la cantidad de cuartos.
 
 **Scatterplot de la variable precio_en_miles y superficie_total**
 
@@ -302,7 +306,7 @@ ggplot(datos_limpios, aes(x = surface_total, y = precio_en_miles, color = proper
   theme(legend.position = "none") + 
   theme_minimal() + 
   labs(y = "Precios en miles", x = "Superficie total") +
-  ggtitle("Scatterplot: precios en función de superficie total") 
+  ggtitle("Scatterplot: precios en función de superficie total")
 # se grafica adicionalmente la variable rooms para detectar presencia de valores atípicos
 ggplot(datos_limpios, aes(x = rooms, y = precio_en_miles, color = property_type)) + 
   geom_point(alpha = 0.75) +
@@ -312,7 +316,7 @@ ggplot(datos_limpios, aes(x = rooms, y = precio_en_miles, color = property_type)
   labs(y = "Precios por metro cuadrado", x = "Número de habitaciones") +
   ggtitle("Scatterplot: precios en función del número de habitaciones") 
 ```
-En particular, se detectó la presencia de un regitro atípico correspondiente a un PH de 126000 metros de superficie por 215 mil dolares y de un registro de un numero de ambientes de 32, también correspondiente a un PH en San Telmo. 
+En particular, se destaca la presencia de un regitro atípico correspondiente a un PH de 126000 metros de superficie por 215 mil dolares y de un registro de un numero de ambientes de 32, también correspondiente a un PH en San Telmo. 
 
 Se analizaron asimismo otros datos atípicos, efectuando filtros a dichas variables. En algunos casos se detectaron errores que podrían deberse a errores de carga o de escala de medición. Estos casos se tratarán luego con los métodos de tratamiento de outliers que se describen a continuación. Respecto de las habitaciones/ambientes, no parece haber otro valor atípico que llame precisamente la atención.
 
@@ -337,7 +341,8 @@ summary(datos_sin_outliers$pxmt)
 ggplot(data = datos_sin_outliers, aes(x = pxmt)) + 
   geom_histogram(col = "white", aes( fill = ..count..), alpha = 0.75) +
   labs(title = "Histograma de precios por m2 de propiedades") +
-  labs(x = "Precio por m2")
+  labs(x = "Precio por m2") +
+  theme_bw()
 ```
 
 ### Usando 3 desvíos del rango intercuartil para las variables y valor de corte
@@ -386,25 +391,31 @@ datos_sin_outliers %>%
             Q3 = quantile(precio_en_miles, probs = 0.75),
             Maximo = max(precio_en_miles), 
             Desvio = round(sd(precio_en_miles),0))
+
 # Armo histograma para ver distribucion de precios en miles del nuevo dataset
 ggplot(data = datos_sin_outliers, aes(x = precio_en_miles)) + 
   geom_histogram(col = "white", aes( fill = ..count..), alpha = 0.75) +
   labs(title = "Histograma de precios de propiedades") +
-  labs(x = "Precio en miles de USD")
+  labs(x = "Precio en miles de USD") +
+  theme_minimal()
+
 # Tabla de estadisticas descriptivas por tipo de propiedad
 datos_sin_outliers %>% 
   group_by(property_type) %>% 
   summarise(Minimo = min(precio_en_miles), Q1 = quantile(precio_en_miles, probs = 0.25), Mediana = quantile(precio_en_miles, probs = 0.5), Promedio = round(mean(precio_en_miles),0), Q3 = quantile(precio_en_miles, probs = 0.75),  Maximo = max(precio_en_miles), Desvio = round(sd(precio_en_miles),0))
+
 # Armo boxplots paralelos segun el tipo de propiedad (casa, dpto o ph) con el nuevo dataset
 ggplot(datos_sin_outliers, aes(y = precio_en_miles, fill = property_type )) +
   geom_boxplot() +
   labs(title = "Boxplots de precios por tipo de propiedad")+
   theme(legend.position = 'none') +
+  theme_minimal() +
   scale_fill_brewer(palette = "PRGn") +
   scale_y_continuous() +
   labs(y = "Precio en miles de USD") +
   labs(x = "Tipo de propiedad") +
   facet_wrap(~ property_type)
+
 # Armo boxplots paralelos de precios por metro cuadrado segun el tipo de propiedad sin outliers
 ggplot(datos_sin_outliers, aes(y = precio_en_miles, fill = property_type )) +
   geom_boxplot() +
@@ -416,6 +427,7 @@ ggplot(datos_sin_outliers, aes(y = precio_en_miles, fill = property_type )) +
   labs(y = "Precio en miles") +
   labs(x = "Tipo de propiedad") +
   facet_wrap(~ property_type)
+
 # armo scatterplot de precios en miles en función de superficie total
 ggplot(datos_sin_outliers, aes(x = surface_total, y = precio_en_miles, color = property_type)) + 
   geom_point(alpha = 0.75) +
@@ -433,7 +445,8 @@ Rearmando el histograma de precios por metro sin outliers, se observa mucho más
 ggplot(data = datos_sin_outliers, aes(x = pxmt)) + 
   geom_histogram(col = "white", aes( fill = ..count..), alpha = 0.75) +
   labs(title = "Histograma de precios por m2 de propiedades") +
-  labs(x = "Precio por m2")
+  labs(x = "Precio por m2") +
+  theme_minimal()
 ```
 Graficando nuevamente ggpairs, se puede observar que mejoran sustancialmente las visualizaciones, que antes  
 
@@ -441,7 +454,7 @@ Graficando nuevamente ggpairs, se puede observar que mejoran sustancialmente las
 datos_sin_outliers %>%
   # descartando variables no numéricas y el precio para no duplicar la información que ya tenemos en precio_en_miles
   select(-c("id", "l3", "price", "pxmt")) %>%
-  ggpairs(., aes(color = property_type), upper = list(continuous = wrap("cor", size = 3, hjust=0.7)), legend = 25) + 
+  ggpairs(., aes(color = property_type), upper = list(continuous = wrap("cor", size = 3, hjust=0.7)), legend = 25, progress = FALSE) + 
   theme_bw() +
   theme(axis.text.x = element_text(angle=45, vjust=0.5), legend.position = "bottom")
 ```
