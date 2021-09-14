@@ -68,11 +68,11 @@ datos_properati %>%
 
 Veamos cómo es la correlación entre las variables numéricas. 
 
-```{r, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
+```{r, progress=FALSE, message=FALSE,  warning=FALSE, fig.width=12, fig.height=8}
 # graficamos con ggpairs coloreando por property type
 g <- ggpairs(datos_properati %>% select(-c(id,l3)), aes(color = property_type), 
           upper = list(continuous = wrap("cor", size = 3, hjust=0.5)), legend = 25) + 
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1), legend.position = "bottom") + 
   theme_bw()
 # hacemos un loop para cambiar los colores del gráfico
 for(i in 1:g$nrow) {
@@ -82,7 +82,7 @@ for(i in 1:g$nrow) {
       scale_color_brewer(palette="Dark2")
         }
 }
-g
+g 
 ```
 
 * Las variables superficie cubierta y total presentan una asociación lineal positiva fuerte (0.945).
@@ -153,9 +153,9 @@ tidy_sc_r
 
 #### Significado de los coeficientes estimados
 
-* El valor de $\hat{\beta_0}$ (ordenada al origen) es 21.639 dólares, lo que corresponde al precio **esperado** de una propiedad con 0 habitaciones y sin superficie. Lo cual, este caso carecería de sentido ya que las propiedades deberían tener superficie y al menos alguna habitación/ambiente.  
+* El valor de $\hat{\beta_0}$ (ordenada al origen) es `r round(tidy_sc_r$estimate[1])` dólares, lo que corresponde al precio **esperado** de una propiedad con 0 habitaciones y sin superficie. Lo cual, este caso carecería de sentido ya que las propiedades deberían tener superficie y al menos alguna habitación/ambiente.  
 
-* El coeficiente estimado de $\hat{\beta_{surface\_covered}}$ (superficie cubierta) es de 2.247 dólares, lo que indica que si mantenemos el número de habitaciones constante, cada incremento de un m2 adicional de superficie corresponde a un aumento de 2.247 dólares, **en promedio** en el precio de la propiedad. O lo que es igual, dadas dos propiedades con la misma cantidad de habitaciones pero teniendo una un m2 más de superficie que la otra, el precio **esperado** para la de mayor superficie será 2.247 dólares más alto que la de menor superficie.
+* El coeficiente estimado de $\hat{\beta_{surface\_covered}}$ (superficie cubierta) es de `r round(tidy_sc_r$estimate[2])` dólares, lo que indica que si mantenemos el número de habitaciones constante, cada incremento de un m2 adicional de superficie corresponde a un aumento de `r round(tidy_sc_r$estimate[2])` dólares, **en promedio** en el precio de la propiedad. O lo que es igual, dadas dos propiedades con la misma cantidad de habitaciones pero teniendo una un m2 más de superficie que la otra, el precio **esperado** para la de mayor superficie será `r round(tidy_sc_r$estimate[2])` dólares más alto que la de menor superficie.
 
 ¿Cómo se interpretaría el coeficiente estimado del número de habitaciones?
 
@@ -208,11 +208,11 @@ tidy_sc_pt
 El modelo de regresión lineal en este caso consiste simplemente en expresar
 la media del nivel de precios en cada población (de casas, departamentos o PHs) mediante tres coeficientes distintos, donde: 
 
-* $\beta_0$ (categoría basal de variable categórica) es la media del precio para las Casas sin superficie. En este modelo es de -232.257 dólares, lo que carece de sentido económico ya que las casas deberían tener alguna superficie y no podrían tener un precio negativo.  
+* $\beta_0$ (categoría basal de variable categórica) es la media del precio para las Casas sin superficie. En este modelo es de `r round(tidy_sc_pt$estimate[1])` dólares, lo que carece de sentido económico ya que las casas deberían tener alguna superficie y no podrían tener un precio negativo.  
 
-* $\beta_0 + \beta_{property\_typeDepartamento}$ es la media del precio para los departamentos, dada la superficie. Por lo tanto, $\beta_{property\_typeDepartamento}$ es la diferencia en los **niveles medios** de precios de los departamentos respecto de las casas (categoría basal).
+* $\beta_0 + \beta_{property\_typeDepartamento}$ es la media del precio para los departamentos, dada la superficie. Por lo tanto, $\beta_{property\_typeDepartamento}$ es la diferencia en los **niveles medios** de precios de los departamentos respecto de las casas (categoría basal).Es decir, $\beta_{property\_typeDepartamento}$ (`r round(tidy_sc_pt$estimate[3])`) indica cuánto más alta es la función de respuesta (precio) para los departamentos respecto de las casas (categoría basal), dada la superficie.
 
-* Vemos que el nivel medio del precio es una función lineal de la superficie de la propiedad, con una misma pendiente $\beta_{surface_total}$ (2.668) para casas, departamentos y PHs. Por otro lado, $\beta_{property\_typeDepartamento}$ (251.740) indica cuánto más alta es la función de respuesta (precio) para los departamentos respecto de las casas (categoría basal), dada la superficie.
+* Vemos que el nivel medio del precio es una función lineal de la superficie de la propiedad, con una misma pendiente $\beta_{surface_total}$ `r round(tidy_sc_pt$estimate[2])` para casas, departamentos y PHs. 
 
 ¿Cómo se interpretaría entonces $\beta_{property\_typePH}$? ¿Y $\beta_0 + \beta_{property\_typePH}$?
 
@@ -228,10 +228,10 @@ intercepto_D = modelo_sc_pt$coefficients[1] + modelo_sc_pt$coefficients[3] # β0
 intercepto_PH = modelo_sc_pt$coefficients[1] + modelo_sc_pt$coefficients[4] # β0 + β3
 # Graficamos el dataset y el modelo
 train_data %>% ggplot(., aes(x = surface_covered, y = price)) + 
+  geom_point() + #capa de los datos
   geom_abline(intercept = intercepto_C, slope = pendiente, color = "forestgreen", size=1) + # capa del modelo
   geom_abline(intercept = intercepto_D, slope = pendiente, color = "darkorange", size=1) + # capa del modelo 
     geom_abline(intercept = intercepto_PH, slope = pendiente, color = "slateblue3", size=1) + # capa del modelo 
-  geom_point() + #capa de los datos
   theme_bw() +
   labs(title="Modelo Lineal Múltiple: Superficie y Tipo de Propiedad", x="Superficie en m2", y="Precio en miles de USD") 
 ```
@@ -240,7 +240,7 @@ train_data %>% ggplot(., aes(x = surface_covered, y = price)) +
 
 La variable barrios (l3) tiene 57 niveles distintos. Veamos a través de boxplots paralelos cómo se comportan. 
 
-```{r}
+```{r, fig.width=10, fig.height=5}
 length(unique(datos_properati$l3)) # 57 barrios
 # armo scatterplot de precios en miles en función de superficie total
 ggplot( datos_properati, aes(x = fct_reorder(l3, price, .desc = T), y = price/1000)) + 
@@ -251,6 +251,18 @@ ggplot( datos_properati, aes(x = fct_reorder(l3, price, .desc = T), y = price/10
   ggtitle("Boxplots de precios en función de los barrios")+
   theme (axis.text.x = element_text(face="italic", colour="dark grey", size = 8, angle = 90))
 ```
+```{r, fig.width=10, fig.height=5}
+# armamos scatterplot de precios en miles en función de superficie total
+ggplot(datos_properati, aes(x = fct_reorder(l3, price, .desc = T), y = price/1000)) + 
+  geom_boxplot(outlier.shape = NA, alpha = 0.75, aes(fill = l3)) + 
+  theme_minimal() + 
+  theme(legend.position = 'none')+
+  labs(y = "Precios en miles", x = "Barrios")  +
+  scale_y_continuous(limits = c(0, 1200)) +
+  ggtitle("Boxplots de precios en función de los barrios")+
+  theme (axis.text.x = element_text(face="italic", colour="dark grey", size = 8, angle = 90))
+```
+
 En los boxplots paralelos de precios por barrios se puede ver que entre los barrios que presentan mayores precios se ubican: Puerto Madero,Las Cañitas, Catalinas, Recoleta y Belgrano, mientras que Villa Soldati, Constitución, Villa lugano y la Boca presentan los menores precios de propiedades. 
 
 Probemos **ajustar un modelo lineal** para el precio en función de la superficie total y los barrios.  
@@ -283,9 +295,9 @@ Para evaluar la significativdad individual de cada una de las variables se anali
 
 Es decir, busca probar:  
 
-* $H_0: \hat{\beta_k} = 0$ 
+* $H_0: \beta_k = 0$ 
 
-* $H_1: \hat{\beta_k} ≠ 0$. 
+* $H_1: \beta_k ≠ 0$. 
 
 **Modelo Superficie y Habitaciones**
 
