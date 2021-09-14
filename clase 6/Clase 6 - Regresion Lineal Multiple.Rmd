@@ -71,7 +71,7 @@ Veamos cómo es la correlación entre las variables numéricas.
 ```{r, progress=FALSE, message=FALSE,  warning=FALSE, fig.width=12, fig.height=8}
 # graficamos con ggpairs coloreando por property type
 g <- ggpairs(datos_properati %>% select(-c(id,l3)), aes(color = property_type), 
-          upper = list(continuous = wrap("cor", size = 3, hjust=0.5)), legend = 25) + 
+          upper = list(continuous = wrap("cor", size = 3, hjust=0.5)), legend = 25, progress=FALSE) + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1), legend.position = "bottom") + 
   theme_bw()
 # hacemos un loop para cambiar los colores del gráfico
@@ -434,109 +434,3 @@ tidy_sc_tb
 ```
 
 ¿Qué pasa ahora con la significatividad de los predictores?
-
-### Colinealidad de los Predictores
-
-Cuando las variables predictoras están correlacionadas entre sí, decimos que existe intercorrelación o multicolinealidad. 
-
-¿Qué pasa en nuestro dataset con la superficie cubierta y descubierta?
-
-```{r}
-cor(train_data$surface_total, train_data$surface_covered)
-```
-Como ya habíamos visto en el gráfico ggpairs inicial, estas variables tienen alta correlación. Veamos qué ocurre con los coeficientes de ambas variables al armar distintos modelos múltiples que las incluyan. 
-
-Armamos un **modelo con superficie total, superficie cubierta, habitaciones y tipo de propiedad**. 
-
-```{r}
-modelo_stsc_r_pt <- lm(price ~ surface_total + surface_covered + rooms + property_type, data = train_data)
-tidy(modelo_stsc_r_pt)
-```
-
-Armamos un **modelo con superficie total y cubierta**. 
-
-```{r}
-modelo_stsc <- lm(price ~ surface_total + surface_covered, data = train_data)
-tidy(modelo_stsc)
-```
-
-Armamos un **modelo con superficie total, habitaciones y tipo de propiedad** pero sin contemplar superficie cubierta. 
-
-```{r}
-modelo_st_r_pt <- lm(price ~ surface_total + rooms + property_type, data = train_data)
-tidy(modelo_st_r_pt)
-```
-
-##### ¿Qué diferencias encuentran con los coeficientes de superficie total y cubierta en los 3 modelos?
-
-* Los coeficientes de regresión estimados se modifican sustancialmente cuando agregamos o quitamos variables del modelo. En el modelo que tiene las 4 variables vs el que solo tiene las superficies cubierta y total el beta estimado de la superficie total cambia de 918 a 412 y la cubierta de 2421 a 2516. 
-
-* Los errores estándares de los estimadores de los coeficientes aumentan espúreamente cuando se incluyen covariables muy correlacionadas. Se infla la varianza estimada de los estimadores. En nuestro caso: el error estándar de la variable superficie total en el primer modelo donde está incluida la superficie cubierta es de alrededor de 918, mientras que en el modelo último que se excluye dicha variable es de 2560.
-
-Veamos qué ocurre si en vez de usar la superficie total en el modelo último usamos la superficie cubierta.
-
-```{r}
-modelo_sc_r_pt <- lm(price ~ surface_covered + rooms + property_type, data = train_data)
-tidy(modelo_sc_r_pt)
-```
-
-Observamos que otra vez cambia el valor del estimador. 
-
-Los coeficientes pueden ser no significativos aún cuando exista una asociación verdadera entre la variable de respuesta y el conjunto de regresoras cuando armamos un modelo con multicolinealidad de variables regresoras. 
-
-> Hay que tener cuidado con la colinealidad de los predictores para no tener problemas con la interpretación de los coeficientes del modelo lineal y que no aumenten espúreamente la varianza estimada de los estimadores. 
-
-### Observaciones sobre la interpretación de los coeficientes
-
-**Modelo con superficies total y cubierta**
-
-La interpretación de los coeficientes estimados sería:
-
-* $\hat{\beta_{surface\_total}}$ indica que por cada m2 adicional de superficie total el precio esperado aumenta en 412 dólares, dada la superficie cubierta.
-
-* $\hat{\beta_{surface\_covered}}$ indica que por cada m2 adicional de superficie cubierta el precio esperado aumenta en 2516 dólares, dada la superficie total.
-
-Respecto a la segunda interpretación alguien podría objetar lo siguiente:
-
-$surface\_total = suface\_covered + suface\_uncovered$
-
-Entonces, si aumento en un m2 la superficie cubierta no puedo sostener que variable superficie total se mantiene constante.
-
-¿Es esta observación correcta?
-
-El coeficiente de $\hat{\beta_{surface\_total}}$ en realidad nos permite evaluar cual es el efecto en el precio esperado de un m2 más de superficie descubierta para igual cantidad de m2 de superficie cubierta. Es decir, lo que cambia es la interpretación en este caso de dicho coeficiente.
-
-Por ejemplo, si existen dos propiedades de 50m2 de superficie total y la propiedad A tiene 5 m2 de superficie descubierta y la propiedad B 4 m2, nuestro modelo nos indica que el precio predicho para la propiedad B va a ser 412 dólares menor al precio de la propiedad A.
-
-**Modelo superficies cubierta y descubierta**
-
-Si quisieramos poder separar el efecto de la superficie cubierta y descubierta deberíamos crear una variable nueva que sea:
-
-$surface\_uncovered = suface\_total + suface\_covered$
-
-Ahora nuestro modelo es:
-
-$E(precio|...) = \beta_0 + \beta_{sc}surface\_covered + \beta_{su}surface\_uncovered$
-
-Para ello creamos una nueva variable de superficie descubierta que sea resultado de la resta entre superficie total y cubierta. 
-
-```{r}
-df2 = train_data %>%
-  mutate(surface_uncovered = surface_total - surface_covered)
-```
-
-Construimos el modelo lineal que planteamos 
-
-```{r}
-tidy(lm(price ~ surface_covered + surface_uncovered, data = df2))
-```
-
-La interpretación de los coeficientes estimados es:
-
-* $\hat{\beta_{suface\_covered}}$ indica que por cada m2 adicional de superficie cubierta el precio **esperado** de las propiedades aumenta en 2.929 dólares, dada la superficie descubierta.
-
-* $\hat{\beta_{suface\_uncovered}}$ indica que por cada m2 adicional de superficie descubierta el precio **esperado** aumenta 412 dólares, dada la superficie cubierta.
-
-En este caso la regresión ayuda a entender cómo afecta la superficie cubierta y descubierta al precio del inmueble. Es decir, cuánto aumenta el precio medio un m2 adicional de superficie cubierta, dada la superficie descubierta, y cuánto aumenta el precio promedio un m2 adicional de superficie descubierta, dada la superficie cubierta. 
-
-Volvemos a observar que el p valor asociado a $\beta_2$ indica que no se puede rechazar la hipotesis nula del test de significatividad individual.
