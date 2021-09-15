@@ -17,7 +17,12 @@ div.main-container {
   margin-right: auto;
 }
 </style>
-  
+
+```{r, echo=FALSE}
+options(scipen=999)
+```
+
+
 ## Planteo del problema
 
 Nuestro objetivo es crear un modelo lineal múltiple para explicar el precio de venta en dólares de las propiedades en Capital Federal reportadas por la empresa [Properati Argentina](https://www.properati.com.ar/). 
@@ -28,7 +33,7 @@ Nuestra idea subyacente de cómo se puede explicar el precio es:
 
 $precio = \beta_0 +\beta_1X_1+\beta_2X_2+...+\epsilon$
 
-```{r, warning=F, message=F}
+```{r, warning=F, message=FALSE}
 library(tidyverse)
 library(tidymodels)
 library(rsample)
@@ -226,9 +231,11 @@ intercepto_C = modelo_sc_pt$coefficients[1] # β0
 pendiente = modelo_sc_pt$coefficients[2] # β1
 intercepto_D = modelo_sc_pt$coefficients[1] + modelo_sc_pt$coefficients[3] # β0 + β2
 intercepto_PH = modelo_sc_pt$coefficients[1] + modelo_sc_pt$coefficients[4] # β0 + β3
+
+color_group <- c("forestgreen","darkorange","slateblue3")
 # Graficamos el dataset y el modelo
 train_data %>% ggplot(., aes(x = surface_covered, y = price)) + 
-  geom_point() + #capa de los datos
+  geom_point(alpha=0.5) + #capa de los datos
   geom_abline(intercept = intercepto_C, slope = pendiente, color = "forestgreen", size=1) + # capa del modelo
   geom_abline(intercept = intercepto_D, slope = pendiente, color = "darkorange", size=1) + # capa del modelo 
     geom_abline(intercept = intercepto_PH, slope = pendiente, color = "slateblue3", size=1) + # capa del modelo 
@@ -251,7 +258,10 @@ ggplot( datos_properati, aes(x = fct_reorder(l3, price, .desc = T), y = price/10
   ggtitle("Boxplots de precios en función de los barrios")+
   theme (axis.text.x = element_text(face="italic", colour="dark grey", size = 8, angle = 90))
 ```
-```{r, fig.width=10, fig.height=5}
+
+Dado que la presencia de outliers univariados dificulta la observación, realizamos nuevamente el gráfico quitando estas observaciones atípicas.
+
+```{r, warning=FALSE,fig.width=10, fig.height=5}
 # armamos scatterplot de precios en miles en función de superficie total
 ggplot(datos_properati, aes(x = fct_reorder(l3, price, .desc = T), y = price/1000)) + 
   geom_boxplot(outlier.shape = NA, alpha = 0.75, aes(fill = l3)) + 
@@ -346,11 +356,11 @@ tidy_sc_l3 %>%
 
 * Si queremos evaluar las variables *property_type* o *l3* en su conjunto, debemos recurrir a un test F. 
 
-## Test F (test de significatividad global)
+## Test conjunto F 
 
 El test conjunto F (y su correspondiente p-valor) permite medir la significatividad conjunta de una variable categórica para explicar la respuesta.
 
-Test F se construye para testear si varios parámetros son cero, es decir, para probar las hipótesis:
+El test conjunto F se construye para testear si todos los parámetros asociados a las categorías de una variable categórica son cero, es decir, para probar las hipótesis:
 
 * $H_0: β_1 = β_2 = · · · = β_{p−1} = 0$
 
@@ -398,9 +408,10 @@ Observemos la distribución de los precios promedio por m2.
 ```{r}
 # boxplot de precios por metro cuadrado
 ggplot(data = AVG_pxm2_l3, aes(x = AVG_pxm2_l3)) + 
-  geom_boxplot(alpha = 0.75) +
+  geom_boxplot(alpha = 0.75, fill="firebrick") +
   labs(title = "Boxplot de precios promedio de barrios por m2") +
-  labs(x = "Precios promedio de barrios por m2")
+  labs(x = "Precios promedio de barrios por m2") +
+  theme_bw()
 ```
 Aplicaremos el siguiente criterio para agrupar los barrios en:
 
