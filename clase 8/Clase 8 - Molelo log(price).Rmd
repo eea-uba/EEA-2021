@@ -1,0 +1,395 @@
+---
+title: "Extensiones del Modelo Regresión Lineal Múltiple"
+author: "Juan Barriola y Sofía Perini"
+date: "9 de Octubre de 2021"
+output:
+  html_notebook:
+    theme: spacelab
+    toc: yes
+    toc_float: yes
+    df_print: paged
+---
+
+<style type="text/css">
+div.main-container {
+  max-width: 1600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+```{r, echo=FALSE}
+options(scipen = 8)
+```
+
+
+```{r, warning=F, message=F}
+library(tidyverse)
+library(tidymodels)
+library(gridExtra)
+```
+
+## Dataset 
+
+Vamos a trabajar con el subconjunto de datos que se utilizó en la clase anterior, precio de venta en dólares de las propiedades en Capital Federal reportadas por la empresa [Properati Argentina](https://www.properati.com.ar/). 
+
+```{r}
+# Levantamos Dataset 
+datos_properati <- read.csv("../clase 6/properati_preprocesado.csv")
+# creamos nueva variable de superficie descubierta
+datos_properati = datos_properati %>%
+  mutate(surface_uncovered = surface_total - surface_covered)
+# creamos variables log
+datos_properati = datos_properati %>% 
+  mutate(log.price = log(price), log.rooms = log(rooms), log.bathrooms = log(bathrooms), log.surf_cov = log(surface_covered))
+head(datos_properati)
+summary(datos_properati)
+```
+
+## Modelo log 
+
+Nuestro objetivo es ajustar e interpretar un modelo de regresión lineal múltiple que buscan explicar el precio de venta en dólares de dichas propiedades pero distinto a los que vimos hasta ahora:
+
+$$
+log(price) = \beta_0 + \beta_{r}log(rooms) + \beta_{b}log(bathrooms) + \beta_{sc}log(surface\_covered) + \beta_{pt}property\_type + \beta_{l3}l3 + \beta_{su}surface\_uncovered
+$$
+### Repaso Diagnóstico del Modelo Lineal previo
+
+**Diagnóstico para el Modelo Varias con Barrios**
+
+El diagnóstico del modelo consiste en utilizar técnicas para validar el cumplimiento (o no) de los supuestos del modelo lineal. Recordemos que estos supuestos se puede resumir en:
+
+$ε_i ∼ N(0,σ^2)$ independientes entre sí.
+
+* A través del análisis gráfico se pudo notar que los residuos parecen tener algún tipo de estructura: se distingue un incremento de la varianza al aumentar el valor predicho. Esto podría indicar que el **supuesto de homogeneidad de varianzas** no se satisface. La variabilidad que se observa frente a precios más altos puede tener que ver con que existen diferencias significativas de precios según el tipo de propiedad o el barrio.
+
+* El QQplot permitió verificar que los puntos se alejan un poco de la diagonal hacia los extremos, lo que puede indicar que los residuos no tienen una **distribución normal** y, por lo tanto, los errores tampoco.
+
+* Es decir, que se puede detectar cierto patrón en los residuos y, por ende, existe margen de mejora del modelo.
+
+## Modelo con transformación logarítmica de Y
+
+Para resolver el hecho de que la varianza no sea constante se puede emplear una transformación estabilizadora de la varianza para transformar a las Y, ya que el reemplazo de Y por Ytransformada puede inducir varianza constante en la escala transformada. 
+
+La forma más común de mejorar un modelo es transformar una o más variables, generalmente usando una transformación logarítmica dado que permite modificar la forma de su distribución. Es por ello, que se efectúa un nuevo modelo empleando dichas transformaciones y se analizan sus resultados. 
+
+
+### Partición del dataset en train y test
+
+En este caso para evaluar los modelos vamos a realizar una partición entre dataset de entrenamiento (75%) y testeo (25%) usando la función `initial_split` del paquete [rsample](https://rsample.tidymodels.org/) de tidymodels.
+
+```{r}
+# fijamos semilla
+set.seed(2021)
+# Partición Train y Test, indicando proporción
+train_test <- initial_split(datos_properati, prop = 0.75)
+train_data <- training(train_test)
+test_data <- testing(train_test)
+# vemos las dimensiones de cada particion
+train_data %>%
+  dim_desc() 
+test_data %>%
+  dim_desc() 
+```
+### Distribución de la nueva variable log.price
+
+Veamos cómo es la distribución de nuestra nueva variable creada log.price en comparación a la variable original price. 
+
+```{r, message=FALSE}
+# Armamos histograma de precios de las propiedades
+ggplot(data = train_data, aes(x = round(price/1000))) + 
+  geom_histogram(col = "white", aes( fill = ..count..), alpha = 0.75) +
+  labs(title = "Histograma de precios de propiedades") +
+  labs(x = "Precio en miles de USD") +
+  theme_bw()
+# Armamos histograma de nueva variable log.price
+ggplot(data = train_data, aes(x = log.price)) + 
+  geom_histogram(col = "white", aes( fill = ..count..), alpha = 0.75) +
+  labs(title = "Histograma de log.price") +
+  labs(x = "log.price") +
+  theme_bw()
+```
+
+### Ajuste del modelo
+
+Vamos a ajustar un modelo con las nuevas variables log. 
+
+```{r}
+# modelo log
+modelo_log <- lm(log.price ~ l3 + log.rooms + log.bathrooms + log.surf_cov + surface_uncovered + property_type, data = train_data)
+```
+
+```{r}
+tidy(modelo_log, conf.int = TRUE) %>% arrange(p.value)
+```
+
+### Interpretación de coeficientes
+
+Los coeficientes en modelos que incluyen variables con tranformación logarítmica tienen una interpretación distinta según el caso, a saber: 
+
+* El **modelo Nivel-Nivel** representa las variables en su forma original. Es decir, la interpretación de los coeficientes en este modelo consiste en: un cambio de una unidad en X, afecta en β unidades a Y.
+* En el **modelo Nivel-Log** esa interpretación cambia: un incremento del 1% en X está asociado a un cambio en Y de 0,01*β.
+* En el **modelo Log-Nivel** dicho coeficiente se conoce como la semielasticidad de Y respecto a X. Se interpreta como: un incremento de una unidad en X está asociado a un cambio en Y de (100·β)%.
+* En el **modelo Log-Log** se conoce como la elasticidad de Y respecto a X. Se interpreta como: un incremento del 1% en X está asociado a un cambio en Y de β%.
+
+Sugerimos leer la sección del libro ["Introductory Econometrics: A Modern Approach"](Wooldrige.pdf) de Jeffrey Wooldrige para profundizar el entendimiento de estas interpretaciones. 
+
+Veamos cómo aplican estas interpretaciones en nuestro modelo log, con algunos ejemplos: 
+
+* El coeficiente de log(surf_cov) es la elasticidad estimada del precio respecto a la superficie cubierta. Es decir, que por cada aumento del 1% en la superficie cubierta hay un aumento de aproximadamente 0,78% en el precio medio de los inmuebles.
+
+* El coeficiente de surface_uncovered representa una semielasticidad del precio respecto de la superficie descubierta. Este coeficiente tiene una interpretación porcentual multiplicándolo por 100: el precio medio del inmueble aumenta 0,22% por cada metro cuadrado adicional de superficie descubierta. 
+
+### Diagnóstico del modelo 
+
+* *Residuos vs valores predichos*: en este caso la distribución de residuos (y residuos estandarizados) no parece tener una forma que indique que sigue a la variable predicha (representando una mayor varianza a mayor valor predicho, como veiamos en el anterior modelo) sino que parece más bien una nube de puntos sin demasiada forma. 
+
+* *Normal QQ plot*: El extremo superior derecho no se ajusta a la distribución teórica, por lo que no parecen seguir una distribución normal.
+
+* *Residual vs leverage*: Existe un punto con un leverage más alto.
+
+```{r}
+eval1 <- broom::augment(modelo_log, train_data)
+# grafico histograma de los residuos
+g6 <- ggplot(eval1, aes(.resid/1000)) + 
+  geom_histogram(col = "white", aes( fill = ..count..), alpha = 0.75) +
+  labs(title = "Histograma de Residuos") +
+  theme(legend.position = 'none') +
+  labs(y = "Cuenta") +
+  labs(x = "Residuos") + 
+  theme_bw()
+# grafico de residuos en funcion de valores predichos
+g7 <-ggplot(eval1, aes(.fitted/1000, .resid/1000)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0) +
+  geom_smooth(se = FALSE) +
+  labs(title = "Distribución de Residuos")+
+  theme(legend.position = 'none') +
+  labs(y = "Residuos") +
+  labs(x = "Predicción precio (miles USD)") + 
+  theme_bw()
+# grafico de residuos estandarizados en funcion de valores predichos
+g8 <- ggplot(eval1, aes(sample= .std.resid))+
+  stat_qq(alpha = 0.5)+
+  geom_abline(color = "blue")+
+  labs(title = "QQ-plot de Residuos estandarizados")+
+  theme(legend.position = 'none') +
+  labs(y = "Residuos") +
+  labs(x = "Cuantiles teóricos") + 
+  theme_bw()
+# gráfico de la distribución de la raíz de residuos estandarizados
+g9 <-ggplot(eval1, aes(.fitted/1000, sqrt(abs(.std.resid))))+
+  geom_point(alpha = 0.5) +
+  geom_smooth(se = FALSE)+
+  labs(title = "Distribución Raíz de residuos estand.")+
+  theme(legend.position = 'none') +
+  labs(y = "Raíz Resid.estand.") +
+  labs(x = "Predicción precio (miles USD)") + 
+  theme_bw()
+# gráfico de la distribución de la raíz de residuos estandarizados
+g10 <-ggplot(eval1, aes(.hat, .std.resid)) +
+  geom_vline(size = 2, colour = "white", xintercept = 0) +
+  geom_hline(size = 2, colour = "white", yintercept = 0) +
+  geom_point(alpha = 0.7) + geom_smooth(se = FALSE) +
+  labs(title = "Leverage vs. Residuos estandarizados")+
+  theme(legend.position = 'none') +
+  labs(y = "Resid. estand.") +
+  labs(x = "Leverage (hat matrix)") + 
+  theme_bw()
+# organizo graficos para mostrarlos juntos
+g6
+grid.arrange(g7, g8, g9, g10)
+```
+### Evaluación y comparación de modelos
+
+Volvemos a crear modelo varias con tipo de barrio para poder comparar con los resultados del modelo log. 
+
+```{r}
+# Modelo varias + tipo de barrio
+modelo_varias_l3 <- lm(price ~ surface_covered + surface_uncovered + rooms + property_type + l3, data = train_data)
+# armamos lista con todos los modelos
+models <- list(modelo_varias_l3 = modelo_varias_l3, modelo_log = modelo_log)
+# calculamos las métricas para todos los modelos
+df_evaluacion_train = map_df(models, broom::glance, .id = "model") %>%
+  # ordenamos por R2 ajustado
+  arrange(desc(adj.r.squared))
+df_evaluacion_train
+```
+**¿Creen que se puede comparar el $R^2$ de ambos modelos? ¿Por qué?**
+
+Una comparación de $R^2$ es significativa sólo si la variable dependiente es la misma para ambos modelos. Entonces, el $R^2$ del modelo lineal no se puede comparar con el $R^2$ del modelo log-log ya que en el primer caso el $R^2$ muestra la proporción de variabilidad del precio explicada por el modelo, mientras que en el modelo log-log, el $R^2$ muestra la variabilidad de log(precio) explicada por el modelo. 
+
+### Métricas en TRAIN 
+
+Para fines de la comparación, nos gustaría una medida que utilice el anti-log (función exponencial) del log(precio). Para el modelo log-log, la forma de proceder es obtener los valores predichos del antilogaritmo y calcular el $R^2$ entre el antilogaritmo de los valores observados y predichos. Este $R^2$ sí será comparable con el obtenido a partir de la estimación MCO del modelo lineal.
+
+Para ello, se puede calcular el anti-log de los valores de log(precios) predichos (así obtener los precios predichos), y luego computar la función `metrics()` de la librería **yardstick** con las columnas de precios predichos y observados para que devuelva: RMSE, R2 y MAE. Veamos cómo hacerlo. 
+
+```{r}
+# para ejecutar el anti-log usamos función exponencial
+eval1 = eval1 %>%  mutate(fitted_antilog= exp(.fitted))
+
+# calculamos RMSE y R2 para las variables originales y no log(price) para que sea comparable con los demás modelos
+metricas1 = metrics(data=eval1, truth=price, estimate=fitted_antilog) %>% mutate(.estimate=round(.estimate, 4))
+metricas1
+
+# Obtenemos las metricas para el modelo sin transformaciones
+eval2 <- broom::augment(modelo_varias_l3, train_data)
+metricas2 = metrics(data=eval2, truth=price, estimate=.fitted) %>% mutate(.estimate=round(.estimate, 4))
+metricas2
+```
+* Analizando el $R^2$, se observa que este modelo explica 80,2% de la variabilidad del precio, es decir, más que el modelo sin log (74,3%). De acuerdo a la literatura, y como se pudo comprobar, el uso del logaritmo de una o más variables mejora el ajuste del modelo al transformar la distribución de las características en una curva de campana de forma más normal.
+
+### Métricas en TEST
+
+De igual manera, obtenemos las métricas en el dataset de test.
+
+```{r}
+# Obtenemos las predicciones de ambos modelos
+lista_predicciones_testing = map(.x = models, .f = augment, newdata = test_data) 
+lista_predicciones_testing
+
+# Obtenemos las metricas para el modelo con transformaciones logaritmicas
+metricas1_test = lista_predicciones_testing$modelo_log %>% 
+                 mutate(fitted_antilog= exp(.fitted)) %>% 
+                 metrics(truth=price, estimate=fitted_antilog) %>% mutate(.estimate=round(.estimate, 4))
+
+# Obtenemos las metricas para el modelo sin transformaciones
+metricas2_test = lista_predicciones_testing$modelo_varias_l3 %>% 
+                 metrics(truth=price, estimate=.fitted) %>% mutate(.estimate=round(.estimate, 4))
+```
+
+Observamos que el modelo_log presenta menor RMSE y mayor R2 tanto en training como en testing. Por lo que parece ser el mejor modelo para predecir el precio. 
+
+
+## Modelo log-log sin interacción
+ 
+Si bien en el apunte de Woolridge se encuentra simplificado, para entender la interpretación de un coeficiente en un modelo log-log como el siguiente:
+
+$$ln(Y) = \beta_0 + \beta_1X_1 +\beta_2ln(X_2)$$
+Podemos tomar la derivada parcial respecto $X_2$ y nos queda:
+ 
+$$\frac{1}{Y} \frac{\delta Y}{\delta X_2} = \beta_2 \frac{1}{X_2} $$
+$$\frac{X_2}{Y} \frac{\delta Y}{\delta X_2} = \beta_2 $$
+
+El término izquierdo es la elasticidad de $Y$ respecto a $X_2$, con lo cual $\beta_2$ equivale a eso.
+ 
+### Caso de interacción entre una variable log y otra sin transformación
+ 
+Ahora si aplicamos el mismo procedimiento para un modelo en el cual realizamos la interacción entre $X_1$ y $ln(X_2)$:
+
+$$ln(Y) = \beta_0 + \beta_1X_1 +\beta_2ln(X_2) + \beta_3X_1.ln(X_2) $$
+ 
+Tomando la derivada parcial respecto $X_2$:
+
+$$\frac{1}{Y} \frac{\delta Y}{\delta X_2} = \beta_2 \frac{1}{X_2} + \beta_3X_1.\frac{1}{X_2}$$
+$$\frac{X_2}{Y} \frac{\delta Y}{\delta X_2} = \beta_2 + \beta_3X_1 $$
+ 
+Ahora nos queda que el valor de la elasticidad de $Y$ respecto de $X_2$ depende de $X_1$. Dependiendo de si $X_1$ es una variable binaria o numérica es cómo se va a poder interpretar el coeficiente $\beta_3$.
+
+Para mayor detalle de caso de interacción entre dos variables log recomendamos ver [How to interpret interaction in Log Log models](https://stats.stackexchange.com/questions/405707/how-to-interpret-interaction-in-log-log-models). También sugerimos para el caso de variables dummies revisar [Log-Log Regression - Dummy Variable and Index](https://stats.stackexchange.com/questions/240572/log-log-regression-dummy-variable-and-index).
+
+### Colinealidad de los Predictores
+
+Cuando las variables predictoras están correlacionadas entre sí, decimos que existe intercorrelación o multicolinealidad. 
+
+¿Qué pasa en nuestro dataset con la superficie cubierta y descubierta?
+
+```{r}
+cor(train_data$surface_total, train_data$surface_covered)
+```
+Como ya habíamos visto en el gráfico ggpairs inicial, estas variables tienen alta correlación. Veamos qué ocurre con los coeficientes de ambas variables al armar distintos modelos múltiples que las incluyan. 
+
+Armamos un **modelo con superficie total, superficie cubierta, habitaciones y tipo de propiedad**. 
+
+```{r}
+modelo_stsc_r_pt <- lm(price ~ surface_total + surface_covered + rooms + property_type, data = train_data)
+tidy(modelo_stsc_r_pt)
+```
+
+Armamos un **modelo con superficie total y cubierta**. 
+
+```{r}
+modelo_stsc <- lm(price ~ surface_total + surface_covered, data = train_data)
+tidy(modelo_stsc)
+```
+
+Armamos un **modelo con superficie total, habitaciones y tipo de propiedad** pero sin contemplar superficie cubierta. 
+
+```{r}
+modelo_st_r_pt <- lm(price ~ surface_total + rooms + property_type, data = train_data)
+tidy(modelo_st_r_pt)
+```
+
+##### ¿Qué diferencias encuentran con los coeficientes de superficie total y cubierta en los 3 modelos?
+
+* Los coeficientes de regresión estimados se modifican sustancialmente cuando agregamos o quitamos variables del modelo. En el modelo que tiene las 4 variables vs el que solo tiene las superficies cubierta y total el beta estimado de la superficie total cambia de 918 a 412 y la cubierta de 2421 a 2516. 
+
+* Los errores estándares de los estimadores de los coeficientes aumentan espúreamente cuando se incluyen covariables muy correlacionadas. Se infla la varianza estimada de los estimadores. En nuestro caso: el error estándar de la variable superficie total en el primer modelo donde está incluida la superficie cubierta es de alrededor de 27.53, mientras que en el modelo último que se excluye dicha variable es de 14.4.
+
+Veamos qué ocurre si en vez de usar la superficie total en el modelo último usamos la superficie cubierta.
+
+```{r}
+modelo_sc_r_pt <- lm(price ~ surface_covered + rooms + property_type, data = train_data)
+tidy(modelo_sc_r_pt)
+```
+
+Observamos que otra vez cambia el valor del estimador. 
+
+Los coeficientes pueden ser no significativos aún cuando exista una asociación verdadera entre la variable de respuesta y el conjunto de regresoras cuando armamos un modelo con multicolinealidad de variables regresoras. 
+
+> Hay que tener cuidado con la colinealidad de los predictores para no tener problemas con la interpretación de los coeficientes del modelo lineal y que no aumenten espúreamente la varianza estimada de los estimadores. 
+
+### Observaciones sobre la interpretación de los coeficientes
+
+**Modelo con superficies total y cubierta**
+
+La interpretación de los coeficientes estimados sería:
+
+* $\hat{\beta_{surface\_total}}$ indica que por cada m2 adicional de superficie total el precio esperado aumenta en 412 dólares, dada la superficie cubierta.
+
+* $\hat{\beta_{surface\_covered}}$ indica que por cada m2 adicional de superficie cubierta el precio esperado aumenta en 2516 dólares, dada la superficie total.
+
+Respecto a la segunda interpretación alguien podría objetar lo siguiente:
+
+$surface\_total = suface\_covered + suface\_uncovered$
+
+Entonces, si aumento en un m2 la superficie cubierta no puedo sostener que variable superficie total se mantiene constante.
+
+¿Es esta observación correcta?
+
+El coeficiente de $\hat{\beta_{surface\_total}}$ en realidad nos permite evaluar cuál es el efecto en el precio esperado de un m2 más de superficie descubierta para igual cantidad de m2 de superficie cubierta. Es decir, lo que cambia es la interpretación en este caso de dicho coeficiente.
+
+Por ejemplo, si existen dos propiedades de 50m2 de superficie total y la propiedad A tiene 5 m2 de superficie descubierta y la propiedad B 4 m2, nuestro modelo nos indica que el precio predicho para la propiedad B va a ser 412 dólares menor al precio de la propiedad A.
+
+**Modelo superficies cubierta y descubierta**
+
+Si quisieramos poder separar el efecto de la superficie cubierta y descubierta deberíamos crear una variable nueva que sea:
+
+$surface\_uncovered = suface\_total + suface\_covered$
+
+Ahora nuestro modelo es:
+
+$E(precio|...) = \beta_0 + \beta_{sc}surface\_covered + \beta_{su}surface\_uncovered$
+
+Para ello creamos una nueva variable de superficie descubierta que sea resultado de la resta entre superficie total y cubierta. 
+
+```{r}
+df2 = train_data %>%
+  mutate(surface_uncovered = surface_total - surface_covered)
+```
+
+Construimos el modelo lineal que planteamos 
+
+```{r}
+tidy(lm(price ~ surface_covered + surface_uncovered, data = df2))
+```
+
+La interpretación de los coeficientes estimados es:
+
+* $\hat{\beta_{suface\_covered}}$ indica que por cada m2 adicional de superficie cubierta el precio **esperado** de las propiedades aumenta en 2.929 dólares, dada la superficie descubierta.
+
+* $\hat{\beta_{suface\_uncovered}}$ indica que por cada m2 adicional de superficie descubierta el precio **esperado** aumenta 412 dólares, dada la superficie cubierta.
+
+En este caso la regresión ayuda a entender cómo afecta la superficie cubierta y descubierta al precio del inmueble. Es decir, cuánto aumenta el precio medio un m2 adicional de superficie cubierta, dada la superficie descubierta, y cuánto aumenta el precio promedio un m2 adicional de superficie descubierta, dada la superficie cubierta. 
+
