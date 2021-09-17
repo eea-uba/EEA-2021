@@ -18,6 +18,11 @@ div.main-container {
 }
 </style>
 
+```{r, echo=FALSE}
+options(scipen = 8)
+```
+
+
 ```{r, warning=F, message=F}
 library(tidyverse)
 library(tidymodels)
@@ -62,7 +67,7 @@ $ε_i ∼ N(0,σ^2)$ independientes entre sí.
 
 * Es decir, que se puede detectar cierto patrón en los residuos y, por ende, existe margen de mejora del modelo.
 
-## Modelo usando trasnformación logarítmica sobre la variable a predecir
+## Modelo con transformación logarítmica de Y
 
 Para resolver el hecho de que la varianza no sea constante se puede emplear una transformación estabilizadora de la varianza para transformar a las Y, ya que el reemplazo de Y por Ytransformada puede inducir varianza constante en la escala transformada. 
 
@@ -90,17 +95,19 @@ test_data %>%
 
 Veamos cómo es la distribución de nuestra nueva variable creada log.price en comparación a la variable original price. 
 
-```{r}
+```{r, message=FALSE}
 # Armamos histograma de precios de las propiedades
 ggplot(data = train_data, aes(x = round(price/1000))) + 
   geom_histogram(col = "white", aes( fill = ..count..), alpha = 0.75) +
   labs(title = "Histograma de precios de propiedades") +
-  labs(x = "Precio en miles de USD")
+  labs(x = "Precio en miles de USD") +
+  theme_bw()
 # Armamos histograma de nueva variable log.price
 ggplot(data = train_data, aes(x = log.price)) + 
   geom_histogram(col = "white", aes( fill = ..count..), alpha = 0.75) +
   labs(title = "Histograma de log.price") +
-  labs(x = "log.price")
+  labs(x = "log.price") +
+  theme_bw()
 ```
 
 ### Ajuste del modelo
@@ -125,7 +132,7 @@ Los coeficientes en modelos que incluyen variables con tranformación logarítmi
 * En el **modelo Log-Nivel** dicho coeficiente se conoce como la semielasticidad de Y respecto a X. Se interpreta como: un incremento de una unidad en X está asociado a un cambio en Y de (100·β)%.
 * En el **modelo Log-Log** se conoce como la elasticidad de Y respecto a X. Se interpreta como: un incremento del 1% en X está asociado a un cambio en Y de β%.
 
-Sugerimos leer el paper de [Wooldrige](Wooldrige.pdf) para profundizar el entendimiento de estas interpretaciones. 
+Sugerimos leer la sección del libro ["Introductory Econometrics: A Modern Approach"](Wooldrige.pdf) de Jeffrey Wooldrige para profundizar el entendimiento de estas interpretaciones. 
 
 Veamos cómo aplican estas interpretaciones en nuestro modelo log, con algunos ejemplos: 
 
@@ -210,43 +217,46 @@ df_evaluacion_train
 ```
 **¿Creen que se puede comparar el $R^2$ de ambos modelos? ¿Por qué?**
 
-Una comparación de $R^2$ es significativa sólo si la variable dependiente es la misma para ambos modelos. Entonces, el  $R^2$ del modelo lineal no se puede comparar con el $R^2$ del modelo log-log ya que en el primer caso el $R^2$ muestra la proporción de variabilidad del precio explicada por el modelo, mientras que en el modelo log-log, el $R^2$ muestra la variabilidad de log(precio) explicada por el modelo. 
+Una comparación de $R^2$ es significativa sólo si la variable dependiente es la misma para ambos modelos. Entonces, el $R^2$ del modelo lineal no se puede comparar con el $R^2$ del modelo log-log ya que en el primer caso el $R^2$ muestra la proporción de variabilidad del precio explicada por el modelo, mientras que en el modelo log-log, el $R^2$ muestra la variabilidad de log(precio) explicada por el modelo. 
 
-Para fines de comparación, nos gustaría una medida que utilice el anti-log del log(precio). Para el modelo log-log, la forma de proceder es obtener los valores predichos del antilogaritmo y calcular el $R^2$ entre el antilogaritmo de los valores observados y predichos. Este $R^2$ sí será comparable con el obtenido a partir de la estimación MCO del modelo lineal.
+### Métricas en TRAIN 
 
-Para ello, se puede calcular el anti-log de los valores de log(precios) predichos (así obtener los precios predichos), y luego computar la función “postResample” de la librería caret pasandole los vectores de precios predichos y observados para que devuelva: RMSE, R2 y MAE. Veamos cómo hacerlo. 
+Para fines de la comparación, nos gustaría una medida que utilice el anti-log (función exponencial) del log(precio). Para el modelo log-log, la forma de proceder es obtener los valores predichos del antilogaritmo y calcular el $R^2$ entre el antilogaritmo de los valores observados y predichos. Este $R^2$ sí será comparable con el obtenido a partir de la estimación MCO del modelo lineal.
+
+Para ello, se puede calcular el anti-log de los valores de log(precios) predichos (así obtener los precios predichos), y luego computar la función `metrics()` de la librería **yardstick** con las columnas de precios predichos y observados para que devuelva: RMSE, R2 y MAE. Veamos cómo hacerlo. 
 
 ```{r}
-library(caret)
 # para ejecutar el anti-log usamos función exponencial
-fitted_antilog = exp(eval1$.fitted)
+eval1 = eval1 %>%  mutate(fitted_antilog= exp(.fitted))
 
 # calculamos RMSE y R2 para las variables originales y no log(price) para que sea comparable con los demás modelos
-metricas1 = round(postResample(fitted_antilog, train_data$price),4)
+metricas1 = metrics(data=eval1, truth=price, estimate=fitted_antilog) %>% mutate(.estimate=round(.estimate, 4))
 metricas1
+
+# Obtenemos las metricas para el modelo sin transformaciones
 eval2 <- broom::augment(modelo_varias_l3, train_data)
-metricas2 = round(postResample(eval2$.fitted, train_data$price),4)
+metricas2 = metrics(data=eval2, truth=price, estimate=.fitted) %>% mutate(.estimate=round(.estimate, 4))
 metricas2
 ```
 * Analizando el $R^2$, se observa que este modelo explica 80,2% de la variabilidad del precio, es decir, más que el modelo sin log (74,3%). De acuerdo a la literatura, y como se pudo comprobar, el uso del logaritmo de una o más variables mejora el ajuste del modelo al transformar la distribución de las características en una curva de campana de forma más normal.
 
-### Métricas en TRAIN 
-
-```{r}
-modelos = data.frame(list(metricas_log = metricas1, metricas_varias = metricas2))
-modelos
-```
-
 ### Métricas en TEST
 
+De igual manera, obtenemos las métricas en el dataset de test.
+
 ```{r}
+# Obtenemos las predicciones de ambos modelos
 lista_predicciones_testing = map(.x = models, .f = augment, newdata = test_data) 
 lista_predicciones_testing
 
-metricas1t = round(postResample(exp(lista_predicciones_testing$modelo_log$.fitted), test_data$price),4)
-metricas2t = round(postResample(lista_predicciones_testing$modelo_varias_l3$.fitted, test_data$price),4)
-modelost = data.frame(list(metricas_logt = metricas1t, metricas_variast = metricas2t))
-modelost
+# Obtenemos las metricas para el modelo con transformaciones logaritmicas
+metricas1_test = lista_predicciones_testing$modelo_log %>% 
+                 mutate(fitted_antilog= exp(.fitted)) %>% 
+                 metrics(truth=price, estimate=fitted_antilog) %>% mutate(.estimate=round(.estimate, 4))
+
+# Obtenemos las metricas para el modelo sin transformaciones
+metricas2_test = lista_predicciones_testing$modelo_varias_l3 %>% 
+                 metrics(truth=price, estimate=.fitted) %>% mutate(.estimate=round(.estimate, 4))
 ```
 
 Observamos que el modelo_log presenta menor RMSE y mayor R2 tanto en training como en testing. Por lo que parece ser el mejor modelo para predecir el precio. 
@@ -315,7 +325,7 @@ tidy(modelo_st_r_pt)
 
 * Los coeficientes de regresión estimados se modifican sustancialmente cuando agregamos o quitamos variables del modelo. En el modelo que tiene las 4 variables vs el que solo tiene las superficies cubierta y total el beta estimado de la superficie total cambia de 918 a 412 y la cubierta de 2421 a 2516. 
 
-* Los errores estándares de los estimadores de los coeficientes aumentan espúreamente cuando se incluyen covariables muy correlacionadas. Se infla la varianza estimada de los estimadores. En nuestro caso: el error estándar de la variable superficie total en el primer modelo donde está incluida la superficie cubierta es de alrededor de 918, mientras que en el modelo último que se excluye dicha variable es de 2560.
+* Los errores estándares de los estimadores de los coeficientes aumentan espúreamente cuando se incluyen covariables muy correlacionadas. Se infla la varianza estimada de los estimadores. En nuestro caso: el error estándar de la variable superficie total en el primer modelo donde está incluida la superficie cubierta es de alrededor de 27.53, mientras que en el modelo último que se excluye dicha variable es de 14.4.
 
 Veamos qué ocurre si en vez de usar la superficie total en el modelo último usamos la superficie cubierta.
 
@@ -348,7 +358,7 @@ Entonces, si aumento en un m2 la superficie cubierta no puedo sostener que varia
 
 ¿Es esta observación correcta?
 
-El coeficiente de $\hat{\beta_{surface\_total}}$ en realidad nos permite evaluar cual es el efecto en el precio esperado de un m2 más de superficie descubierta para igual cantidad de m2 de superficie cubierta. Es decir, lo que cambia es la interpretación en este caso de dicho coeficiente.
+El coeficiente de $\hat{\beta_{surface\_total}}$ en realidad nos permite evaluar cuál es el efecto en el precio esperado de un m2 más de superficie descubierta para igual cantidad de m2 de superficie cubierta. Es decir, lo que cambia es la interpretación en este caso de dicho coeficiente.
 
 Por ejemplo, si existen dos propiedades de 50m2 de superficie total y la propiedad A tiene 5 m2 de superficie descubierta y la propiedad B 4 m2, nuestro modelo nos indica que el precio predicho para la propiedad B va a ser 412 dólares menor al precio de la propiedad A.
 
@@ -382,6 +392,4 @@ La interpretación de los coeficientes estimados es:
 * $\hat{\beta_{suface\_uncovered}}$ indica que por cada m2 adicional de superficie descubierta el precio **esperado** aumenta 412 dólares, dada la superficie cubierta.
 
 En este caso la regresión ayuda a entender cómo afecta la superficie cubierta y descubierta al precio del inmueble. Es decir, cuánto aumenta el precio medio un m2 adicional de superficie cubierta, dada la superficie descubierta, y cuánto aumenta el precio promedio un m2 adicional de superficie descubierta, dada la superficie cubierta. 
-
-Volvemos a observar que el p valor asociado a $\beta_2$ indica que no se puede rechazar la hipotesis nula del test de significatividad individual.
 

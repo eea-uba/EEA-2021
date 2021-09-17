@@ -64,7 +64,9 @@ test_data %>%
   dim_desc() 
 ```
 
-Vamos a traer el dataset de clasificación de barrios para poder utilizarlo en los modelos. Cabe aclarar que es posible utilizar esta clasificación en ambos datasets ya que cuando generamos la clasificación usamos los datos de training. Si para generar una clasificación usáramos precios por metro cuadrado de todo el dataset antes de particionar (train y test) estaríamos incurriendo en data leakage, dado que estaríamos usando la variable a predecir en el ajuste del modelo. 
+**Nota sobre Data Leakage**
+
+Vamos a traer el dataset de clasificación de barrios para poder utilizarlo en los modelos. Cabe aclarar que es posible utilizar esta categorización en ambos datasets ya que cuando generamos la clasificación usamos los datos de training. Si para generar una clasificación usáramos precios por metro cuadrado de todo el dataset antes de particionar (train y test) estaríamos incurriendo en **data leakage**, dado que estaríamos usando la variable a predecir del set de testing en el ajuste del modelo. 
 
 ```{r}
 # levantamos dataset de tipo de barrio
@@ -74,6 +76,7 @@ train_data = train_data %>% left_join(AVG_pxm2_l3[c("l3","tipo_barrio")], by = '
 test_data = test_data %>% left_join(AVG_pxm2_l3[c("l3","tipo_barrio")], by = 'l3') 
 head(train_data)
 ```
+
 El data leakage (o fuga de datos) es el uso de información en el proceso de entrenamiento del modelo que no se esperaría que estuviera disponible en el momento de la predicción, lo que hace que las métricas sobreestimen la utilidad del modelo. 
 
 Se produce cuando se utiliza información externa al conjunto de datos de entrenamiento para crear el modelo. Esta información adicional puede permitir que el modelo aprenda o sepa algo que de otro modo no sabría y, a su vez, invalidará el rendimiento estimado del modo que se está construyendo.
@@ -117,7 +120,7 @@ modelo_varias_l3 <- lm(price ~ surface_covered + surface_uncovered + rooms + pro
 modelo_varias_tb <- lm(price ~ surface_covered + surface_uncovered + rooms + property_type + tipo_barrio, data = train_data)
 ```
 
-En el notebook previo sólo habíamos interpretado el valor de los parámetros estimados y su nivel de significación. Ahora buscaremos responder preguntas tales como:
+En el notebook previo sólo habíamos interpretado el valor de los parámetros estimados y su nivel de significancia. Ahora buscaremos responder preguntas tales como:
 
 ¿Qué proporción de la variabilidad logra explicar el modelo? ¿Cómo decidir que modelo explica mejor el fenómeno?
 
@@ -147,13 +150,15 @@ En este gráfico podemos observar los coeficientes estimados para este modelo co
 
 ```{r}
 # medidas de resumen tidy (incluido el intervalo de confianza)
-tidy_sc_l3 <- tidy(modelo_sc_l3, conf.int = TRUE) %>% arrange(p.value)
-tidy_sc_l3
+tidy_sc_l3 <- tidy(modelo_sc_l3, conf.int = TRUE) %>% arrange(p.value) 
+tidy_sc_l3 
 # Plot de los Coeficientes
-ggplot(tidy_sc_l3, aes(estimate, term, xmin = conf.low, xmax = conf.high, height = 0)) +
-  geom_point(color = "forestgreen") +
+ggplot(tidy_sc_l3, aes(estimate, term, color=p.value < 0.05, xmin = conf.low, xmax = conf.high, height = 0)) +
+  geom_point() +
   geom_vline(xintercept = 0, lty = 4, color = "black") +
-  geom_errorbarh(color = "forestgreen") +
+  geom_errorbarh() +
+  scale_color_manual(values=c('firebrick', 'forestgreen')) +
+  guides(color="none") +
   theme_bw() +
   labs(y = "Coeficientes β", x = "Estimación")
 ```
@@ -175,7 +180,7 @@ ggplot(tidy_sc_tb, aes(estimate, term, xmin = conf.low, xmax = conf.high, height
 ```
 ¿Cómo se interpretan estos coeficientes?
 
-Podemos calcular las variables resumen para todos los modelos juntos, usando la función map_df de la librería purrr para poder mostrar las salidas todas en un mismo dataframe. 
+Podemos calcular esta información para todos los modelos juntos, usando la función map_df de la librería purrr para poder mostrar las salidas todas en un mismo dataframe 
 
 ```{r}
 # armamos lista con todos los modelos
@@ -208,11 +213,12 @@ df_evaluacion_train
 
 ### Selección del mejor modelo en training
 
-¿Cuál es el modelo que mejor explica la variabildad del conjunto?
+¿Cuál es el modelo que mejor explica la variabilidad del conjunto?
 
-Como no todos los modelos tienen igual número de variables, debemos compararlos a través del $R^2_a$, ya que sino podemos incurrir en un error. Por ejemplo, vemos que en los modelos que incluyen a l3, el $R^2$ es el mayor al $R_a^2$. Esa diferencia está explicada por el mayor número de dummies que contienen. A pesar de ello los mejores modelos resultan ser los que incluyen la variable barrios ya que poseen mayor $R_a^2$.
+Como no todos los modelos tienen igual número de variables, debemos compararlos a través del $R^2_a$, ya que sino podemos incurrir en un error. Por ejemplo, vemos que en los modelos que incluyen a l3, el $R^2$ es el mayor al $R_a^2$.
+Por lo expuesto previamente esa diferencia podría estar explicada por el mayor número de dummies que contienen. A pesar de ello los mejores modelos resultan ser los que incluyen la variable barrios ya que poseen mayor $R_a^2$.
 
-Analizando el R2 ajustado, el **mejor modelo** resulta ser modelo_varias_l3: que explica el precio en función de superficie cubierta, descubierta, barrios, habitaciones y tipo de propiedad. Este modelo explica 74,27% de la variabilidad del precio, es decir, más que todos los restantes modelos. 
+Analizando el R2 ajustado, el **mejor modelo** resulta ser modelo_varias_l3: que explica el precio en función de superficie cubierta, descubierta, barrios, habitaciones y tipo de propiedad. Este modelo explica 74,23% de la variabilidad del precio, es decir, más que todos los restantes modelos. 
 
 
 ## Diagnóstico de Modelos
@@ -221,7 +227,7 @@ El diagnóstico del modelo consiste en utilizar técnicas para validar el cumpli
 
 $ε_i ∼ N(0,σ^2)$ independientes entre sí.
 
-Los errores tienen distribución normal con media cero y varianza constante y son independientes entre sí. Los errores son inobservables, por lo tanto, tendremos que trabajar con su correlato empírico: los residuos en las técnicas de diagnóstico.
+Los errores tienen distribución normal con media cero y varianza constante y son independientes entre sí. Los errores son inobservables, por lo tanto, tendremos que trabajar con su correlato empírico: los residuos.
 
 Vamos a efectuar el diagnóstico de dos de los mejores modelos según el R-cuadrado ajustado. 
 
