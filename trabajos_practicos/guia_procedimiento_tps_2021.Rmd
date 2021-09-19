@@ -1,7 +1,10 @@
+
 ---
 title: "Guia de trabajo para los TPs"
-output: html_notebook
-author: Juan Manuel Barriola y Sofía Perini
+author: "Juan Manuel Barriola y Sofía Perini"
+output:
+  html_document:
+    df_print: paged
 ---
 
 Esta es una pequeña guía sobre como proceder con la realización de los trabajos prácticos.
