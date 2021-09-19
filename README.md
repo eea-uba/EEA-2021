@@ -1,5 +1,7 @@
 # EEA-UBA 2021
 
+![image](trabajos_practicos/imagenes/logo-eea.png)
+
 ## Ayudantes
 
 Juan Manuel Barriola
