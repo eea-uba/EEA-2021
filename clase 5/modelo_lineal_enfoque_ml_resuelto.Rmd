@@ -117,7 +117,7 @@ measure_distance(7, 1.5, sim1)
 
 Ahora podemos calcular el __ECM__ para todos los modelos del dataframe _models_. Para eso utilizamos el paquete __purrr__, para ejecutar varias veces la misma función sobre varios elementos. 
 
-### MAP^[basado en https://jennybc.github.io/purrr-tutorial/ls03_map-function-syntax.html]
+### MAP
 
 Nosotros tenemos que pasar pasar los valores de a1 y a2 (dos parámetros --> map2), pero como nuestra función toma sólo uno (el vector a), nos armamos una función de ayuda para wrapear a1 y a2
 
@@ -254,10 +254,11 @@ rss_graph
 
 Podríamos ir haciendo la cuadrícula más fina y fina hasta que nos centramos en el mejor modelo. Pero hay mejores formas de abordar ese problema como herramientas de optimización numéricas. Algunas de ellas son:
 
+* Método Nelder-Mead
 * Búsqueda __Newton-Raphson__.
 * **Gradient Descent**
 
-La intuición de estas dos herramientas es bastante simple: Se elige un punto de partida en la superficie de la función objetivo y se busca la pendiente más inclinada. Luego, desciende por esa pendiente un poco, y se repite una y otra vez, hasta alcanzar la condición de corte. 
+La intuición de este último método es bastante simple: Se elige un punto de partida en la superficie de la función objetivo y se busca la pendiente más inclinada. Luego, desciende por esa pendiente un poco, y se repite una y otra vez, hasta alcanzar la condición de corte. 
 
 
 En R, podemos utilizar la función `optim ()`. Cuenta con los siguientes parámetros:
@@ -266,12 +267,17 @@ En R, podemos utilizar la función `optim ()`. Cuenta con los siguientes paráme
 - **fn**: función objetivo, y los parámetros que nuestra función necesita (data)
 
 ```{r}
+# Adaptamos la función del ECM para usarla con la optimizacion
+measure_distance_opt <- function(params, data) {
+ diff <- data$y - model1(params[1], params[2], data)
+ mean(diff ^ 2)
+   }
+
 # Corremos la optimizacion
-best <- optim(c(0, 0), measure_distance, data = sim1)
+best <- optim(c(0, 0), measure_distance_opt, data = sim1)
 
 best
 ```
-
 
 ```{r}
 # Obtenemos los mejores parametros
@@ -284,9 +290,20 @@ ggplot(sim1, aes(x, y)) +
   theme_bw()
 ```
 
+Para llegar a este resultado definimos:
+
+* **Tipo de modelo**: consideramos que nuestro conjunto de datos (fenómeno) se puede modelar con una regresión lineal simple
+* **Función de costo**: utilizamos el error cuadrático medio
+* **Método de optimización**: la función `optim()` usa por default el método Nelder-Mead
+
+## Función lm()
+
 Al comparar el valor de los parámetros obtenidos mediante el método de optimización con los coeficientes estimados por la función de modelo lineal, observamos que son los mismos.
 
 ```{r}
 summary(lm(y~x, data=sim1))
 ```
+**Nota técnica**
+La función `lm()` llama a la función `lm.fit()`, la cual utiliza **factorización o descomposición QR** para resolver las ecuaciones del modelo lineal.
+
 

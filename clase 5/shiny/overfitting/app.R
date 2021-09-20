@@ -13,7 +13,7 @@ ui <- fluidPage(theme = shinytheme("paper"),
                 titlePanel("Overfitting"),
                 
                 sidebarLayout(
-                  sidebarPanel("Diego Kozlowski, Juan Manuel Barriola",
+                  sidebarPanel("Diego Kozlowski, Juan Manuel Barriola, Sofia Perini",
                                checkboxInput(inputId = "seed", label = "Mantener datos",value = TRUE),
                                sliderInput(inputId = "deg1", label = "Grado del modelo", value = 2,
                                            min = 1, max = 20,step = 1),
