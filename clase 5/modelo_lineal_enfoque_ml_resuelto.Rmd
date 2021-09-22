@@ -43,7 +43,7 @@ Se puede ver un patrón fuerte en los datos. Pareciera que el modelo lineal `y =
 
 ## Modelos al azar
 
-Para empezar, generemos aleatoriamente varios modelos lineales para ver qué forma tienen. Para eso, podemos usar `geom_abline ()` que toma una pendiente e intercepto como parámetros. 
+Para empezar, generemos aleatoriamente varios modelos lineales para ver qué forma tienen. Para eso, podemos usar `geom_abline()` que toma una pendiente e intercepto como parámetros. 
 
 ```{r}
 models <- tibble(
@@ -84,7 +84,7 @@ ggplot(dist1, aes(x1, y)) +
 ```
 
 
-La distancia de cada punto a la recta es la diferencia entre lo que predice nuestro modelo y el valor real
+La distancia de cada punto a la recta es la diferencia entre lo que predice nuestro modelo y el valor real.
 
 ## Función de Modelo
 
@@ -119,7 +119,7 @@ Ahora podemos calcular el __ECM__ para todos los modelos del dataframe _models_.
 
 ### MAP
 
-Nosotros tenemos que pasar pasar los valores de a1 y a2 (dos parámetros --> map2), pero como nuestra función toma sólo uno (el vector a), nos armamos una función de ayuda para wrapear a1 y a2
+Nosotros tenemos que pasar pasar los valores de a1 y a2 (dos parámetros --> map2), pero como nuestra función toma sólo uno (el vector a), nos armamos una función de ayuda para wrapear a1 y a2.
 
 
 ```{r}
@@ -185,9 +185,9 @@ ggplot(sim1, aes(x, y)) +
 
 ## Superficie del ECM
 
-Podemos pasar del gráfico de la grilla de puntos a graficar los mismos datos en tres dimensiones. En el plano *xy* tendremos a ambos parámetros y en el eje *z* observamos el valor del del error cuadractico medio (ECM).
+Podemos pasar del gráfico de la grilla de puntos a graficar los mismos datos en tres dimensiones. En el plano *xy* tendremos a ambos parámetros y en el eje *z* observamos el valor del error cuadrático medio (ECM).
 
-Notemos que ya no estamos trabajando con la distancia sino que estamos graficando la superficie del ECM como función de ambos parametros.
+Notemos que ya no estamos trabajando con la distancia sino que estamos graficando la superficie del ECM como función de ambos parámetros.
 
 Por la fórmula del ECM esta superficie es convexa y presenta un mínimo global.
 
@@ -197,7 +197,6 @@ model_predictions <- function(parameters, data, predictor){
    pred <- parameters[1] + parameters[2] * data[[predictor]]
    return(pred)
 }
-
 # Calcular el rss
 get_rss <- function(parameters, data, predictor = 'x', predicted = 'y'){
   prediction <- model_predictions(parameters, data, predictor = predictor)
@@ -205,31 +204,25 @@ get_rss <- function(parameters, data, predictor = 'x', predicted = 'y'){
   rss <- sum((residuals)^2)
   return(rss)
 }
-
 #Calcular el rss para el dataset sim1
 sim1_get_rss <- function(a0, a1) {
   get_rss(c(a0, a1), sim1)
 }
-
 # Vectores de parametros
 b0 = seq(2, 6, by = 0.1)
 b1 = seq(1.7, 2.5, length=length(b0))
-
 # Grilla de modelos
 models_grid <- expand.grid(
   
   b0 = seq(2, 6, by = 0.1),
   b1 = seq(1.7, 2.5, length=length(b1))
 ) %>% 
-  mutate(dist = purrr::map2_dbl(b0, b1, sim1_get_rss)) 
-
-
+  mutate(dist = purrr::map2_dbl(b0, b1, sim1_get_rss))
 ```
 
 ```{r}
 # Matriz para el grafico
 rss_matrix <- matrix(models_grid[["dist"]],nrow = length(b1),ncol = length(b1), byrow = TRUE)
-
 # Grafico usando plotly
 rss_graph = plot_ly(x=b0, y=b1, z=rss_matrix) %>% add_surface(contours = list(
   z = list(
@@ -246,7 +239,6 @@ rss_graph = plot_ly(x=b0, y=b1, z=rss_matrix) %>% add_surface(contours = list(
       yaxis = list(title = "a1"),
       zaxis = list(title = "RSS")
     ))
-
 rss_graph
 ```
 
@@ -261,7 +253,7 @@ Podríamos ir haciendo la cuadrícula más fina y fina hasta que nos centramos e
 La intuición de este último método es bastante simple: Se elige un punto de partida en la superficie de la función objetivo y se busca la pendiente más inclinada. Luego, desciende por esa pendiente un poco, y se repite una y otra vez, hasta alcanzar la condición de corte. 
 
 
-En R, podemos utilizar la función `optim ()`. Cuenta con los siguientes parámetros:
+En R, podemos utilizar la función `optim()`. Cuenta con los siguientes parámetros:
 
 - **par**: vector de puntos iniciales. Elegimos el origen por poner cualquier cosa
 - **fn**: función objetivo, y los parámetros que nuestra función necesita (data)
@@ -272,17 +264,14 @@ measure_distance_opt <- function(params, data) {
  diff <- data$y - model1(params[1], params[2], data)
  mean(diff ^ 2)
    }
-
 # Corremos la optimizacion
 best <- optim(c(0, 0), measure_distance_opt, data = sim1)
-
 best
 ```
 
 ```{r}
 # Obtenemos los mejores parametros
 best$par
-
 # Graficamos la linea de los mejores parametros
 ggplot(sim1, aes(x, y)) + 
   geom_point(size = 2, colour = "grey30") + 
