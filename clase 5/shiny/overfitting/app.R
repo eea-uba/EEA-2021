@@ -1,6 +1,8 @@
 #######                                                #######
-####### basado en https://github.com/apapiu/Shiny-Apps #######
+####### Basado en https://github.com/apapiu/Shiny-Apps #######
 #######                                                #######
+####### Dejamos link al material sobre cómo implementar una shiny app #########
+#### https://shiny.rstudio.com/tutorial/ ####### 
 
 library(polynom)
 library(ggplot2)
@@ -13,25 +15,30 @@ ui <- fluidPage(theme = shinytheme("paper"),
                 titlePanel("Overfitting"),
                 
                 sidebarLayout(
-                  sidebarPanel("Diego Kozlowski, Juan Manuel Barriola",
-                               checkboxInput(inputId = "seed", label = "Mantener datos",value = TRUE),
+                  sidebarPanel("Seleccionar parámetros deseados",
+                               "",
+                               "",
+                               # checkboxInput(inputId = "seed", label = "Mantener datos",value = TRUE),
                                sliderInput(inputId = "deg1", label = "Grado del modelo", value = 2,
                                            min = 1, max = 20,step = 1),
-                               "Datos reales",
-                               sliderInput(inputId = "n", label = "Cantidad de ejemplos", value = 50,
+                               "Datos",
+                               sliderInput(inputId = "n", label = "Cantidad de observaciones", value = 50,
                                            min = 10, max = 200,step = 1),
                                sliderInput(inputId = "q", label = "Grado del target", value = 1,
                                            min = 1, max = 5,step = 1),
                                sliderInput(inputId = "s", label = "Cantidad de ruido", value = .5,
-                                           min = 0, max = 3,step = .1), width = 3),
+                                           min = 0, max = 3,step = .1), width = 3), 
+                  
                   
                   mainPanel(
-                    h2(textOutput("text1", container = span)),
-                    h4(textOutput("text2", container = span)),
+                    h3(textOutput("text1", container = span)),
+                    h6(textOutput("text2", container = span)),
                     withMathJax(),
                     uiOutput('eq0'),
                     uiOutput('eq1'),
-                    plotOutput("plot", width = "800px", height = "600px"))
+                    plotOutput("plot", width = "800px", height = "600px"),
+                    "Diego Kozlowski, Juan Manuel Barriola y Sofia Perini, basado en https://github.com/apapiu/Shiny-Apps." 
+                    )
                   
                   
                   
@@ -60,7 +67,7 @@ server <- function (input, output) {
     paste0("El concepto de overfitting en el modelo lineal")})
   
   output$text2 <- renderText({
-    paste0("El modelo SIEMPRE es lineal en los coeficientes y sus efectos SIEMPRE son aditivos")})
+    paste0("El modelo SIEMPRE es lineal en los coeficientes y sus efectos SIEMPRE son aditivos.")})
   
   output$eq0 <- renderUI({
     eq <- paste0("y  = \\beta_0")
@@ -70,7 +77,7 @@ server <- function (input, output) {
       
     }
     withMathJax(
-      h5(paste0('Modelo Real  $$',eq,'+ \\epsilon$$',
+      h6(paste0('Modelo Real $$',eq,'+ \\epsilon$$',
                       'con $$\\epsilon\\sim\\mathcal{N}(0,\\,',input$s,')$$')))
   })
   
@@ -84,7 +91,7 @@ server <- function (input, output) {
       
     }
     withMathJax(
-      h5(paste0('Modelo Propuesto  $$',eq,'$$')))
+      h6(paste0('Modelo Propuesto $$',eq,'$$')))
   })
   
   output$plot =  renderPlot({
@@ -93,13 +100,15 @@ server <- function (input, output) {
     
     ggplot(data()[[1]]) +
       aes(x, y) +
-      geom_point(alpha = 0.7, size = 3, color='forestgreen') +
-      theme_classic() +
+      geom_point(alpha = 0.3, size = 3, color='forestgreen') +
+      theme_minimal() +
       stat_function(fun = polynomial, size = 1.25, alpha = 0.9) +
       geom_smooth(method = "lm", formula = y ~ poly(x,input$deg1), 
-                  color = "red", se = FALSE, size = 1.25, alpha = 0.9) +
-      theme(panel.background = element_rect(color = "black"))
+                  color = "steelblue", se = FALSE, size = 1.25, alpha = 0.9) +
+      theme(panel.background = element_rect(color = "black"), axis.text=element_text(size=14),
+            axis.title=element_text(size=14,face="bold"))
   })
 }
 
 shinyApp(ui, server)
+

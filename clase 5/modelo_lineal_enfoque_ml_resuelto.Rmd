@@ -1,7 +1,7 @@
 ---
 title: "Regresión Lineal Simple: Enfoque Machine Learning"
 author: "Juan Barriola y Sofía Perini"
-date: "26 de Septiembre de 2020"
+date: "25 de Septiembre de 2021"
 output:
   html_notebook:
     theme: spacelab
@@ -21,7 +21,7 @@ library(plotly)
 options(na.action = na.warn)
 ```
 
-Usualmente se observa el enfoque "estadístico para hallar las estimaciones de los parámetros en un modelo lineal. Obtenemos los valores con las siguientes fórmulas:
+En el contexto del curso se observa el enfoque **estadístico** para hallar las estimaciones de los parámetros en un modelo lineal. Obtenemos los valores con las siguientes fórmulas:
 
 $\hat{\beta_0} = \overline{Y} - \hat{\beta_1} \cdot \overline{X}$
 
@@ -43,7 +43,7 @@ Se puede ver un patrón fuerte en los datos. Pareciera que el modelo lineal `y =
 
 ## Modelos al azar
 
-Para empezar, generemos aleatoriamente varios modelos lineales para ver qué forma tienen. Para eso, podemos usar `geom_abline ()` que toma una pendiente e intercepto como parámetros. 
+Para empezar, generemos aleatoriamente varios modelos lineales para ver qué forma tienen. Para eso, podemos usar `geom_abline()` que toma una pendiente e intercepto como parámetros. 
 
 ```{r}
 models <- tibble(
@@ -57,7 +57,6 @@ ggplot(sim1, aes(x, y)) +
   theme_bw()
 ```
 
-
 A simple vista podemos apreciar que algunos modelos son mejores que otros. Pero necesitamos una forma de cuantificar cuales son los _mejores_ modelos. 
 
 ## Distancias
@@ -67,7 +66,7 @@ Una forma de definir _mejor_ es pensar en aquel modelo que minimiza la distancia
 Para eso, elijamos un modelo cualquiera:
 
 $$ y= 7 + 1.5*x$$
-
+Y lo representamos gráficamente
 
 ```{r}
 dist1 <- sim1 %>% 
@@ -85,21 +84,17 @@ ggplot(dist1, aes(x1, y)) +
 ```
 
 
-La distancia de cada punto a la recta es la diferencia entre lo que predice nuestro modelo y el valor real
+La distancia de cada punto a la recta es la diferencia entre lo que predice nuestro modelo y el valor real.
 
 ## Función de Modelo
 
-Para computar la distancia, primero necesitamos una función que permita representar a cualquier modelo.
-
-### Ejercicio
-
-Crear una función que reciba un vector con los parametros del modelo, y el set de datos, y genere la predicción:
+Para computar la distancia, primero necesitamos una función que permita representar a cualquier modelo lineal simple. Creamos una  una función que recibe un vector con los parametros del modelo, y el set de datos, y genera la predicción:
   
 ```{r}
-model1 <- function(a, data) {
-   a[1] + data$x * a[2]
+model1 <- function(ordenada, pendiente, data) {
+   ordenada + data$x * pendiente
    }
-model1(c(7, 1.5), sim1)
+model1(7, 1.5, sim1)
 ```
 
 Necesitamos una forma de cuantificar el error de predicción de nuestro modelo en todas las observaciones y resumirlo en única métrica.
@@ -107,36 +102,30 @@ Esta será la función objetivo que buscaremos minimizar.
 
 Una de las formas de hacerlo es con el error cuadrático medio (ECM)
 
-### Ejercicio 2
-
-Necesitamos una función, que reciba un vector con los parametros del modelo y el set de datos, que calcule el promedio de los errores cuadráticos (ECM)
- 
 $$ECM = \frac{\sum_i^n{(\hat{y_i} - y_i)^2}}{n}$$
 
 ```{r}
-measure_distance <- function(mod, data) {
- diff <- data$y - model1(mod, data)
+# Creamos una función que recibe un vector con los parametros del modelo y el set de datos y devuelve el ECM
+measure_distance <- function(ordenada, pendiente, data) {
+ diff <- data$y - model1(ordenada, pendiente, data)
  mean(diff ^ 2)
    }
-measure_distance(c(7, 1.5), sim1)
+measure_distance(7, 1.5, sim1)
 ```
 
 ## Evaluando los modelos aleatorios
 
 Ahora podemos calcular el __ECM__ para todos los modelos del dataframe _models_. Para eso utilizamos el paquete __purrr__, para ejecutar varias veces la misma función sobre varios elementos. 
 
-### MAP^[basado en https://jennybc.github.io/purrr-tutorial/ls03_map-function-syntax.html]
+### MAP
 
-Nosotros tenemos que pasar pasar los valores de a1 y a2 (dos parámetros --> map2), pero como nuestra función toma sólo uno (el vector a), nos armamos una función de ayuda para wrapear a1 y a2
+Nosotros tenemos que pasar pasar los valores de a1 y a2 (dos parámetros --> map2), pero como nuestra función toma sólo uno (el vector a), nos armamos una función de ayuda para wrapear a1 y a2.
 
 
 ```{r}
-sim1_dist <- function(a1, a2) {
-  measure_distance(c(a1, a2), sim1)
-}
-
+# Calculamos las distancias para los nuevos modelos
 models <- models %>% 
-  mutate(dist = purrr::map2_dbl(a1, a2, sim1_dist))
+  mutate(dist = purrr::map2_dbl(a1, a2, measure_distance, sim1))
 models
 ```
 
@@ -152,7 +141,6 @@ ggplot(sim1, aes(x, y)) +
   theme_bw()
               
 ```
-
 
 También podemos pensar en estos modelos como observaciones y visualizar con un gráfico de dispersión de `a1` vs` a2`, nuevamente coloreado por `-dist`. Ya no podemos ver directamente cómo se compara el modelo con los datos, pero podemos ver muchos modelos a la vez. Nuevamente, destacamos los 10 mejores modelos, esta vez dibujando círculos rojos debajo de ellos.
 
@@ -175,7 +163,7 @@ grid <- expand.grid(
   a2 = seq(1, 3, length = 25)
   ) %>% 
   # Calcular la distancia
-  mutate(dist = purrr::map2_dbl(a1, a2, sim1_dist))
+  mutate(dist = purrr::map2_dbl(a1, a2, measure_distance, sim1))
 
 grid %>% 
   ggplot(aes(a1, a2)) +
@@ -197,9 +185,9 @@ ggplot(sim1, aes(x, y)) +
 
 ## Superficie del ECM
 
-Podemos pasar del gráfico de la grilla de puntos a graficar los mismos datos en tres dimensiones. En el plano *xy* tendremos a ambos parámetros y en el eje *z* observamos el valor del del error cuadractico medio (ECM).
+Podemos pasar del gráfico de la grilla de puntos a graficar los mismos datos en tres dimensiones. En el plano *xy* tendremos a ambos parámetros y en el eje *z* observamos el valor del error cuadrático medio (ECM).
 
-Notemos que ya no estamos trabajando con la distancia sino que estamos graficando la superficie del ECM como función de ambos parametros.
+Notemos que ya no estamos trabajando con la distancia sino que estamos graficando la superficie del ECM como función de ambos parámetros.
 
 Por la fórmula del ECM esta superficie es convexa y presenta un mínimo global.
 
@@ -209,7 +197,6 @@ model_predictions <- function(parameters, data, predictor){
    pred <- parameters[1] + parameters[2] * data[[predictor]]
    return(pred)
 }
-
 # Calcular el rss
 get_rss <- function(parameters, data, predictor = 'x', predicted = 'y'){
   prediction <- model_predictions(parameters, data, predictor = predictor)
@@ -217,31 +204,25 @@ get_rss <- function(parameters, data, predictor = 'x', predicted = 'y'){
   rss <- sum((residuals)^2)
   return(rss)
 }
-
 #Calcular el rss para el dataset sim1
 sim1_get_rss <- function(a0, a1) {
   get_rss(c(a0, a1), sim1)
 }
-
 # Vectores de parametros
 b0 = seq(2, 6, by = 0.1)
 b1 = seq(1.7, 2.5, length=length(b0))
-
 # Grilla de modelos
 models_grid <- expand.grid(
   
   b0 = seq(2, 6, by = 0.1),
   b1 = seq(1.7, 2.5, length=length(b1))
 ) %>% 
-  mutate(dist = purrr::map2_dbl(b0, b1, sim1_get_rss)) 
-
-
+  mutate(dist = purrr::map2_dbl(b0, b1, sim1_get_rss))
 ```
 
 ```{r}
 # Matriz para el grafico
 rss_matrix <- matrix(models_grid[["dist"]],nrow = length(b1),ncol = length(b1), byrow = TRUE)
-
 # Grafico usando plotly
 rss_graph = plot_ly(x=b0, y=b1, z=rss_matrix) %>% add_surface(contours = list(
   z = list(
@@ -258,7 +239,6 @@ rss_graph = plot_ly(x=b0, y=b1, z=rss_matrix) %>% add_surface(contours = list(
       yaxis = list(title = "a1"),
       zaxis = list(title = "RSS")
     ))
-
 rss_graph
 ```
 
@@ -266,29 +246,32 @@ rss_graph
 
 Podríamos ir haciendo la cuadrícula más fina y fina hasta que nos centramos en el mejor modelo. Pero hay mejores formas de abordar ese problema como herramientas de optimización numéricas. Algunas de ellas son:
 
+* Método Nelder-Mead
 * Búsqueda __Newton-Raphson__.
 * **Gradient Descent**
 
-La intuición de estas dos herramientas es bastante simple: Se elige un punto de partida en la superficie de la función objetivo y se busca la pendiente más inclinada. Luego, desciende por esa pendiente un poco, y se repite una y otra vez, hasta alcanzar la condición de corte. 
+La intuición de este último método es bastante simple: Se elige un punto de partida en la superficie de la función objetivo y se busca la pendiente más inclinada. Luego, desciende por esa pendiente un poco, y se repite una y otra vez, hasta alcanzar la condición de corte. 
 
 
-En R, podemos utilizar la función `optim ()`. Cuenta con los siguientes parámetros:
+En R, podemos utilizar la función `optim()`. Cuenta con los siguientes parámetros:
 
 - **par**: vector de puntos iniciales. Elegimos el origen por poner cualquier cosa
 - **fn**: función objetivo, y los parámetros que nuestra función necesita (data)
 
 ```{r}
+# Adaptamos la función del ECM para usarla con la optimizacion
+measure_distance_opt <- function(params, data) {
+ diff <- data$y - model1(params[1], params[2], data)
+ mean(diff ^ 2)
+   }
 # Corremos la optimizacion
-best <- optim(c(0, 0), measure_distance, data = sim1)
-
+best <- optim(c(0, 0), measure_distance_opt, data = sim1)
 best
 ```
-
 
 ```{r}
 # Obtenemos los mejores parametros
 best$par
-
 # Graficamos la linea de los mejores parametros
 ggplot(sim1, aes(x, y)) + 
   geom_point(size = 2, colour = "grey30") + 
@@ -296,9 +279,20 @@ ggplot(sim1, aes(x, y)) +
   theme_bw()
 ```
 
+Para llegar a este resultado definimos:
+
+* **Tipo de modelo**: consideramos que nuestro conjunto de datos (fenómeno) se puede modelar con una regresión lineal simple
+* **Función de costo**: utilizamos el error cuadrático medio
+* **Método de optimización**: la función `optim()` usa por default el método Nelder-Mead
+
+## Función lm()
+
 Al comparar el valor de los parámetros obtenidos mediante el método de optimización con los coeficientes estimados por la función de modelo lineal, observamos que son los mismos.
 
 ```{r}
 summary(lm(y~x, data=sim1))
 ```
+**Nota técnica**
+La función `lm()` llama a la función `lm.fit()`, la cual utiliza **factorización o descomposición QR** para resolver las ecuaciones del modelo lineal.
+
 
