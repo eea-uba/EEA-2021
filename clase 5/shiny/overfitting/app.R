@@ -37,7 +37,8 @@ ui <- fluidPage(theme = shinytheme("paper"),
                     uiOutput('eq0'),
                     uiOutput('eq1'),
                     plotOutput("plot", width = "800px", height = "600px"),
-                    "Diego Kozlowski, Juan Manuel Barriola y Sofia Perini, basado en https://github.com/apapiu/Shiny-Apps." 
+                    "Diego Kozlowski, Juan Manuel Barriola y Sofia Perini, basado en https://github.com/apapiu/Shiny-Apps.",
+                    "Compartimos el link al material para constuir sus propias shiny apps para el que le interese https://shiny.rstudio.com/tutorial/"
                     )
                   
                   
