@@ -70,11 +70,15 @@ Introducción a programación funcional con Tidyverse `PURRR`
 
 Diagnóstico de modelo lineal simple
 
-- [Regresión Lineal Simple: Evaluación y diagnóstico]()
+- [Regresión Lineal Simple: Evaluación y diagnóstico](clase 4/Clase-4---Regresion-Lineal-Simple-Eval.html)
 
 Modelo lineal desde el enfoque de Machine Learning: random search y grid search de parámetros, función objetivo y métodos de optimización para hallar los valores de los parámetros
 
-- [Regresión Lineal Simple: Enfoque de Machine Learning]()
+- [Regresión Lineal Simple: Enfoque de Machine Learning](clase 5/modelo_lineal_enfoque_ml_resuelto.nb.html)
+
+Un ejemplo de Shiny App para mostrar Overfitting (basado en https://github.com/apapiu/Shiny-Apps)
+
+- [Shiny App](clase 5/shiny/overfitting/app.R)
 
 ### Clase 7: 02-10
 
