@@ -76,7 +76,7 @@ Modelo lineal desde el enfoque de Machine Learning: random search y grid search 
 
 - [Regresión Lineal Simple: Enfoque de Machine Learning](clase 5/modelo_lineal_enfoque_ml_resuelto.nb.html)
 
-Un ejemplo de Shiny App para mostrar Overfitting (basado en https://github.com/apapiu/Shiny-Apps)
+Un ejemplo de Shiny App sobre Overfitting (basado en https://github.com/apapiu/Shiny-Apps)
 
 - [Shiny App](clase 5/shiny/overfitting/app.R)
 
