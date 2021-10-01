@@ -45,7 +45,7 @@ datos <- read_csv("../Fuentes/ar_properties.csv")
 glimpse(datos)
 ```
 
-### b. Aplicando filtros
+### Aplicando filtros
 
 Se filtran aquellos registros que pertenecen a Argentina y Capital Federal, cuyo precio esta en dolares (USD), el tipo de propiedad corresponde a Departamento, PH o Casa, y el tipo de operacion sea Venta. 
 
