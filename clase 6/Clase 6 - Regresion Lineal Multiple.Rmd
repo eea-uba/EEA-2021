@@ -243,7 +243,7 @@ train_data %>% ggplot(., aes(x = surface_covered, y = price)) +
   geom_abline(intercept = intercepto_D, slope = pendiente, color = "darkorange", size=1) + # capa del modelo 
     geom_abline(intercept = intercepto_PH, slope = pendiente, color = "slateblue3", size=1) + # capa del modelo 
   theme_bw() +
-  labs(title="Modelo Lineal Múltiple: Superficie y Tipo de Propiedad", x="Superficie en m2", y="Precio en miles de USD") 
+  labs(title="Modelo Lineal Múltiple: Superficie y Tipo de Propiedad", x="Superficie en m2", y="Precio en USD") 
 ```
 
 ### *Predictores Cualitativos con muchas clases*
