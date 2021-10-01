@@ -1,11 +1,14 @@
 ---
 title: "Preprocesamiento Dataset Properati"
 author: "Juan Barriola y Sofía Perini"
-date: "25 de Septiembre de 2021"
+date: "2 de Octubre de 2021"
 output:
   html_notebook:
     toc: yes
     toc_float: yes
+    df_print: paged
+  html_document:
+    toc: yes
     df_print: paged
 ---
 
@@ -36,7 +39,7 @@ Vamos a utilizar datos del 2019 para no incorporar comportamientos atípicos oca
 
 La estructura del dataset consiste en 24 variables (columnas) y 388.891 observaciones (filas). Entre las variables figuran distintos tipos (character, date, logical o double): id, fechas, ubicacion geográfica, pais, provincia, barrio, características como número de habitaciones, baños, superficie total o cubierta, precio, tipo de propiedad, operación, entre otras.
 
-```{r}
+```{r, warning=FALSE}
 # leo el archivo ar_properties 
 datos <- read_csv("../Fuentes/ar_properties.csv")
 glimpse(datos)

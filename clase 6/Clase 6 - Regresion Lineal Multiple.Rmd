@@ -1,12 +1,15 @@
 ---
 title: "Regresión Lineal Múltiple I"
 author: "Juan Barriola y Sofía Perini"
-date: "25 de Septiembre de 2021"
+date: "2 de Octubre de 2021"
 output:
   html_notebook:
     theme: spacelab
     toc: yes
     toc_float: yes
+    df_print: paged
+  html_document:
+    toc: yes
     df_print: paged
 ---
 
@@ -338,7 +341,7 @@ tidy_sc_pt %>%
 
 **Modelo Superficie Total y Barrios** 
 
-```{r}
+```{r, warning=FALSE}
 tidy_sc_l3 %>%
   select(term, statistic, p.value, conf.low, conf.high) %>% 
   arrange(p.value)
