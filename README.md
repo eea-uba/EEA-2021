@@ -84,12 +84,12 @@ Un ejemplo de Shiny App sobre Overfitting (basado en https://github.com/apapiu/S
 
 Interpretación de coeficientes en Regresión Lineal Múltiple, inclusión de variables categóricas y test de significatividad individual
 
-- [Regresión Lineal Múltiple: Parte I]()
+- [Regresión Lineal Múltiple: Parte I](clase 6/Clase 6 - Regresion Lineal Multiple.nb.html)
 
 #### Dataset Notebook Modelo Lineal Múltiple
 
-- [Dataset Properati]()
-- [Preprocesamiento Dataset Properati]()
+- [Dataset Properati](Fuentes/ar_properties.csv)
+- [Preprocesamiento Dataset Properati](clase 6/Preprocesamiento Dataset Properati.nb.html)
 
 ### Clase 8: 09-10
 
