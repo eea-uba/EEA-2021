@@ -367,7 +367,7 @@ Se construye para testear si todos los parámetros asociados a las categorías d
 
 * $H_0: β_q = β_{q+1} = · · · = β_{p−1} = 0$
 
-* $H_1:$ al menos uno de los $β_k$ (con $k entre q y p−1$) est tal que $β_k \neq 0$. 
+* $H_1:$ al menos uno de los $β_k$ (con $k$ entre $q$ y $p−1$) est tal que $β_k \neq 0$. 
 
 En nuestro caso queremos testear si la variable categórica tipo de propiedad (o barrios) es significativa para explicar el nivel de precios de venta de inmuebles cuando en el modelo tenemos a la superficie cubierta como explicativa. 
 
