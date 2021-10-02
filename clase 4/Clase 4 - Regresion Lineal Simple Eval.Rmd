@@ -285,33 +285,39 @@ La función agregó varias columnas al dataset:
 Al contar con esta información como dataframe podemos trabajarla de diversas maneras. Por ejemplo, podemos realizar los gráficos de diagnóstico con ggplot
 
 ```{r  message= FALSE}
-
 ggplot(encuesta_aumentada, aes(.fitted, .resid)) +
   geom_point()+
   geom_hline(size = 1, colour = "grey", linetype="dashed", yintercept = 0) +
   geom_smooth(se = FALSE) +
   theme_bw() +
   labs(title = "Residuos vs valores predichos")
-
+ggplot(encuesta_aumentada, aes(x= .std.resid)) + 
+  geom_histogram(col = "white", aes( fill = ..count..), alpha = 0.75) +
+  labs(title = "Histograma de residuos estandarizados") +
+  labs(x = "Residuos estandarizados") +
+  theme_bw()
 ggplot(encuesta_aumentada, aes(sample= .std.resid))+
   stat_qq()+
   geom_abline() +
   theme_bw() +
   labs(title = "Normal QQ plot")
+```
 
+El histograma de residuos estandarizados muestra que los mismos presentan una distribución sesgada a derecha. Lo que también se aprecia en el QQ plot, al alejarse en los extremos de los valores teóricos se observa que en valores bajos de residuos, los residuos observados presentan valores mayores a los teóricos, mientras que los valores teóricos estarían por encima de los observados en valores altos de residuos. 
+
+Para mayor detalle de cómo sería la distribución de los residuos según el tipo de QQ-plot, sugerimos ver los ejemplos que muestra el Dr Jon Yearsley en [Quantile-Quantile Plots](https://www.ucd.ie/ecomodel/Resources/QQplots_WebVersion.html#right-skewed-data).
+
+```{r}
 ggplot(encuesta_aumentada, aes(.fitted, sqrt(abs(.std.resid))))+
   geom_point()+
   geom_smooth(se = FALSE) +
   theme_bw() +
   labs(title = "Scale-location plot")
-
 ggplot(encuesta_aumentada, aes(.hat, .std.resid)) +
   geom_vline(size = 2, colour = "white", xintercept = 0) +
   geom_hline(size = 1, colour = "grey", linetype="dashed", yintercept = 0) +
   geom_point() + geom_smooth(se = FALSE) +
   theme_bw() +
   labs(title = "Residual vs leverage")
-
 ```
-
 
