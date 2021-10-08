@@ -17,9 +17,9 @@ div.main-container {
 }
 </style>
 
-# Cargamos las librerías que vamos a utilizar
 
 ```{r, echo=TRUE, message=FALSE, warning=FALSE}
+# Cargamos las librerías que vamos a utilizar
 library(tidyverse)
 library(tidymodels)
 library(modelr)
@@ -34,7 +34,7 @@ set.seed(2021)
 
 La **regresión logística** es útil para problemas de predicción de clases. En este caso vamos a tratar de resolver el problema de predecir si una persona que viajaba a bordo del Titanic sobrevivió o no. 
 
-## Levantamos el conjunto de datos
+## Conjunto de datos
 
 Este conjunto de datos proviene de [Kaggle - Titanic: Machine Learning from Disaster](https://www.kaggle.com/c/titanic/overview).
 
@@ -69,7 +69,7 @@ dftitanic_test <- dftitanic_test %>%
   mutate(Pclass = factor(Pclass), Embarked = factor(Embarked))
 ```
 
-## Exploratorias
+## Análisis Exploratorios
 
 Analicemos la distribución de la clase en cada dataset. 
 
@@ -101,20 +101,24 @@ Realizamos un gráfico exploratorio completo para ver el comportamiento y las re
 
 ```{r, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
 # graficamos con ggpairs coloreando por variable a predecir
-g <- ggpairs(dftitanic_train %>% 
-               select("Survived","Pclass", "Sex", "Age", "Fare", "SibSp", "Parch"),
-             title = "Correlograma de variables",
-             mapping = aes(colour= factor(Survived))) + 
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
-  theme_bw()
+g <- dftitanic_train %>% 
+        select("Survived","Pclass", "Sex", "Age", "Fare", "SibSp", "Parch") %>% 
+        ggpairs(title = "Correlograma de variables",
+                mapping = aes(colour= factor(Survived)),
+                progress = FALSE) + 
+        theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+        theme_bw() +
+        scale_fill_brewer(palette="Set1") +
+        scale_color_brewer(palette="Set1")
+
 # hacemos un loop para cambiar los colores del gráfico
-for(i in 1:g$nrow) {
-  for(j in 1:g$ncol){
-    g[i,j] <- g[i,j] + 
-      scale_fill_brewer(palette="Set1") +  
-      scale_color_brewer(palette="Set1")
-        }
-}
+#for(i in 1:g$nrow) {
+#  for(j in 1:g$ncol){
+#    g[i,j] <- g[i,j] + 
+      # scale_fill_brewer(palette="Set1") +  
+      # scale_color_brewer(palette="Set1")
+      #   }
+#}
 g
 ```
 
@@ -361,13 +365,13 @@ prediction_bad <- models %>%
 violin_full = ggplot(prediction_full, aes(x=Survived, y=.fitted, group=Survived, fill=factor(Survived))) + 
   geom_violin() +
   theme_bw() +
-  guides(fill=FALSE) +
+  guides(scale="none") +
   labs(title='Violin plot', subtitle='Modelo completo', y='Predicted probability')
 # graficamos el modelo malo
 violin_bad = ggplot(prediction_bad, aes(x=Survived, y=.fitted, group=Survived, fill=factor(Survived))) + 
   geom_violin() + 
   theme_bw() +
-  guides(fill=FALSE) +
+  guides(scale="none") +
   labs(title='Violin plot', subtitle='Modelo malo', y='Predicted probability')
 # mostramos ambos
 plot_grid(violin_bad, violin_full)
@@ -538,8 +542,6 @@ table=table %>%
 # Creamos la matriz de confusión
 confusionMatrix(table(table$predicted_class, table$Survived), positive = "1")
 ```
-
-# Segunda parte
 
 ## Desbalanceo de la clase
 
