@@ -38,7 +38,7 @@ La **regresión logística** es útil para problemas de predicción de clases. E
 
 Este conjunto de datos proviene de [Kaggle - Titanic: Machine Learning from Disaster](https://www.kaggle.com/c/titanic/overview).
 
-```{r}
+```{r, message=FALSE}
 # cargamos los datasets de train y test 
 dftitanic_train <- read_csv("../Fuentes/titanic_complete_train.csv")
 dftitanic_test <- read_csv("../Fuentes/titanic_complete_test.csv")
@@ -99,26 +99,18 @@ Vemos que estamos trabajando con un problema de clasificación con cierto desbal
 
 Realizamos un gráfico exploratorio completo para ver el comportamiento y las relaciones entre las variables. El color rojo designa a quienes no sobrevivieron y el azul a los que sí.
 
-```{r, message=FALSE, warning=FALSE, fig.width=8, fig.height=6}
+```{r, message=FALSE, warning=FALSE, fig.width=8, fig.height=6, progress=FALSE}
 # graficamos con ggpairs coloreando por variable a predecir
 g <- dftitanic_train %>% 
         select("Survived","Pclass", "Sex", "Age", "Fare", "SibSp", "Parch") %>% 
         ggpairs(title = "Correlograma de variables",
                 mapping = aes(colour= factor(Survived)),
-                progress = FALSE) + 
+                progress = FALSE, 
+                lower=list(combo=wrap("facethist", binwidth=0.8))) +
         theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
         theme_bw() +
         scale_fill_brewer(palette="Set1") +
         scale_color_brewer(palette="Set1")
-
-# hacemos un loop para cambiar los colores del gráfico
-#for(i in 1:g$nrow) {
-#  for(j in 1:g$ncol){
-#    g[i,j] <- g[i,j] + 
-      # scale_fill_brewer(palette="Set1") +  
-      # scale_color_brewer(palette="Set1")
-      #   }
-#}
 g
 ```
 
@@ -162,7 +154,7 @@ ggplot(dftitanic_train, aes(Age, Survived)) +
   theme_bw()
 ```
 
-Parece tener bastantes problemas para estimar la probabilidad de supervivencia de los individuos. 
+Parece tener bastantes problemas para estimar la probabilidad de supervivencia de los individuo: no existe un punto de corte claro, la predicción podría ser mayor a 1 o menor a cero llegado el caso.
 
 ### Regresión Logística
 
@@ -194,7 +186,7 @@ Algunas familias son:
 
 Como estamos trabajando con un fenómeno que suponemos tiene una distribución binomial, así lo especificamos en el parámetro **family**.
 
-Realizamos un modelo de regresión logística para predecir la supervivencia en función de **Pclass**, **Sex** y **Age**.
+Realizamos un modelo de regresión logística para predecir la supervivencia en función de **Pclass**, **Sex** y **Age**. 
 
 ```{r}
 # modelo de regresión logística 
@@ -203,6 +195,8 @@ glm1 <- glm(data = dftitanic_train, Survived ~ Pclass + Sex + Age, family = 'bin
 tidy(glm1)
 glance(glm1)
 ```
+
+Se va a discutir sobre la interpretación de coeficientes y la evaluación en las siguientes secciones.
 
 ## Creación de fórmulas
 
@@ -248,7 +242,7 @@ models %>%
   mutate(tidy = map(mod, tidy))  # Qué realizamos en este paso? Que va a tener esta columna?
 ```
 
-Para acceder a los elementos de la nueva columna _tidy_ debemos desanidarla. 
+Para acceder a los elementos de la nueva columna _tidy_ debemos desanidarla (usando `unnest()`). El anidado crea una columna de listas de dataframes, es implícitamente una operación de resumen: obtiene una fila para cada grupo definido por las columnas no anidadas. Desanidar lo aplana de nuevo en columnas regulares. Para mayor detalle, sugerimos ver la documentación de tidyr sobre [Nest and unnest](https://tidyr.tidyverse.org/reference/nest.html). 
 
 ```{r, warning=FALSE}
 models %>% 
@@ -542,6 +536,7 @@ table=table %>%
 # Creamos la matriz de confusión
 confusionMatrix(table(table$predicted_class, table$Survived), positive = "1")
 ```
+Al existir desbalanceo de clases, es posible que el analista desee saber si la precisión general (Accuracy) de su modelo es mejor que la proporción de datos con la clase mayoritaria (No-information Rate). confusionMatrix usa la función binom.test para probar que la precisión (Acc) es mejor que la tasa sin información (NIR). Si el P-Value [Acc > NIR] resulta significativo, entonces podemos decir que existe evidencia estadísticamente significativa para decir que la precisión del modelo es mejor que la tasa sin información. 
 
 ## Desbalanceo de la clase
 
