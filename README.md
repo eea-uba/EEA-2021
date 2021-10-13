@@ -91,17 +91,20 @@ Interpretación de coeficientes en Regresión Lineal Múltiple, inclusión de va
 - [Dataset Properati](Fuentes/ar_properties.csv)
 - [Preprocesamiento Dataset Properati](clase 6/Preprocesamiento Dataset Properati.nb.html)
 
-### Clase 8: 09-10
+### Clase 8: 16-10
 
-Evaluación y diagnóstico del modelo. Explicación vs predicción
+Evaluación y diagnóstico del modelo. Explicación vs predicción.
 
-- [Regresión Lineal Múltiple: Parte II]()
+- [Regresión Lineal Múltiple: Parte II](clase 7/Clase 7 - Regresion Multiple II.nb.html)
 
-### Clase 9: 16-10
+#### Dataset Preprocesado Modelo Lineal Múltiple
 
-A definir 
+- [Datos Properati Preprocesados](clase 6/properati_preprocesado.csv)
 
-### Clase 10: 23-10
+### Clase 9: 23-10
+
+
+### Clase 10: 30-10
 
 Regresión Logística: modelo de clasificación. Interpretación de coeficientes, métricas y gráficos de evaluación del modelo y evaluación de performance. 
 
@@ -109,27 +112,23 @@ Problema del desbalanceo de clases: comportamiento del modelo, estrategia de ove
 
 - [Regresion Logistica]()
 
-### Clase 11: 30-10
+### Clase 11: 06-11
 
 Regularización: modelos Ridge, Lasso y Elastic Net y trade off sesgo-varianza
 
 - [Regularizacion: Ridge, Lasso y Elastic Net]()
 
-### Clase 12: 06-11
+### Clase 12: 13-11
 
 Smoothing, GAM y Prophet. 
 
 - [Prophet: implementacion de GAM para series de tiempo]()
 
-### Clase 13: 13-11
-
-Repaso pre-parcial.
-
-### Clase 14: 20-11
+### Clase 13: 27-11
 
 Examen final integrador. 
 
-### Clase 15: 27-11
+### Clase 14: 4-12
 
 Redes Neuronales. 
 
