@@ -1,7 +1,7 @@
 ---
 title: "Extensiones del Modelo Regresión Lineal Múltiple"
 author: "Juan Barriola y Sofía Perini"
-date: "9 de Octubre de 2021"
+date: "23 de Octubre de 2021"
 output:
   html_notebook:
     theme: spacelab
