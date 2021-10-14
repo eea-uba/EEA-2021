@@ -103,6 +103,9 @@ Evaluación y diagnóstico del modelo. Explicación vs predicción.
 
 ### Clase 9: 23-10
 
+Extensiones del Modelo de Regresión Lineal Múltiple. 
+
+- [Extensiones Modelo Lineal Múltiple]()
 
 ### Clase 10: 30-10
 
