@@ -164,7 +164,7 @@ ggplot(tidy_sc_l3, aes(estimate, term, color=p.value < 0.05, xmin = conf.low, xm
 ```
 En el caso de la variable barrios, este test permite chequear si los valores medios del precio son los mismos para los distintos barrios respecto del Abasto (categoría basal). En este caso se observa que los niveles medios de precio de inmuebles en los distintos barrios en algunos casos difieren de los niveles medios del Abasto (tienen p-valor > 0.05 y sus IC incluyen al 0).
 
-**Modelo Varias**
+**Modelo Superficie y Tipo de barrio**
 
 ```{r}
 # medidas de resumen tidy (incluido el intervalo de confianza)
