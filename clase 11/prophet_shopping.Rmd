@@ -5,7 +5,7 @@ output:
     toc: yes
     toc_float: yes
 author: "Juan Manuel Barriola y Sofia Perini"
-date: "21 de Noviembre de 2020"
+date: "13 de Noviembre de 2021"
 ---
 
 <style type="text/css">
@@ -106,7 +106,7 @@ Se nota que para un **span muy pequeño** nuestro modelo va a tener un problema 
 
 # Prophet
 
-Es un procedimiento para **pronosticar datos de series de tiempo basado en un modelo aditivo** donde las tendencias no lineales se ajustan a la estacionalidad anual, semanal y diaria, más los efectos de eventos especiales. Funciona mejor con series de tiempo que tienen fuertes efectos estacionales y varias temporadas de datos históricos. Es robusto ante datos faltantes y cambios de tendencia, y normalmente maneja bien valores atípicos.
+Es un modelo para **pronosticar datos de series de tiempo basado en un modelo aditivo** donde las tendencias no lineales se ajustan a la estacionalidad anual, semanal y diaria, más los efectos de eventos especiales. Funciona mejor con series de tiempo que tienen fuertes efectos estacionales y varias temporadas de datos históricos. Es robusto ante datos faltantes y cambios de tendencia, y normalmente maneja bien valores atípicos.
 
 [Prophet](https://facebook.github.io/prophet/) es un software de código abierto lanzado por Facebook. En este caso, vamos a trabajar sobre la implementación de Prophet en R.
 
@@ -127,8 +127,28 @@ prophet_df = shopping %>% select(Dia, visitantes) %>% rename(., ds=Dia, y=visita
 
 ## Modelo
 
-Recordemos que el modelo subyacente es el propuesto por Harvey & Peters (1990): 
+El modelo subyacente es el propuesto por Harvey & Peters (1990): 
+
 $y(t)=g(t)+s(t)+h(t)+\epsilon_t$
+
+$y(t):$ variable a predecir
+
+$g(t):$ función de tendencia
+
+$s(t):$ cambios periódicos
+
+$h(t):$fectos de vacaciones (eventos atípicos)$
+
+$ε_t:$error
+
+El modelo es similar a los GAM:
+
+1) Cada variable es una función (posiblemente) no lineal del tiempo
+2) Los efectos de los componentes se suman (efectos aditivos)
+
+En palabras de los autores:
+
+*"We  are,  in  effect,  framing  the  forecasting  problem  as  a  curvefitting  exercise,  which is  inherently  different  from  time  series  models  that  explicitly  account  for  the  temporal dependence structure in the data"* Taylor & Letham: *Forecasting at Scale* (2017)
 
 Hay muchos parámetros para tener en cuenta. Veremos algunos:
 
@@ -177,27 +197,6 @@ prophet_plot_components(prophet_base, fcst=predict(prophet_base, prophet_df)) +t
 
 En este caso tenemos la tendencia de los visitantes y la estacionalidad semanal. Esta última parece tener bastante sentido ya que nos muestra que hay mayor cantidad de visitantes durante el fin de semana.
 
-#### Diagnóstico del modelo
-
-La funcion `cross_validation` permite realizar pronósticos realizando un esquema de cross-validation temporal y, a partir de ellos, obtener ciertas métricas de performance.
-
-  * **horizon**: horizonte del pronóstico. Cuánto tiempo deseo predecir
-  
-  * **period**: período entre fechas de análisis. Cuánto voy corriendo mi ventana
-  
-   * **initial**: período inicial de entrenamiento
-
-```{r}
-cv_base = cross_validation(prophet_base, initial = 45, period = 7, horizon = 15, units = 'days')
-cv_base
-```
-
-La funcion `performance_metrics` computa varias métricas de performance a partir de un dataframe de cross validation de prophet. Definimos la proporción de datos que se utilizarán en cada ventana móvil para calcular las métricas (`rolling_window`).  
-
-```{r}
-performance_metrics(cv_base, rolling_window = 0.5)
-```
-
 ### Modelo con estacionalidad mensual
 
 La función `add_seasonality` nos permite agregar nuevas estacionalidades. Las estacionalidades se modelan utilizando series de Fourier que nosotros debemos definir.
@@ -216,7 +215,7 @@ Definimos:
 # Llamamos solo al modelo
 prophet_mensual=prophet()
 # Agregamos la estacionalidad mensual
-prophet_mensual=add_seasonality(prophet_mensual, name='monthly', period=365/12, fourier.order = 4)
+prophet_mensual=add_seasonality(m=prophet_mensual, name='monthly', period=365/12, fourier.order = 4)
 # Le pasamos el dataset
 prophet_mensual = fit.prophet(m = prophet_mensual, prophet_df) 
 ```
@@ -236,19 +235,6 @@ prophet_plot_components(prophet_mensual, fcst=predict(prophet_mensual, prophet_d
 ```
 
 Notemos que la tendencia y estacionalidad semanal se mantiene y ahora se agrega la tendencia mensual que habíamos incorporado. Nos indica que el ciclo mensual se caracteriza por un crecimiento en la mitad de mes.
-
-#### Diagnóstico del modelo
-
-```{r, message=FALSE, echo=FALSE, results='hide'}
-cv_mensual = cross_validation(prophet_mensual, initial = 45, period = 7, horizon = 15, units = 'days')
-cv_mensual
-```
-
-La funcion `performance_metrics` computa varias metricas de performance a partir de un dataframe de cross validation de prophet
-
-```{r}
-performance_metrics(cv_mensual, rolling_window = 0.5)
-```
 
 ### Modelo completo 
 
@@ -304,7 +290,45 @@ prophet_plot_components(prophet_full, fcst=predict(prophet_full, prophet_df)) +t
 
 La tendencia y estacionalidad semanal se mantienen aproximadamente igual. La estacionalidad mensual cambia bastante y se observa que existen tres picos en el ciclo mensual. Por su parte, los eventos se modelan como pequeños saltos o picos.
 
-#### Diagnóstico del modelo
+## Diagnóstico del modelo
+
+La funcion `cross_validation` permite realizar pronósticos realizando un esquema de cross-validation temporal y, a partir de ellos, obtener ciertas métricas de performance.
+
+  * **horizon**: horizonte del pronóstico. Cuánto tiempo deseo predecir
+  
+  * **period**: período entre fechas de análisis. Cuánto voy corriendo mi ventana
+  
+   * **initial**: período inicial de entrenamiento
+   
+![](img/diagnostico_prophet.png)
+
+### Modelo básico
+
+```{r}
+cv_base = cross_validation(prophet_base, initial = 45, period = 7, horizon = 15, units = 'days')
+cv_base
+```
+
+La funcion `performance_metrics` computa varias métricas de performance a partir de un dataframe de cross validation de prophet. Definimos la proporción de datos que se utilizarán en cada ventana móvil para calcular las métricas (`rolling_window`).  
+
+```{r}
+performance_metrics(cv_base, rolling_window = 0.5)
+```
+
+### Modelo mensual
+
+```{r, message=FALSE, echo=FALSE, results='hide'}
+cv_mensual = cross_validation(prophet_mensual, initial = 45, period = 7, horizon = 15, units = 'days')
+cv_mensual
+```
+
+La funcion `performance_metrics` computa varias metricas de performance a partir de un dataframe de cross validation de prophet
+
+```{r}
+performance_metrics(cv_mensual, rolling_window = 0.5)
+```
+
+#### Modelo completo
 
 ```{r, message=FALSE, echo=FALSE, results='hide'}
 cv_full = cross_validation(prophet_full, initial = 45, period = 7, horizon = 15, units = 'days')
@@ -320,6 +344,13 @@ performance_metrics(cv_full, rolling_window = 0.5)
 
 Prophet también nos permite realizar gráficos interactivos que suelen ser muy útiles para presentar los resultados.
 
-```{r, fig.width=8,fig.height=6}
+```{r, fig.width=8.5,fig.height=6}
 dyplot.prophet(prophet_full, fcst=predict(prophet_full, prophet_df))
 ```
+
+## Fuentes
+
+  * Github: https://github.com/facebook/prophet
+  * Paper: https://peerj.com/preprints/3190.pdf
+  * Blog: https://research.fb.com/prophet-forecasting-at-scale/
+  * Documentacion: https://facebook.github.io/prophet/docs/
