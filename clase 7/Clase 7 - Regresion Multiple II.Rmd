@@ -239,7 +239,7 @@ plot(modelo_varias_l3)
 
 * *Residuos vs valores predichos*: Parece existir cierta estructura en los datos: la varianza parece incrementarse con los valores predichos (depende de la variable), por lo que no se satisface el supuesto de homocedasticidad.
 
-* *Normal QQ plot*: El extremo superior derecho no se ajusta a la distribución teórica.
+* *Normal QQ plot*: El extremo superior derecho e izquierdo inferior no se ajustan a la distribución teórica.
 
 * *Residual vs leverage*: Existen dos/tres puntos con un leverage bastante alto.
 
@@ -387,7 +387,7 @@ rmse(data = pred_varias_l3, truth = price, estimate = .fitted)
 
 ### Comparación entre training y testing
 
-Podemos obtener los valores del RMSE en el dataset de **training** para los cinco modelos evaluados usando `map`.
+Podemos obtener los valores del RMSE en el dataset de **training** para los modelos evaluados usando `map`.
 
 ```{r}
 # Aplicamos la función augment a los modelos
