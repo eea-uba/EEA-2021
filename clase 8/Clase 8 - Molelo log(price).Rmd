@@ -137,18 +137,19 @@ tidy(modelo_log, conf.int = TRUE) %>% arrange(p.value)
 
 Los coeficientes en modelos que incluyen variables con tranformación logarítmica tienen una interpretación distinta según el caso, a saber: 
 
-* El **modelo Nivel-Nivel** representa las variables en su forma original. Es decir, la interpretación de los coeficientes en este modelo consiste en: un cambio de una unidad en X, afecta en β unidades a Y.
-* En el **modelo Nivel-Log** esa interpretación cambia: un incremento del 1% en X está asociado a un cambio en Y de 0,01*β.
-* En el **modelo Log-Nivel** dicho coeficiente se conoce como la semielasticidad de Y respecto a X. Se interpreta como: un incremento de una unidad en X está asociado a un cambio en Y de (100·β)%.
-* En el **modelo Log-Log** se conoce como la elasticidad de Y respecto a X. Se interpreta como: un incremento del 1% en X está asociado a un cambio en Y de β%.
+* El **modelo Nivel-Nivel** representa las variables en su forma original. Es decir, la interpretación de los coeficientes en este modelo consiste en: un cambio de una unidad en X, afecta en β unidades al valor esperado de Y.
+* En el **modelo Nivel-Log** esa interpretación cambia: un incremento del 1% en X está asociado a un cambio en el valor esperado de Y de 0,01*β.
+* En el **modelo Log-Nivel** dicho coeficiente se conoce como la **semielasticidad** de Y respecto a X. Se interpreta como: un incremento de una unidad en X está asociado a un cambio en el valor esperado de Y de (100·β)%.
+* En el **modelo Log-Log** se conoce como la elasticidad de Y respecto a X. Se interpreta como: un incremento del 1% en X está asociado a un cambio en el valor esperado de Y de β%.
 
 Sugerimos leer la sección del libro ["Introductory Econometrics: A Modern Approach"](Wooldrige.pdf) de Jeffrey Wooldrige para profundizar el entendimiento de estas interpretaciones. 
 
 Veamos cómo aplican estas interpretaciones en nuestro modelo log, con algunos ejemplos: 
 
-* El coeficiente de *log(surf_cov)* es la elasticidad estimada del precio respecto a la superficie cubierta. Es decir, que por cada aumento del 1% en la superficie cubierta hay un aumento de aproximadamente 0,78% en el **precio medio** de los inmuebles.
+* El coeficiente de *log(surf_cov)* es la **elasticidad** estimada del precio respecto a la superficie cubierta. Es decir, que por cada aumento del 1% en la superficie cubierta hay un aumento de aproximadamente 0,78% en el **precio medio** de los inmuebles.
 
-* El coeficiente de *surface_uncovered* representa una semielasticidad del precio respecto de la superficie descubierta. Este coeficiente tiene una interpretación porcentual multiplicándolo por 100: el **precio medio** del inmueble aumenta 0,22% por cada metro cuadrado adicional de superficie descubierta. 
+* El coeficiente de *surface_uncovered* representa una **semielasticidad** del precio respecto de la superficie descubierta. Este coeficiente tiene una interpretación porcentual multiplicándolo por 100: el **precio medio** del inmueble aumenta 0,22% por cada metro cuadrado adicional de superficie descubierta. 
+
 
 ### Diagnóstico del modelo log
 
@@ -276,22 +277,21 @@ metricas2_test
 
 * Observamos que el modelo_log presenta menor $RMSE$ y $MAE$ y mayor $R^2$ tanto en training como en testing. Por lo que parece ser el mejor modelo para predecir el precio. 
 
+### Notas técnicas
 
-## Modelo log-log sin interacción
+#### Modelo log-log: Derivación de la elasticidad
  
-Si bien en el apunte de Woolridge se encuentra simplificado, para entender la interpretación de un coeficiente en un modelo log-log como el siguiente:
+Para entender cómo surge la interpretación de un coeficiente en un modelo log-log como la **elasticidad** podemos partir de la siguiente formulación:
 
 $$ ln(Y) = \beta_0 + \beta_1X_1 +\beta_2ln(X_2)$$
-
-
-Podemos tomar la derivada parcial respecto $X_2$ y nos queda:
+Tomamos la derivada parcial respecto $X_2$ y nos queda:
  
 $$\frac{1}{Y} \frac{\delta Y}{\delta X_2} = \beta_2 \frac{1}{X_2} $$
-$$\frac{X_2}{Y} \frac{\delta Y}{\delta X_2} = \beta_2 $$
+$$ \beta_2 = \frac{X_2}{Y} \frac{\delta Y}{\delta X_2}  $$
 
 El término izquierdo es la elasticidad de $Y$ respecto a $X_2$, con lo cual $\beta_2$ equivale a eso.
  
-### Caso de interacción entre una variable log y otra sin transformación
+#### Caso de interacción entre una variable log y otra sin transformación
  
 Ahora si aplicamos el mismo procedimiento para un modelo en el cual realizamos la interacción entre $X_1$ y $ln(X_2)$:
 
@@ -306,7 +306,7 @@ Ahora nos queda que el valor de la elasticidad de $Y$ respecto de $X_2$ depende 
 
 Para mayor detalle de caso de interacción entre dos variables log recomendamos ver [How to interpret interaction in Log Log models](https://stats.stackexchange.com/questions/405707/how-to-interpret-interaction-in-log-log-models). También sugerimos para el caso de variables dummies revisar [Log-Log Regression - Dummy Variable and Index](https://stats.stackexchange.com/questions/240572/log-log-regression-dummy-variable-and-index).
 
-### Colinealidad de los Predictores
+## Colinealidad de los Predictores
 
 Cuando las variables predictoras están correlacionadas entre sí, decimos que existe intercorrelación o multicolinealidad. 
 

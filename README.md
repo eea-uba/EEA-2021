@@ -105,7 +105,7 @@ Evaluación y diagnóstico del modelo. Explicación vs predicción.
 
 Extensiones del Modelo de Regresión Lineal Múltiple. 
 
-- [Extensiones Modelo Lineal Múltiple]()
+- [Extensiones Modelo Lineal Múltiple](clase 8/Clase 8 - Molelo log(price).nb.html)
 
 ### Clase 10: 30-10
 
@@ -113,7 +113,7 @@ Regresión Logística: modelo de clasificación. Interpretación de coeficientes
 
 Problema del desbalanceo de clases: comportamiento del modelo, estrategia de oversampling y su efecto en el modelo  
 
-- [Regresion Logistica]()
+- [Regresion Logistica](clase 8/Clase 8 - Molelo log(price).nb.html)
 
 ### Clase 11: 06-11
 
