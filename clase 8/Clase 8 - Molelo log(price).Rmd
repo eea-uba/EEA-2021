@@ -63,7 +63,7 @@ La forma más común de mejorar un modelo es transformar una o más variables, g
 Entonces, nuestro objetivo será ajustar e interpretar un modelo de regresión lineal múltiple que buscan explicar el precio de venta en dólares de dichas propiedades pero distinto a los que vimos hasta ahora:
 
 $$
-log(price) = \beta_0 + \beta_{r}log(rooms) + \beta_{b}log(bathrooms) + \beta_{sc}log(surface\_covered) + \beta_{pt}property\_type + \beta_{l3}l3 + \beta_{su}surface\_uncovered
+E(log(price)) = \beta_0 + \beta_{r}log(rooms) + \beta_{b}log(bathrooms) + \beta_{sc}log(surface\_covered) + \beta_{pt}property\_type + \beta_{l3}l3 + \beta_{su}surface\_uncovered
 $$
 
 ### Creamos nuevas variables 
@@ -287,7 +287,7 @@ $$ ln(Y) = \beta_0 + \beta_1X_1 +\beta_2ln(X_2)$$
 Tomamos la derivada parcial respecto $X_2$ y nos queda:
  
 $$\frac{1}{Y} \frac{\delta Y}{\delta X_2} = \beta_2 \frac{1}{X_2} $$
-$$ \beta_2 = \frac{X_2}{Y} \frac{\delta Y}{\delta X_2}  $$
+$$ \beta_2 = \frac{\delta Y}{\delta X_2} \frac{X_2}{Y} $$
 
 El término izquierdo es la elasticidad de $Y$ respecto a $X_2$, con lo cual $\beta_2$ equivale a eso.
  
