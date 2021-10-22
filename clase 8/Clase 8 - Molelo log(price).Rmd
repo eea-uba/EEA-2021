@@ -146,9 +146,9 @@ Sugerimos leer la sección del libro ["Introductory Econometrics: A Modern Appro
 
 Veamos cómo aplican estas interpretaciones en nuestro modelo log, con algunos ejemplos: 
 
-* El coeficiente de *log(surf_cov)* es la **elasticidad** estimada del precio respecto a la superficie cubierta. Es decir, que por cada aumento del 1% en la superficie cubierta hay un aumento de aproximadamente 0,78% en el **precio medio** de los inmuebles.
+* El coeficiente de *log(surf_cov)* es la **elasticidad** estimada del precio respecto a la superficie cubierta. Es decir, que por cada aumento del 1% en la superficie cubierta hay un aumento de aproximadamente 0,78% en el **precio medio** de los inmuebles, dadas las demás covariables.
 
-* El coeficiente de *surface_uncovered* representa una **semielasticidad** del precio respecto de la superficie descubierta. Este coeficiente tiene una interpretación porcentual multiplicándolo por 100: el **precio medio** del inmueble aumenta 0,22% por cada metro cuadrado adicional de superficie descubierta. 
+* El coeficiente de *surface_uncovered* representa una **semielasticidad** del precio respecto de la superficie descubierta. Este coeficiente tiene una interpretación porcentual multiplicándolo por 100: el **precio medio** del inmueble aumenta 0,22% por cada metro cuadrado adicional de superficie descubierta, dadas las demás covariables. 
 
 
 ### Diagnóstico del modelo log
