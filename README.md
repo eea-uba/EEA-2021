@@ -113,7 +113,7 @@ Regresión Logística: modelo de clasificación. Interpretación de coeficientes
 
 Problema del desbalanceo de clases: comportamiento del modelo, estrategia de oversampling y su efecto en el modelo  
 
-- [Regresion Logistica](clase 8/logit.nb.html)
+- [Regresion Logistica](clase 9/logit.nb.html)
 
 ### Clase 11: 06-11
 
