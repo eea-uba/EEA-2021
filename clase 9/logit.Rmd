@@ -17,6 +17,13 @@ div.main-container {
 }
 </style>
 
+## Planteo del problema
+
+En este caso vamos a tratar de resolver el problema de **predecir si una persona que viajaba a bordo del Titanic sobrevivió o no**. En particular, la regresión logística es útil para problemas de predicción de clases.
+
+Queremos estimar $P(Survived=1|X)=P(X)$ para cada individuo y a partir de ello poder definir un punto de corte para predecir quiénes son los que van a sobrevivir y los que no.
+
+Para ello, utilizaremos el conjunto de datos que proviene de [Kaggle - Titanic: Machine Learning from Disaster](https://www.kaggle.com/c/titanic/overview).
 
 ```{r, echo=TRUE, message=FALSE, warning=FALSE}
 # Cargamos las librerías que vamos a utilizar
@@ -32,16 +39,13 @@ library(caret)
 set.seed(2021)
 ```
 
-La **regresión logística** es útil para problemas de predicción de clases. En este caso vamos a tratar de resolver el problema de predecir si una persona que viajaba a bordo del Titanic sobrevivió o no. 
-
-## Conjunto de datos
-
-Este conjunto de datos proviene de [Kaggle - Titanic: Machine Learning from Disaster](https://www.kaggle.com/c/titanic/overview).
-
 ```{r, message=FALSE}
 # cargamos los datasets de train y test 
 dftitanic_train <- read_csv("../Fuentes/titanic_complete_train.csv")
 dftitanic_test <- read_csv("../Fuentes/titanic_complete_test.csv")
+```
+
+```{r, message=FALSE}
 # observamos su estructura
 glimpse(dftitanic_train)
 glimpse(dftitanic_test)
@@ -86,7 +90,7 @@ test <- dftitanic_test %>%
 # armamos tabla conjunta para graficar
 distrib = cbind(rbind(train, test), dataset = c("train", "train", "test", "test"))
 distrib
-# grafico las distribuciones
+# graficamos las distribuciones
 ggplot(distrib, aes(x = Survived, y = prop, fill = factor(Survived), label = prop)) + 
          geom_bar(stat="identity", position = "dodge") + facet_wrap(~ dataset) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
@@ -120,9 +124,7 @@ g
 
 ¿Cuáles parecen ser buenas variables para discriminar entre quienes sobrevivieron y quienes no?
 
-## Planteo del Problema
-
-Queremos estimar $P(Survived=1|X)=P(X)$ para cada individuo y a partir de ello poder definir un punto de corte para predecir quiénes son los que van a sobrevivir y los que no.
+### Probemos algunas soluciones
 
 ### Regresión lineal
 
@@ -178,11 +180,11 @@ La funcíón `glm()` nos permite crear un modelo lineal generalizado (Generalize
 
 Algunas familias son:
 
-* Binomial: link=logit
+* *Binomial*: link=logit
 
-* Poisson: link=log
+* *Poisson*: link=log
 
-* Gaussiana: link=identidad
+* *Gaussiana*: link=identidad
 
 Como estamos trabajando con un fenómeno que suponemos tiene una distribución binomial, así lo especificamos en el parámetro **family**.
 
@@ -198,7 +200,7 @@ glance(glm1)
 
 Se va a discutir sobre la interpretación de coeficientes y la evaluación en las siguientes secciones.
 
-## Creación de fórmulas
+### Creación de fórmulas
 
 Para crear varios modoelos de regresión logística podemos utilizar la función `formulas` del paquete **modelr** para crear un objeto que contiene todas las fórmulas que vamos a utilizar. 
 
@@ -220,7 +222,7 @@ logit_formulas <- formulas(.response = ~ Survived,
 logit_formulas # observamos el objeto formulas
 ```
 
-## Creación de modelos
+### Creación de modelos
 
 Procedemos a crear los modelos a partir de estas fórmulas.
 
@@ -326,16 +328,16 @@ Comenzamos agregando las predicciones con `augment` con el parámetro `type="res
 
   * Si `type.predict = 'link'` la predicción es en términos de la función link. En nuestro caso son el logaritmo de las odds, es decir, los valores que toma la expresión logit.
   
-  * Si `type.predict = 'response'` la predicción son las probabilidades de que la observación pertenezca a la clase positiva. En nuestro caso, devuelve la probabilidad de la que persona defaultee.
+  * Si `type.predict = 'response'` la predicción son las probabilidades de que la observación pertenezca a la clase positiva. En nuestro caso, devuelve la probabilidad de la que persona sobreviva.
 
 ```{r, warning=FALSE}
 # Añadir las predicciones
 models <- models %>% 
   mutate(pred= map(mod, augment, type.predict = "response"))
 #Observaciones con probabilidad más baja
-models$pred[7]$PcSAF %>% arrange(.fitted) %>% head(10)
+models$pred$PcSAF %>% arrange(.fitted) %>% head(10)
 #Observaciones con probabilidad más alta
-models$pred[7]$PcSAF %>% arrange(desc(.fitted)) %>% head(10)
+models$pred$PcSAF %>% arrange(desc(.fitted)) %>% head(10)
 ```
 
 Guardamos las predicciones para los modelos mencionados.
@@ -453,7 +455,7 @@ Aquellos **círculos que se ubiquen por encima** de la línea punteada indican q
 
 #### Curvas ROC
 
-```{r}
+```{r,message=FALSE}
 # Calculamos curvas ROC
 roc_full <- roc(response=prediction_full$Survived, predictor=prediction_full$.fitted)
 roc_bad <- roc(response=prediction_bad$Survived, predictor=prediction_bad$.fitted)
@@ -523,7 +525,7 @@ ggplot(logit_pred, aes(cutoff,estimate, group=term, color=term)) + geom_line(siz
 
 Seleccionamos el modelo completo, ya que es el que maximizaba el porcentaje de deviance explicada y en base a lo que vimos definimos un punto de corte en 0.4 (pueden probar otros), donde se cruzan sensitivity y specificity.
 
-```{r}
+```{r,message=FALSE}
 sel_cutoff = 0.4
 # Creamos el modelo
 full_model <- glm(logit_formulas$PcSAF, family = 'binomial', data = dftitanic_train)
