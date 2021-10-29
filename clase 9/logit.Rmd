@@ -525,19 +525,34 @@ ggplot(logit_pred, aes(cutoff,estimate, group=term, color=term)) + geom_line(siz
 
 Seleccionamos el modelo completo, ya que es el que maximizaba el porcentaje de deviance explicada y en base a lo que vimos definimos un punto de corte en 0.4 (pueden probar otros), donde se cruzan sensitivity y specificity.
 
+Calculamos la matriz de confusión para los datasets de train y test.
+
 ```{r,message=FALSE}
 sel_cutoff = 0.4
 # Creamos el modelo
 full_model <- glm(logit_formulas$PcSAF, family = 'binomial', data = dftitanic_train)
-# Agregamos la predicciones al dataset de testeo
-table= augment(x = full_model, newdata=dftitanic_test, type.predict='response') 
+# calculamos las predicciones sobre el dataset de train
+table_train = augment(x = full_model, type.predict='response')
 # Clasificamos utilizamos el punto de corte
-table=table %>% 
+table_train = table_train %>% 
   mutate(predicted_class = if_else(.fitted>sel_cutoff, 1, 0) %>% as.factor(), 
          Survived = factor(Survived))
 # Creamos la matriz de confusión
-confusionMatrix(table(table$predicted_class, table$Survived), positive = "1")
+confusionMatrix(table(table_train$predicted_class, table_train$Survived), positive = "1")
 ```
+
+
+```{r,message=FALSE}
+# Agregamos la predicciones al dataset de testeo
+table_test = augment(x = full_model, newdata=dftitanic_test, type.predict='response') 
+# Clasificamos utilizamos el punto de corte
+table_test = table_test %>% 
+  mutate(predicted_class = if_else(.fitted>sel_cutoff, 1, 0) %>% as.factor(), 
+         Survived = factor(Survived))
+# Creamos la matriz de confusión
+confusionMatrix(table(table_test$predicted_class, table_test$Survived), positive = "1")
+```
+
 Al existir desbalanceo de clases, es posible que el analista desee saber si la precisión general (Accuracy) de su modelo es mejor que la proporción de datos con la clase mayoritaria (No-information Rate). confusionMatrix usa la función binom.test para probar que la precisión (Acc) es mejor que la tasa sin información (NIR). Si el P-Value [Acc > NIR] resulta significativo, entonces podemos decir que existe evidencia estadísticamente significativa para decir que la precisión del modelo es mejor que la tasa sin información. 
 
 ## Desbalanceo de la clase
