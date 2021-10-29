@@ -158,7 +158,7 @@ ggplot(dftitanic_train, aes(Age, Survived)) +
 
 Parece tener bastantes problemas para estimar la probabilidad de supervivencia de los individuo: no existe un punto de corte claro, la predicción podría ser mayor a 1 o menor a cero llegado el caso.
 
-### Regresión Logística
+## Regresión Logística
 
 Para evitar estos problemas, usamos la **función logística**.
 
@@ -257,7 +257,7 @@ models %>%
 
 Observamos que todos los modelos tienen coeficientes significativos aunque el de Age se encuentra muy cercano a nuestro valor de rechazo.
 
-#### Interpretación de los coeficientes
+## Interpretación de los coeficientes
 
 Recordando la ecuación para modelar la probabilidad:
 
@@ -301,7 +301,7 @@ Asimismo, se observa que los coeficientes resultan todos significativos en este 
 
 Recomendamos leer el [capítulo de regresión logística](https://christophm.github.io/interpretable-ml-book/logistic.html) de *Interpretable Machine Learning: A Guide for Making Black Box Models Explainable* de Molnar Cristoph para una discusión más profunda de la interpretación de un modelo de regresión logística.
 
-### Evaluación de todos los modelos
+## Evaluación de todos los modelos
 
 Con `map()` agregamos la función `glance` para traer información relevante para la evaluación del modelo. Con `unnest()` accedemos a dicha información. Por último, agregamos una columna con el porcentaje de deviance explicado por cada modelo y ordenamos el dataset según su valor de deviance.
 
