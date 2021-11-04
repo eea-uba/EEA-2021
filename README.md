@@ -119,7 +119,12 @@ Problema del desbalanceo de clases: comportamiento del modelo, estrategia de ove
 
 Regularización: modelos Ridge, Lasso y Elastic Net y trade off sesgo-varianza
 
-- [Regularizacion: Ridge, Lasso y Elastic Net]()
+- [Regularizacion: Ridge, Lasso y Elastic Net](clase 10/regularizacion.html)
+
+#### Datasets para técnicas de regularización
+
+- [Diccionario de términos NBA](clase 10/diccionario_terminos.csv)
+- [Datos de estádisticas de juego de la NBA](clase 10/ nba_player_stats_salary_2019_2020.csv)
 
 ### Clase 12: 13-11
 
