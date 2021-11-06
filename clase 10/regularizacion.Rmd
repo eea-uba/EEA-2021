@@ -24,6 +24,7 @@ library(tidymodels)
 library(GGally)
 library(cowplot)
 library(glmnet)
+library(RColorBrewer)
 set.seed(2021)
 ```
 
@@ -206,7 +207,7 @@ lineal_coef_scal %>% filter(is.na(estimate))
 
 ## Evaluación de los modelos
 
-Obtemos la evaluación de ambos modelos ¿Cómo esperan que sean los valores de diagnóstico?
+Obtemos la evaluación de ambos modelos ¿Cómo esperan que sean los valores de las métricas de performance?
 
 ```{r}
 modelos_lineales = list(lineal = modelo_lineal, lineal_escalado = modelo_lineal_scal)
@@ -418,11 +419,12 @@ terminos_sobrevientes = lasso_coef %>%
 lasso_coef %>% 
   filter(term %in% terminos_sobrevientes) %>% 
   ggplot(., aes(log(lambda), estimate, group=term, color=term)) +
-  geom_line(size=1) +
+  geom_line(size=1)  +
+  scale_colour_manual(values=rep(brewer.pal(8,"Set1"),times=2))+
+#   scale_color_brewer(palette = mycolors) +
   geom_hline(yintercept = 0, linetype='dashed') +
   theme_bw() +
-  labs(title="Lasso sin Intercepto", y="Coeficientes", subtitle= "\"Mejores\" variables") +
-  scale_color_brewer(palette = 'Set1')
+  labs(title="Lasso sin Intercepto", y="Coeficientes", subtitle= "\"Mejores\" variables")
 ```
 
 Observamos que ahora tenemos otro set de "mejores" variables.
