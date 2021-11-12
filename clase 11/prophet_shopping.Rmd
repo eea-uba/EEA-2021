@@ -21,6 +21,7 @@ library(dplyr)
 library(ggplot2)
 library(prophet)
 library(lubridate)
+library(cowplot)
 ```
 
 ## Problema
@@ -192,7 +193,7 @@ plot(prophet_base,fcst=predict(prophet_base, prophet_df)) +theme_bw()
 La funcion `prophet_plot_components` nos devuelve los efectos de los componentes en nuestra variable a predecir.
 
 ```{r}
-prophet_plot_components(prophet_base, fcst=predict(prophet_base, prophet_df)) +theme_bw()
+prophet_plot_components(prophet_base, fcst=predict(prophet_base, prophet_df))
 ```
 
 En este caso tenemos la tendencia de los visitantes y la estacionalidad semanal. Esta última parece tener bastante sentido ya que nos muestra que hay mayor cantidad de visitantes durante el fin de semana.
@@ -231,7 +232,7 @@ plot(prophet_mensual,fcst=predict(prophet_mensual, prophet_df)) +theme_bw()
 #### Componentes del modelo
 
 ```{r}
-prophet_plot_components(prophet_mensual, fcst=predict(prophet_mensual, prophet_df)) +theme_bw()
+prophet_plot_components(prophet_mensual, fcst=predict(prophet_mensual, prophet_df))
 ```
 
 Notemos que la tendencia y estacionalidad semanal se mantiene y ahora se agrega la tendencia mensual que habíamos incorporado. Nos indica que el ciclo mensual se caracteriza por un crecimiento en la mitad de mes.
@@ -285,12 +286,12 @@ plot(prophet_full,fcst=predict(prophet_full, prophet_df)) +theme_bw()
 #### Componentes del modelo
 
 ```{r}
-prophet_plot_components(prophet_full, fcst=predict(prophet_full, prophet_df)) +theme_bw()
+prophet_plot_components(prophet_full, fcst=predict(prophet_full, prophet_df))
 ```
 
 La tendencia y estacionalidad semanal se mantienen aproximadamente igual. La estacionalidad mensual cambia bastante y se observa que existen tres picos en el ciclo mensual. Por su parte, los eventos se modelan como pequeños saltos o picos.
 
-## Diagnóstico del modelo
+## Evaluación del modelo
 
 La funcion `cross_validation` permite realizar pronósticos realizando un esquema de cross-validation temporal y, a partir de ellos, obtener ciertas métricas de performance.
 
@@ -298,46 +299,157 @@ La funcion `cross_validation` permite realizar pronósticos realizando un esquem
   
   * **period**: período entre fechas de análisis. Cuánto voy corriendo mi ventana
   
-   * **initial**: período inicial de entrenamiento
+  * **initial**: período inicial de entrenamiento
+   
+  * **units**: unidad de tiempo utilizada 
    
 ![](img/diagnostico_prophet.png)
 
+La función `cross_validation` devuelve un dataframe en el cual para cada grupo/fold de **cutoff** se obtiene para cada fecha dentro del **horizonte**: valor predicho, valor inferior del intervalo y valor superior del intervalo.
+
+Una vez que se obtiene este dataframe se pueden obtener métricas de evaluación con la función `performance_metrics`. Definimos la proporción de datos que se utilizarán en cada ventana móvil para calcular las métricas (`rolling_window`).
+
+El procedimiento es el siguiente: 
+
+1. Se calcula el horizonte de predicción de cada observación: ds - cutoff
+2. Se ordena de menor a mayor horizonte
+3. Se calculan las métricas con la cantidad de observaciones definidas por **rolling_window**.  
+  a. Comienza realizandolo para cada horizonte
+  b. Si los datos dentro de un **horizonte** no son suficientes comienza a usar observaciones de horizontes aledaños. 
+
+Entonces, según el valor de **rolling_window** se tienen los siguientes casos: 
+
+  * **rolling_window** < 0: se calculan las métricas para cada observación por separado
+  * **rolling_window** = 0: se calculan las métricas para cada horizonte por separado
+  * **rolling_window** 0 < w < 1: se calculan las métricas para cada horizonte usando el x% de las observaciones del dataframe
+  * **rolling_window** = 1: se calculan las métricas para todas las observaciones
+
+Realicemos la evaluación para nuestros modelos
+
 ### Modelo básico
+
+Usamos `cross_validation` con un periodo inicial de 45 días, un horizonte de 15 días y desplazaremos la predicción cada 7 días
 
 ```{r}
 cv_base = cross_validation(prophet_base, initial = 45, period = 7, horizon = 15, units = 'days')
 cv_base
 ```
-
-La funcion `performance_metrics` computa varias métricas de performance a partir de un dataframe de cross validation de prophet. Definimos la proporción de datos que se utilizarán en cada ventana móvil para calcular las métricas (`rolling_window`).  
+Obtenemos las métricas de performance
 
 ```{r}
-performance_metrics(cv_base, rolling_window = 0.5)
+performance_metrics(cv_base, rolling_window = 0.25)
 ```
+
+#### Breve explicación de la construcción de las métricas
+
+Construimos el horizonte para nuestro set de predicciones 
+
+```{r}
+# Construimos el horizonte
+cv_base_explicacion = cv_base %>% mutate(horizon = ds-cutoff)
+cv_base_explicacion[order(cv_base_explicacion$horizon),]
+```
+Observemos cuantas observaciones tenemos por horizonte
+
+```{r}
+cv_base_explicacion %>% group_by(horizon) %>% count()
+```
+La ventana se define de la siguiente manera:
+
+```{r}
+# El código se adaptó del código fuente de la librería
+n_observaciones_ventana = function(rolling_window, cv_df){
+  w <- as.integer(rolling_window * nrow(cv_df))
+    if (w >= 0) {
+      w <- max(w, 1)
+      w <- min(w, nrow(cv_df))
+    }
+  return(w)
+}
+```
+
+**Rolling window < 0**
+
+```{r}
+rolling_window = -1
+# Cantidad de observaciones
+n_observaciones_ventana(rolling_window, cv_base)
+# Set de metricas
+performance_metrics(cv_base, rolling_window=rolling_window)
+```
+**Rolling window = 0**
+
+```{r}
+rolling_window = 0
+# Cantidad de observaciones
+n_observaciones_ventana(rolling_window, cv_base)
+# Set de metricas
+performance_metrics(cv_base, rolling_window=rolling_window)
+```
+**Rolling window = 0.25**
+
+```{r}
+rolling_window = 0.25
+# Cantidad de observaciones
+n_observaciones_ventana(rolling_window, cv_base)
+# Set de metricas
+performance_metrics(cv_base, rolling_window=rolling_window)
+```
+**Rolling window = 1**
+
+```{r}
+rolling_window = 1
+# Cantidad de observaciones
+n_observaciones_ventana(rolling_window, cv_base)
+# Set de metricas
+performance_metrics(cv_base, rolling_window=rolling_window)
+```
+
+
+
 
 ### Modelo mensual
 
-```{r, message=FALSE, echo=FALSE, results='hide'}
+Usamos `cross_validation` con un periodo inicial de 45 días, un horizonte de 15 días y desplazaremos la predicción cada 7 días
+
+```{r}
 cv_mensual = cross_validation(prophet_mensual, initial = 45, period = 7, horizon = 15, units = 'days')
 cv_mensual
 ```
-
-La funcion `performance_metrics` computa varias metricas de performance a partir de un dataframe de cross validation de prophet
+Obtenemos las métricas de performance
 
 ```{r}
-performance_metrics(cv_mensual, rolling_window = 0.5)
+performance_metrics(cv_mensual, rolling_window = 0.25)
 ```
 
-#### Modelo completo
+### Modelo completo
 
-```{r, message=FALSE, echo=FALSE, results='hide'}
+Usamos `cross_validation` con un periodo inicial de 45 días, un horizonte de 15 días y desplazaremos la predicción cada 7 días
+
+```{r}
 cv_full = cross_validation(prophet_full, initial = 45, period = 7, horizon = 15, units = 'days')
 cv_full
 ```
-Calculamos las métricas. 
+
+Obtenemos las métricas de performance
 
 ```{r}
-performance_metrics(cv_full, rolling_window = 0.5)
+performance_metrics(cv_full, rolling_window = 0.25)
+```
+
+### Gráficos
+
+La función `plot_cross_validation_metric` nos permite graficar el comportamiento de una métrica de performance para los distintos horizontes
+
+```{r}
+mae_base = plot_cross_validation_metric(cv_base, metric = 'mae', rolling_window = 0.25) + 
+            theme_bw() + labs(title="Modelo Base: MAE")
+mae_mensual = plot_cross_validation_metric(cv_mensual, metric = 'mae', rolling_window = 0.25) +
+           theme_bw() + labs(title="Modelo Mensual: MAE")
+mae_full = plot_cross_validation_metric(cv_full, metric = 'mae', rolling_window = 0.25) +
+            theme_bw() + labs(title="Modelo Full: MAE")
+
+cowplot::plot_grid(mae_base, mae_mensual, mae_full)
 ```
 
 ## Gráficos interactivos
