@@ -529,7 +529,7 @@ ridge.mod = glmnet(x = nba_mtx, # Matriz de regresores
                    alpha = 0, # Indicador del tipo de regularizacion
                    standardize = TRUE)
 #Coeficientes tidy                 
-ridge_coef= ridge.mod %>% tidy()
+ridge_coef= ridge.mod %>% tidy() %>% arrange(step)
 ridge_coef 
 ```
 ¿Qué ven de distinto en los coeficientes estimados del modelo respecto a Lasso?
