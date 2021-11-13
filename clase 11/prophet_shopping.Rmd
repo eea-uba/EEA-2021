@@ -132,20 +132,20 @@ El modelo subyacente es el propuesto por Harvey & Peters (1990):
 
 $y(t)=g(t)+s(t)+h(t)+\epsilon_t$
 
-$y(t):$ variable a predecir
+ * $y(t):$ variable a predecir
 
-$g(t):$ función de tendencia
+ * $g(t):$ función de tendencia
 
-$s(t):$ cambios periódicos
+ * $s(t):$ cambios periódicos
 
-$h(t):$fectos de vacaciones (eventos atípicos)$
+ * $h(t):$fectos de vacaciones (eventos atípicos)$
 
-$ε_t:$error
+ * $ε_t:$error
 
 El modelo es similar a los GAM:
 
-1) Cada variable es una función (posiblemente) no lineal del tiempo
-2) Los efectos de los componentes se suman (efectos aditivos)
+1) Cada **variable es una función** (posiblemente) no lineal del tiempo
+2) Los **efectos** de los componentes **se suman** (efectos aditivos)
 
 En palabras de los autores:
 
@@ -314,8 +314,8 @@ El procedimiento es el siguiente:
 1. Se calcula el horizonte de predicción de cada observación: ds - cutoff
 2. Se ordena de menor a mayor horizonte
 3. Se calculan las métricas con la cantidad de observaciones definidas por **rolling_window**.  
-  a. Comienza realizandolo para cada horizonte
-  b. Si los datos dentro de un **horizonte** no son suficientes comienza a usar observaciones de horizontes aledaños. 
+    a. Comienza realizandolo para cada horizonte
+    b. Si los datos dentro de un **horizonte** no son suficientes comienza a usar observaciones de horizontes aledaños. 
 
 Entonces, según el valor de **rolling_window** se tienen los siguientes casos: 
 
