@@ -140,4 +140,4 @@ Examen final integrador.
 
 Redes Neuronales. 
 
-- [Redes I: Fully Conected Neural Networks]()
+- [Redes I: Fully Conected Neural Networks](clase 12/mnist101.nb.html)
